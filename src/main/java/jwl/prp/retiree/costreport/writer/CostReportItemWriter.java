@@ -27,17 +27,7 @@ public class CostReportItemWriter implements ItemWriter<CostReportRecord>
 
         for (CostReportRecord costReportRecord : items)
         {
-            if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FHDR.toString()))
-                System.out.println(CLASS_NAME + " " + METHOD_NAME + " - " + ((FileHeader) costReportRecord).toString());
-            else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.AHDR.toString()))
-                System.out.println(CLASS_NAME + " " + METHOD_NAME + " - " + ((ApplicationHeader) costReportRecord).toString());
-            else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.DETL.toString()))
-                System.out.println(CLASS_NAME + " " + METHOD_NAME + " - " + ((ApplicationDetail) costReportRecord).toString());
-            else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.ATRL.toString()))
-                System.out.println(CLASS_NAME + " " + METHOD_NAME + " - " + ((ApplicationTrailer) costReportRecord).toString());
-            else
-                System.out.println(CLASS_NAME + " " + METHOD_NAME + " - *** ERROR *** " + costReportRecord.toString());
-
+            System.out.println(CLASS_NAME + " " + METHOD_NAME + " - " + costReportRecord.toString());
         }
 
         costReportRecords.addAll(items);

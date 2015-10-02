@@ -65,7 +65,7 @@
     </bean>
 
 
-    <!-- Cost Report -->
+    <!-- Cost Report Item Reader -->
     <bean id="costReportItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
         <property name="resource"   value="file:#{jobParameters['inputFilePath']}" />
         <property name="lineMapper" ref="costReportLineMapper"/>
@@ -76,7 +76,9 @@
             <map>
                 <entry key="FHDR*" value-ref="fileHeaderLineTokenizer"/>
                 <entry key="AHDR*" value-ref="applicationHeaderLineTokenizer"/>
-                <entry key="DETL**" value-ref="applicationDetailLineTokenizer"/>
+                <entry key="DETL*" value-ref="applicationDetailLineTokenizer"/>
+                <entry key="ATRL*" value-ref="applicationTrailerLineTokenizer"/>
+                <entry key="FTRL*" value-ref="fileTrailerLineTokenizer"/>
             </map>
         </property>
         <property name="fieldSetMappers">
@@ -84,22 +86,14 @@
                 <entry key="FHDR*" value-ref="fileHeaderFieldSetMapper"/>
                 <entry key="AHDR*" value-ref="applicationHeaderFieldSetMapper"/>
                 <entry key="DETL*" value-ref="applicationDetailFieldSetMapper"/>
+                <entry key="ATRL*" value-ref="applicationTrailerFieldSetMapper"/>
+                <entry key="FTRL*" value-ref="fileTrailerFieldSetMapper"/>
             </map>
         </property>
     </bean>
 
 
     <!-- File Header -->
-    <bean id="fileHeaderItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
-        <property name="resource"   value="file:#{jobParameters['inputFilePath']}" />
-        <property name="lineMapper" ref="fileHeaderLineMapper"/>
-    </bean>
-
-    <bean id="fileHeaderLineMapper" class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
-        <property name="lineTokenizer"  ref="fileHeaderLineTokenizer"/>
-        <property name="fieldSetMapper" ref="fileHeaderFieldSetMapper"/>
-    </bean>
-
     <bean id="fileHeaderLineTokenizer" class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
         <property name="columns" value="1-4,5,6-15,16-23,24-31,32-110"/>
         <property name="names"   value="recordType,submitterType,submitterID,submitterDate,submitterTime,filler"/>
@@ -113,16 +107,6 @@
 
 
     <!-- Application Header -->
-    <bean id="applicationHeaderItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
-        <property name="resource"   value="file:#{jobParameters['inputFilePath']}" />
-        <property name="lineMapper" ref="applicationHeaderLineMapper"/>
-    </bean>
-
-    <bean id="applicationHeaderLineMapper" class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
-        <property name="lineTokenizer"  ref="applicationHeaderLineTokenizer"/>
-        <property name="fieldSetMapper" ref="applicationHeaderFieldSetMapper"/>
-    </bean>
-
     <bean id="applicationHeaderLineTokenizer" class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
         <property name="columns" value="1-4,5-14,15-110"/>
         <property name="names"   value="recordType,applicationID,filler"/>
@@ -136,16 +120,6 @@
 
 
     <!-- Application Detail -->
-    <bean id="applicationDetailItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
-        <property name="resource"   value="file:#{jobParameters['inputFilePath']}" />
-        <property name="lineMapper" ref="applicationHeaderLineMapper"/>
-    </bean>
-
-    <bean id="applicationDetailLineMapper" class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
-        <property name="lineTokenizer"  ref="applicationHeaderLineTokenizer"/>
-        <property name="fieldSetMapper" ref="applicationHeaderFieldSetMapper"/>
-    </bean>
-
     <bean id="applicationDetailLineTokenizer" class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
         <property name="columns" value="1-4,5-24,25-30,31-42,43-54,55-66,67-78,79-90,91-110"/>
         <property name="names"   value="recordType,uniqueBenefitOptionIdentifier,rxCostYearMonth,estimatedPremium,grossRetireeCost,thresholdReduction,limitReduction,estimatedCostAdjustment,filler"/>
@@ -158,9 +132,31 @@
     <bean id="applicationDetail" class="jwl.prp.retiree.costreport.entity.ApplicationDetail" scope="prototype" />
 
 
-    <!--
-    <bean id="costReportItemWriter" class="jwl.prp.retiree.costreport.writer.DummyItemWriter"/>
-    -->
+    <!-- Application Trailer -->
+    <bean id="applicationTrailerLineTokenizer" class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
+        <property name="columns" value="1-4,5-14,15-21,22-36,37-51,52-66,67-81,82-96,97-110"/>
+        <property name="names"   value="recordType,applicationID,recordCount,totalEstimatedPremium,totalGrossRetireeCost,totalThresholdReduction,totalLimitReduction,totalEstimatedCostAdjustment,filler"/>
+    </bean>
 
+    <bean id="applicationTrailerFieldSetMapper" class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+        <property name="prototypeBeanName"   value="applicationTrailer"/>
+    </bean>
+
+    <bean id="applicationTrailer" class="jwl.prp.retiree.costreport.entity.ApplicationTrailer" scope="prototype" />
+
+
+    <!-- File Trailer -->
+    <bean id="fileTrailerLineTokenizer" class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
+        <property name="columns" value="1-4,5-14,15-19,20-35,36-51,52-67,68-83,84-99,100-110"/>
+        <property name="names"   value="recordType,submitterID,applicationCount,grabdEstimatedPremium,grandGrossRetireeCost,grandThresholdReduction,grandLimitReduction,grandEstimatedCostAdjustment,filler"/>
+    </bean>
+
+    <bean id="fileTrailerFieldSetMapper" class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+        <property name="prototypeBeanName"   value="fileTrailer"/>
+    </bean>
+
+    <bean id="fileTrailer" class="jwl.prp.retiree.costreport.entity.FileTrailer" scope="prototype" />
+
+    <!-- Cost Report Item Writer -->
     <bean id="costReportItemWriter" class="jwl.prp.retiree.costreport.writer.CostReportItemWriter"/>
 </beans>

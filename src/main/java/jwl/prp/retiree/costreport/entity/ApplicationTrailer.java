@@ -3,7 +3,8 @@ package jwl.prp.retiree.costreport.entity;
 /**
  * Created by jwleader on 10/2/15.
  */
-public class ApplicationTrailer extends CostReportRecord {
+public class ApplicationTrailer extends CostReportRecord
+{
     // Position 5 - 14, Length 10
     private String applicationID;
 
@@ -29,7 +30,8 @@ public class ApplicationTrailer extends CostReportRecord {
     private String filler;
 
 
-    public ApplicationTrailer() {
+    public ApplicationTrailer()
+    {
     }
 
 
@@ -41,7 +43,8 @@ public class ApplicationTrailer extends CostReportRecord {
                               String totalThresholdReduction,
                               String totalLimitReduction,
                               String totalEstimatedCostAdjustment,
-                              String filler) {
+                              String filler)
+    {
         super(recordType);
         this.applicationID = applicationID;
         this.recordCount = recordCount;

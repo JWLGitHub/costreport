@@ -7,7 +7,6 @@
                 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                 http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
 
-
     <!-- Import our beans -->
     <import resource="classpath:/applicationContext.xml" />
 
@@ -18,15 +17,7 @@
 
         <step id="importFile">
             <tasklet>
-                <!--
-                <chunk reader="fileHeaderItemReader" writer="costReportItemWriter" commit-interval="100" />
-                -->
-                <!--
-                <chunk reader="applicationHeaderItemReader" writer="costReportItemWriter" commit-interval="100" />
-                -->
-
                 <chunk reader="costReportItemReader" writer="costReportItemWriter" commit-interval="100" />
-
             </tasklet>
         </step>
     </job>

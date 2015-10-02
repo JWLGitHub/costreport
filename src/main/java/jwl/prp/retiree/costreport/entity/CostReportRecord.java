@@ -7,7 +7,7 @@ public class CostReportRecord
 {
     public enum RecordType
     {
-        FHDR, AHDR, DETL, ATRL
+        FHDR, AHDR, DETL, ATRL, FTRL
     }
 
 
