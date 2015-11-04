@@ -11,14 +11,60 @@
     <import resource="classpath:/applicationContext.xml" />
 
     <job id="costReportJob" xmlns="http://www.springframework.org/schema/batch">
-        <step id="fileExists" next="importFile">
+        <step id="fileExists" next="fileEmpty">
             <tasklet ref="fileExistsTasklet" />
+
+            <listeners>
+                <listener ref="fileExistsPromotionListener" />
+            </listeners>
         </step>
 
+        <step id="fileEmpty" >
+            <tasklet ref="fileEmptyTasklet" />
+        </step>
+
+        <!--
         <step id="importFile">
             <tasklet>
-                <chunk reader="costReportItemReader" writer="costReportItemWriter" commit-interval="100" />
+                <chunk reader="costReportItemReader"
+                       processor="costReportItemProcessor"
+                       writer="costReportItemWriter"
+                       commit-interval="3"
+                       skip-limit="10" >
+                    <skippable-exception-classes>
+                        <include class="org.springframework.batch.item.file.FlatFileParseException" />
+                        <include class="org.springframework.batch.item.validator.ValidationException" />
+                    </skippable-exception-classes>
+                </chunk>
+
+                <listeners>
+                    <listener ref="importFileListener" />
+                </listeners>
             </tasklet>
         </step>
+
+        -->
+
+        <!--
+        <step id="importFileFirstPass">
+            <tasklet>
+                <chunk reader="costReportItemReader"
+                       writer="costReportItemWriter"
+                       commit-interval="3"
+                       skip-limit="10" >
+                    <skippable-exception-classes>
+                        <include class="org.springframework.batch.item.file.FlatFileParseException" />
+                        <include class="org.springframework.batch.item.validator.ValidationException" />
+                    </skippable-exception-classes>
+                </chunk>
+
+                <listeners>
+                    <listener ref="importFileListener" />
+                </listeners>
+            </tasklet>
+        </step>
+        -->
+
+
     </job>
 </beans>

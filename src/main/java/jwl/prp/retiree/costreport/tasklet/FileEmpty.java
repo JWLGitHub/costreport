@@ -1,35 +1,34 @@
 package jwl.prp.retiree.costreport.tasklet;
 
-import java.io.File;
-import java.util.Date;
-
 import jwl.prp.retiree.costreport.dao.CostReportFileDAO;
 import jwl.prp.retiree.costreport.dao.CostReportFileProcessDAO;
 import jwl.prp.retiree.costreport.entity.CostReportFile;
 import jwl.prp.retiree.costreport.entity.CostReportFileProcess;
 import jwl.prp.retiree.costreport.entity.FileStatus;
-
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
-
+import java.io.File;
+import java.util.Date;
 
 /**
- * Created by jwleader on 9/28/15.
+ * Created by jwleader on 11/3/15.
  */
-public class FileExists implements Tasklet
+public class FileEmpty implements Tasklet
 {
-    private static String CLASS_NAME  = FileExists.class.getName();
-    private static String SIMPLE_NAME = FileExists.class.getSimpleName();
+    private static String CLASS_NAME  = FileEmpty.class.getName();
+    private static String SIMPLE_NAME = FileEmpty.class.getSimpleName();
 
-    private JobExecution       jobExecution;
-    private StepExecution      stepExecution;
-    private ExecutionContext   stepExecutionContext;
+    private JobExecution      jobExecution;
+    private ExecutionContext  jobExecutionContext;
+    private StepExecution     stepExecution;
 
-    private String  inputFilePath;
+    private String            inputFilePath;
 
     private CostReportFileDAO        costReportFileDAO;
     private CostReportFileProcessDAO costReportFileProcessDAO;
@@ -37,7 +36,7 @@ public class FileExists implements Tasklet
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution,
-                                ChunkContext     chunkContext)
+                                ChunkContext chunkContext)
                                 throws Exception
     {
         final String METHOD_NAME = "execute";
@@ -45,71 +44,45 @@ public class FileExists implements Tasklet
 
         stepExecution = chunkContext.getStepContext().getStepExecution();
         jobExecution = stepExecution.getJobExecution();
-        stepExecutionContext = stepExecution.getExecutionContext();
+        jobExecutionContext = jobExecution.getExecutionContext();
 
         // System.out.println(System.getProperty("user.dir"));
 
         File inputFile = new File( inputFilePath );
 
-        CostReportFile.STATUS_TYPE costReportFileStatusType;
-        if (inputFile.exists())
-            costReportFileStatusType = CostReportFile.STATUS_TYPE.EXISTS;
-        else
-            costReportFileStatusType = CostReportFile.STATUS_TYPE.MISSING;
-
-        CostReportFile costReportFile = createCostReportFileInfo(costReportFileStatusType);
-        saveCostReportFileToStepExecution(costReportFile);
-
-        if (costReportFileStatusType.equals(FileStatus.FILE_STATUS_TYPE.MISSING))
+        if (inputFile.length() == 0)
+        {
+            updateCostReportFileInfo(CostReportFile.STATUS_TYPE.FILE_IS_EMPTY);
             stepExecution.setTerminateOnly();
+        }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME +  " - END");
         return RepeatStatus.FINISHED;
     }
 
 
-    private CostReportFile createCostReportFileInfo(CostReportFile.STATUS_TYPE costReportFileStatusType)
+    private void updateCostReportFileInfo(CostReportFile.STATUS_TYPE costReportFileType)
     {
-        final String METHOD_NAME = "createCostReportFileInfo";
+        final String METHOD_NAME = "updateCostReportFileInfo";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + inputFilePath + ": " + costReportFileStatusType.name());
+        Object costReportFileID = jobExecutionContext.get("costReportFileID");
+        if (null == costReportFileID  ||
+            costReportFileID.toString().equalsIgnoreCase(""))
+        {
+            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - costReportFileID: missing");
+            throw new RuntimeException("'costReportFileID' MISSING from jobExecutionContext");
+        }
 
-        CostReportFile costReportFile = insertCostReportFile(costReportFileStatusType);
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - costReportFileID: " + costReportFileID);
+        CostReportFile costReportFile = costReportFileDAO.findByCostReportFileID(Integer.parseInt(costReportFileID.toString()));
+        costReportFile.setStatus(costReportFileType.name());
+        costReportFileDAO.updateCostReportFile(costReportFile);
 
         insertCostReportFileProcess(costReportFile.getId(),
-                                    costReportFileStatusType);
+                                    costReportFileType);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        return costReportFile;
-    }
-
-
-    private CostReportFile insertCostReportFile(CostReportFile.STATUS_TYPE costReportFileStatusType)
-    {
-        final String METHOD_NAME = "insertCostReportFile";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        CostReportFile costReportFile = new CostReportFile(0,
-                                                           inputFilePath,
-                                                           costReportFileStatusType.name(),
-                                                           jobExecution.getJobInstance().getJobName(),
-                                                           stepExecution.getStepName(),
-                                                           SIMPLE_NAME,
-                                                           METHOD_NAME,
-                                                           new Date(),
-                                                           null,
-                                                           null,
-                                                           null,
-                                                           null,
-                                                           null);
-
-        costReportFileDAO.insertCostReportFile(costReportFile);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        return costReportFile;
     }
 
 
@@ -137,17 +110,6 @@ public class FileExists implements Tasklet
     }
 
 
-    private void saveCostReportFileToStepExecution(CostReportFile costReportFile)
-    {
-        final String METHOD_NAME = "saveCostReportFileToStepExecution";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        stepExecutionContext.put("costReportFileID", String.valueOf(costReportFile.getId()));
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
     /*
      *****                                       *****
      *****     -----     SETTER(s)     -----     *****
@@ -157,7 +119,6 @@ public class FileExists implements Tasklet
     {
         this.inputFilePath = inputFilePath;
     }
-
 
     public void setCostReportFileDAO(CostReportFileDAO costReportFileDAO)
     {

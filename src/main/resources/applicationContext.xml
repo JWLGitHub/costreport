@@ -17,17 +17,14 @@
 
 
     <!-- Data source - connect to a MySQL instance running on the local machine -->
-    <bean id="dataSource"
-          class="org.apache.commons.dbcp.BasicDataSource"
-          destroy-method="close">
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url"             value="jdbc:mysql://localhost/cost_report"/>
         <property name="username"        value="jwl"/>
         <property name="password"        value="jwl"/>
     </bean>
 
-    <bean id="transactionManager"
-          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
     </bean>
 
@@ -48,6 +45,8 @@
         <property name="transactionManager" ref="transactionManager" />
     </bean>
     -->
+
+
     <bean id="jobRepository" class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean">
         <property name="dataSource"         ref="dataSource" />
         <property name="transactionManager" ref="transactionManager" />
@@ -59,9 +58,24 @@
     </bean>
 
 
-    <!-- Tasklet -->
+    <!-- File Exists Tasklet -->
     <bean id="fileExistsTasklet" class="jwl.prp.retiree.costreport.tasklet.FileExists" scope="step">
-        <property name="inputFilePath" value="#{jobParameters['inputFilePath']}" />
+        <property name="inputFilePath"            value="#{jobParameters['inputFilePath']}" />
+        <property name="costReportFileDAO"        ref="costReportFileDAO"/>
+        <property name="costReportFileProcessDAO" ref="costReportFileProcessDAO"/>
+    </bean>
+
+    <!-- File Exists PromotionListener -->
+    <bean id="fileExistsPromotionListener" class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
+        <property name="keys" value="costReportFileID" />
+    </bean>
+
+
+    <!-- File Empty Tasklet -->
+    <bean id="fileEmptyTasklet" class="jwl.prp.retiree.costreport.tasklet.FileEmpty" scope="step">
+        <property name="inputFilePath"            value="#{jobParameters['inputFilePath']}" />
+        <property name="costReportFileDAO"        ref="costReportFileDAO"/>
+        <property name="costReportFileProcessDAO" ref="costReportFileProcessDAO"/>
     </bean>
 
 
@@ -157,6 +171,81 @@
 
     <bean id="fileTrailer" class="jwl.prp.retiree.costreport.entity.FileTrailer" scope="prototype" />
 
+
+    <!-- Cost Report Item Processor -->
+    <bean id="costReportItemProcessor" class="jwl.prp.retiree.costreport.processor.CostReportItemProcessor" scope="step">
+
+        <property name="inputFilePath" value="#{jobParameters['inputFilePath']}" />
+
+        <!-- File Header Validator(s) -->
+        <property name="fileHeaderValidators">
+            <list>
+                <ref bean="firstValidator"/>
+                <ref bean="firstValidator"/>
+            </list>
+        </property>
+
+        <!-- Application Header Validator(s) -->
+        <property name="applicationHeaderValidators">
+            <list>
+                <ref bean="firstValidator"/>
+            </list>
+        </property>
+
+        <!-- Application Detail Validator(s) -->
+        <property name="applicationDetailValidators">
+            <list>
+                <ref bean="firstValidator"/>
+            </list>
+        </property>
+
+        <!-- Application Trailer Validator(s) -->
+        <property name="applicationTrailerValidators">
+            <list>
+                <ref bean="firstValidator"/>
+            </list>
+        </property>
+
+        <!-- Application Validator(s) -->
+        <property name="applicationValidators">
+            <list>
+                <ref bean="applicationValidator"/>
+            </list>
+        </property>
+
+        <!-- File Trailer Validator(s) -->
+        <property name="fileTraileralidators">
+            <list>
+                <ref bean="firstValidator"/>
+            </list>
+        </property>
+    </bean>
+
+
+    <!-- Validator(s) -->
+    <bean id="firstValidator"       class="jwl.prp.retiree.costreport.Validation.FileHeader.TrueValidator"/>
+
+    <bean id="secondValidator"      class="jwl.prp.retiree.costreport.Validation.FileHeader.FalseValidator"/>
+
+    <bean id="applicationValidator" class="jwl.prp.retiree.costreport.Validation.FileHeader.ApplicationValidator"/>
+
+
     <!-- Cost Report Item Writer -->
     <bean id="costReportItemWriter" class="jwl.prp.retiree.costreport.writer.CostReportItemWriter"/>
+
+
+    <!-- Import File Listener -->
+    <bean id="importFileListener" class="jwl.prp.retiree.costreport.listener.ImportFileListener" scope="step">
+        <property name="inputFilePath" value="#{jobParameters['inputFilePath']}" />
+    </bean>
+
+
+    <!-- DAOs -->
+    <bean id="costReportFileDAO" class="jwl.prp.retiree.costreport.dao.CostReportFileDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="costReportFileProcessDAO" class="jwl.prp.retiree.costreport.dao.CostReportFileProcessDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
 </beans>

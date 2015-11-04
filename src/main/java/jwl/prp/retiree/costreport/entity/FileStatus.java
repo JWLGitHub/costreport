@@ -84,4 +84,11 @@ public class FileStatus
     public void setJobName(String jobName) { this.jobName = jobName; }
 
     public void setStepName(String stepName) { this.stepName = stepName; }
+
+    public static enum FILE_STATUS_TYPE {EXISTS,
+                                         MISSING,
+                                         INVALID,
+                                         START,
+                                         END,
+                                         BYPASS};
 }
