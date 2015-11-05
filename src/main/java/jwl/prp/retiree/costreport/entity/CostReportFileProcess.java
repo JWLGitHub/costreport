@@ -123,4 +123,13 @@ public class CostReportFileProcess
     public void setAddDateTime(Date addDateTime) {
         this.addDateTime = addDateTime;
     }
+
+
+    public static enum PROCESS_TYPE
+    {
+        EXISTS,
+        MISSING,
+        CRFILE_IS_EMPTY,
+        CRFILE_BAD_RECORD_TYPE
+    }
 }

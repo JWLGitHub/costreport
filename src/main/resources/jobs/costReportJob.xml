@@ -11,16 +11,22 @@
     <import resource="classpath:/applicationContext.xml" />
 
     <job id="costReportJob" xmlns="http://www.springframework.org/schema/batch">
-        <step id="fileExists" next="fileEmpty">
-            <tasklet ref="fileExistsTasklet" />
+        <step id="fileExists" >
+            <tasklet ref="fileExistsTasklet" >
+                <listeners>
+                    <listener ref="fileExistsPromotionListener" />
+                </listeners>
+            </tasklet>
 
-            <listeners>
-                <listener ref="fileExistsPromotionListener" />
-            </listeners>
+            <fail on="FAILED" />
+            <next on="*" to="fileEmpty" />
         </step>
 
         <step id="fileEmpty" >
             <tasklet ref="fileEmptyTasklet" />
+
+            <fail on="FAILED" />
+            <next on="*" to="importFileFirstPass" />
         </step>
 
         <!--
@@ -42,14 +48,12 @@
                 </listeners>
             </tasklet>
         </step>
-
         -->
 
-        <!--
         <step id="importFileFirstPass">
             <tasklet>
                 <chunk reader="costReportItemReader"
-                       writer="costReportItemWriter"
+                       writer="dummyItemWriter"
                        commit-interval="3"
                        skip-limit="10" >
                     <skippable-exception-classes>
@@ -59,12 +63,9 @@
                 </chunk>
 
                 <listeners>
-                    <listener ref="importFileListener" />
+                    <listener ref="importFileFirstPassListener" />
                 </listeners>
             </tasklet>
         </step>
-        -->
-
-
     </job>
 </beans>

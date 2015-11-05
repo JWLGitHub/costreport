@@ -222,7 +222,9 @@
     </bean>
 
 
-    <!-- Validator(s) -->
+    <!--                         -->
+    <!--        VALIDATOR(s)     -->
+    <!--                         -->
     <bean id="firstValidator"       class="jwl.prp.retiree.costreport.Validation.FileHeader.TrueValidator"/>
 
     <bean id="secondValidator"      class="jwl.prp.retiree.costreport.Validation.FileHeader.FalseValidator"/>
@@ -230,17 +232,37 @@
     <bean id="applicationValidator" class="jwl.prp.retiree.costreport.Validation.FileHeader.ApplicationValidator"/>
 
 
+    <!--                         -->
+    <!--        WRITER(s)        -->
+    <!--                         -->
+
     <!-- Cost Report Item Writer -->
     <bean id="costReportItemWriter" class="jwl.prp.retiree.costreport.writer.CostReportItemWriter"/>
 
+    <!-- Dummy Item Writer -->
+    <bean id="dummyItemWriter" class="jwl.prp.retiree.costreport.writer.DummyItemWriter"/>
+
+
+    <!--                         -->
+    <!--        LISTENER(s)      -->
+    <!--                         -->
 
     <!-- Import File Listener -->
     <bean id="importFileListener" class="jwl.prp.retiree.costreport.listener.ImportFileListener" scope="step">
         <property name="inputFilePath" value="#{jobParameters['inputFilePath']}" />
     </bean>
 
+    <!-- Import File First Pass Listener -->
+    <bean id="importFileFirstPassListener" class="jwl.prp.retiree.costreport.processor.CostReportFileProcessor" scope="step">
+        <property name="inputFilePath"            value="#{jobParameters['inputFilePath']}" />
+        <property name="costReportFileDAO"        ref="costReportFileDAO"/>
+        <property name="costReportFileProcessDAO" ref="costReportFileProcessDAO"/>
+    </bean>
 
-    <!-- DAOs -->
+
+    <!--                          -->
+    <!--          DAO(s)          -->
+    <!--                          -->
     <bean id="costReportFileDAO" class="jwl.prp.retiree.costreport.dao.CostReportFileDAO">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
     </bean>

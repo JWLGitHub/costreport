@@ -5,6 +5,7 @@ import jwl.prp.retiree.costreport.dao.CostReportFileProcessDAO;
 import jwl.prp.retiree.costreport.entity.CostReportFile;
 import jwl.prp.retiree.costreport.entity.CostReportFileProcess;
 import jwl.prp.retiree.costreport.entity.FileStatus;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
@@ -52,8 +53,10 @@ public class FileEmpty implements Tasklet
 
         if (inputFile.length() == 0)
         {
-            updateCostReportFileInfo(CostReportFile.STATUS_TYPE.FILE_IS_EMPTY);
-            stepExecution.setTerminateOnly();
+            int costReportFileID = getCostReportFileID();
+            updateCostReportFileInfo(costReportFileID);
+            insertCostReportFileProcess(costReportFileID);
+            stepExecution.setExitStatus(ExitStatus.FAILED);
         }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME +  " - END");
@@ -61,40 +64,51 @@ public class FileEmpty implements Tasklet
     }
 
 
-    private void updateCostReportFileInfo(CostReportFile.STATUS_TYPE costReportFileType)
+    private int getCostReportFileID()
     {
-        final String METHOD_NAME = "updateCostReportFileInfo";
+        final String METHOD_NAME = "getCostReportFileID";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         Object costReportFileID = jobExecutionContext.get("costReportFileID");
         if (null == costReportFileID  ||
             costReportFileID.toString().equalsIgnoreCase(""))
         {
-            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - costReportFileID: missing");
+            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - costReportFileID: MISSING");
             throw new RuntimeException("'costReportFileID' MISSING from jobExecutionContext");
         }
 
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - costReportFileID: " + costReportFileID);
-        CostReportFile costReportFile = costReportFileDAO.findByCostReportFileID(Integer.parseInt(costReportFileID.toString()));
-        costReportFile.setStatus(costReportFileType.name());
-        costReportFileDAO.updateCostReportFile(costReportFile);
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        insertCostReportFileProcess(costReportFile.getId(),
-                                    costReportFileType);
+        return Integer.parseInt(costReportFileID.toString());
+    }
+
+
+    private void updateCostReportFileInfo(int costReportFileID)
+    {
+        final String METHOD_NAME = "updateCostReportFileInfo";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        CostReportFile costReportFile = costReportFileDAO.findByCostReportFileID(costReportFileID);
+        costReportFile.setStatus(CostReportFile.STATUS_TYPE.FILE_IS_EMPTY.name());
+        costReportFile.setUpdateJob(jobExecution.getJobInstance().getJobName());
+        costReportFile.setUpdateStep(stepExecution.getStepName());
+        costReportFile.setUpdateProgram(SIMPLE_NAME);
+        costReportFile.setUpdateMethod(METHOD_NAME);
+        costReportFile.setUpdateDateTime(new Date());
+        costReportFileDAO.updateCostReportFile(costReportFile);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
 
-    private CostReportFileProcess insertCostReportFileProcess(int                        costReportFileID,
-                                                              CostReportFile.STATUS_TYPE costReportFileStatusType)
+    private void insertCostReportFileProcess(int costReportFileID)
     {
         final String METHOD_NAME = "insertCostReportFileProcess";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         CostReportFileProcess costReportFileProcess = new CostReportFileProcess(0,
                                                                                 costReportFileID,
-                                                                                costReportFileStatusType.name(),
+                                                                                CostReportFileProcess.PROCESS_TYPE.CRFILE_IS_EMPTY.name(),
                                                                                 null,
                                                                                 jobExecution.getJobInstance().getJobName(),
                                                                                 stepExecution.getStepName(),
@@ -105,8 +119,6 @@ public class FileEmpty implements Tasklet
         costReportFileProcessDAO.insertCostReportFileProcess(costReportFileProcess);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        return costReportFileProcess;
     }
 
 

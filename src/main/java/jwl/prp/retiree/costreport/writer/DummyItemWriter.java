@@ -1,7 +1,6 @@
 package jwl.prp.retiree.costreport.writer;
 
-import jwl.prp.retiree.costreport.entity.FileHeader;
-import jwl.prp.retiree.costreport.entity.ApplicationHeader;
+import jwl.prp.retiree.costreport.entity.CostReportRecord;
 import org.springframework.batch.item.ItemWriter;
 
 import java.util.ArrayList;
@@ -10,60 +9,36 @@ import java.util.List;
 /**
  * Created by jwleader on 9/30/15.
  */
-public class DummyItemWriter implements ItemWriter<ApplicationHeader>
+public class DummyItemWriter implements ItemWriter<CostReportRecord>
 {
-    private static String CLASS_NAME = DummyItemWriter.class.getName();
-
-    public List<FileHeader> fileHeaders = new ArrayList<FileHeader>();
-
-    public List<ApplicationHeader> applicationHeaders = new ArrayList<ApplicationHeader>();
+    private static String CLASS_NAME  = DummyItemWriter.class.getName();
+    private static String SIMPLE_NAME = DummyItemWriter.class.getSimpleName();
 
 
-    /*
-    @Override
-    public void write(List<? extends FileHeader> items)
-                      throws Exception
-    {
-        final String METHOD_NAME = "write";
-        System.out.println(CLASS_NAME + " " + METHOD_NAME + " - BEGIN ");
-
-        System.out.println("items = " + items.size());
-
-        for (FileHeader fileHeader : items)
-            System.out.println(CLASS_NAME + " " + METHOD_NAME + " - " + fileHeader.toString());
-
-
-        fileHeaders.addAll(items);
-
-        System.out.println(CLASS_NAME + " " + METHOD_NAME + " -  END ");
-    }
-    */
+    public List<CostReportRecord> costReportRecords = new ArrayList<CostReportRecord>();
 
 
     @Override
-    public void write(List<? extends ApplicationHeader> items)
+    public void write(List<? extends CostReportRecord> costReportRecords)
                       throws Exception
     {
         final String METHOD_NAME = "write";
-        System.out.println(CLASS_NAME + " " + METHOD_NAME + " - BEGIN ");
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        System.out.println("items = " + items.size());
+        System.out.println("costReportRecords = " + costReportRecords.size());
 
-        for (ApplicationHeader applicationHeader : items)
-            System.out.println(CLASS_NAME + " " + METHOD_NAME + " - " + applicationHeader.toString());
+        for (CostReportRecord costReportRecord : costReportRecords)
+            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + costReportRecord.toString());
 
 
-        applicationHeaders.addAll(items);
+        this.costReportRecords.addAll(costReportRecords);
 
-        System.out.println(CLASS_NAME + " " + METHOD_NAME + " -  END ");
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
 
-    public List<FileHeader> getFileHeaders() {
-        return fileHeaders;
-    }
-
-    public List<ApplicationHeader> getApplicationHeaders() {
-        return applicationHeaders;
+    public List<CostReportRecord> getCostReportRecords()
+    {
+        return costReportRecords;
     }
 }

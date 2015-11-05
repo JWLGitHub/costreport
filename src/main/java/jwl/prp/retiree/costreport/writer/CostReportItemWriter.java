@@ -20,7 +20,7 @@ public class CostReportItemWriter implements ItemWriter<List<CostReportRecord>>
 
     @Override
     public void write(List<? extends List<CostReportRecord>> items)
-            throws Exception
+                      throws Exception
     {
         final String METHOD_NAME = "write";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - BEGIN ");

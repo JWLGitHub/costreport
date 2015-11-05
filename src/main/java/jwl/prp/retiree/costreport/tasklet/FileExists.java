@@ -58,10 +58,11 @@ public class FileExists implements Tasklet
             costReportFileStatusType = CostReportFile.STATUS_TYPE.MISSING;
 
         CostReportFile costReportFile = createCostReportFileInfo(costReportFileStatusType);
-        saveCostReportFileToStepExecution(costReportFile);
 
-        if (costReportFileStatusType.equals(FileStatus.FILE_STATUS_TYPE.MISSING))
-            stepExecution.setTerminateOnly();
+        if (costReportFileStatusType.toString().equalsIgnoreCase(FileStatus.FILE_STATUS_TYPE.EXISTS.name()))
+            saveCostReportFileToStepExecution(costReportFile);
+        else
+            stepExecution.setExitStatus(ExitStatus.FAILED);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME +  " - END");
         return RepeatStatus.FINISHED;
@@ -77,8 +78,8 @@ public class FileExists implements Tasklet
 
         CostReportFile costReportFile = insertCostReportFile(costReportFileStatusType);
 
-        insertCostReportFileProcess(costReportFile.getId(),
-                                    costReportFileStatusType);
+        //insertCostReportFileProcess(costReportFile.getId(),
+        //                            costReportFileStatusType);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
