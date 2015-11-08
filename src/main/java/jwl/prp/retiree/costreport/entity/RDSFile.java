@@ -1,6 +1,7 @@
 package jwl.prp.retiree.costreport.entity;
 
-import java.security.Timestamp;
+
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**

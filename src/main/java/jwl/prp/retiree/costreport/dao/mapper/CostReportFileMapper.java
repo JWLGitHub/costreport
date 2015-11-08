@@ -34,5 +34,4 @@ public class CostReportFileMapper implements RowMapper<CostReportFile>
         costReportFile.setUpdateDateTime(resultSet.getTimestamp("CST_RPRT_FL_UPDT_DTTIM"));
         return costReportFile;
     }
-
 }
