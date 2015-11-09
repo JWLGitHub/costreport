@@ -17,13 +17,13 @@ public class RDSFileMapper implements RowMapper<RDSFile>
     {
         RDSFile rdsFile = new RDSFile();
         rdsFile.setFileId(resultSet.getInt("FILE_ID"));
-        rdsFile.setFileDirCd(resultSet.getString("FILE_DIR_CD").charAt(0));
+        rdsFile.setFileDirCd(resultSet.getString("FILE_DIR_CD"));
         rdsFile.setFileTypeCd(resultSet.getString("FILE_TYPE_CD"));
         rdsFile.setFileDtTm(resultSet.getDate("FILE_DT_TM"));
         rdsFile.setFileName(resultSet.getString("FILE_NAME"));
         rdsFile.setFileDescTxt(resultSet.getString("FILE_DESC_TXT"));
         rdsFile.setSubmOrgId(resultSet.getString("SUBM_ORG_ID"));
-        rdsFile.setOrgTypCd(resultSet.getString("ORG_TYP_CD").charAt(0));
+        rdsFile.setOrgTypCd(resultSet.getString("ORG_TYP_CD"));
         rdsFile.setOrgId(resultSet.getString("ORG_ID"));
         rdsFile.setStusCtgryCd(resultSet.getString("STUS_CTGRY_CD"));
         rdsFile.setStusCd(resultSet.getString("STUS_CD"));

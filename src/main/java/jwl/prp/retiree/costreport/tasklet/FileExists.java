@@ -7,12 +7,10 @@ import java.util.Date;
 
 import jwl.prp.retiree.costreport.dao.CostReportFileDAO;
 import jwl.prp.retiree.costreport.dao.CostReportFileProcessDAO;
+import jwl.prp.retiree.costreport.dao.FileErrDAO;
 import jwl.prp.retiree.costreport.dao.RDSFileDAO;
-import jwl.prp.retiree.costreport.entity.CostReportFile;
-import jwl.prp.retiree.costreport.entity.CostReportFileProcess;
-import jwl.prp.retiree.costreport.entity.FileStatus;
+import jwl.prp.retiree.costreport.entity.*;
 
-import jwl.prp.retiree.costreport.entity.RDSFile;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -39,7 +37,7 @@ public class FileExists implements Tasklet
     private static final String MISSING = "MI";
 
     private RDSFileDAO rdsFileDAO;
-    private CostReportFileProcessDAO costReportFileProcessDAO;
+    private FileErrDAO fileErrDAO;
 
 
     @Override
@@ -67,7 +65,7 @@ public class FileExists implements Tasklet
         RDSFile rdsFile = createRDSFileInfo(rdsFileStusCd);
 
         if (rdsFile.getStusCd().equalsIgnoreCase(EXISTS))
-            saveRDSFileToStepExecution(rdsFile);
+            saveRDSFileIdToStepExecution(rdsFile.getFileId());
         else
             stepExecution.setExitStatus(ExitStatus.FAILED);
 
@@ -79,14 +77,12 @@ public class FileExists implements Tasklet
     private RDSFile createRDSFileInfo(String rdsFileStusCd)
     {
         final String METHOD_NAME = "createRDSFileInfo";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + inputFilePath + ": " + rdsFileStusCd);
 
         RDSFile rdsFile = insertRDSFile(rdsFileStusCd);
 
-        //insertCostReportFileProcess(costReportFile.getId(),
-        //                            costReportFileStatusType);
+        if (rdsFile.getStusCd().equalsIgnoreCase(MISSING))
+            insertFileErr(rdsFile.getFileId());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
@@ -100,13 +96,13 @@ public class FileExists implements Tasklet
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         RDSFile rdsFile = new RDSFile(0,
-                                      'D',
+                                      "D",
                                       "12",
                                       new Date(),
                                       inputFilePath,
                                       null,
                                       null,
-                                      'O',
+                                      "O",
                                       "1234567890",
                                       "XX",
                                       rdsFileStusCd,
@@ -125,36 +121,31 @@ public class FileExists implements Tasklet
     }
 
 
-    private CostReportFileProcess insertCostReportFileProcess(int                        costReportFileID,
-                                                              CostReportFile.STATUS_TYPE costReportFileStatusType)
+    private FileErr insertFileErr(int rdsFileId)
     {
-        final String METHOD_NAME = "insertCostReportFileProcess";
+        final String METHOD_NAME = "insertFileErr";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        CostReportFileProcess costReportFileProcess = new CostReportFileProcess(0,
-                                                                                costReportFileID,
-                                                                                costReportFileStatusType.name(),
-                                                                                null,
-                                                                                jobExecution.getJobInstance().getJobName(),
-                                                                                stepExecution.getStepName(),
-                                                                                SIMPLE_NAME,
-                                                                                METHOD_NAME,
-                                                                                new Date());
+        FileErr fileErr = new FileErr(rdsFileId,
+                                      "0440",
+                                      "FE",
+                                      1,
+                                      null);
 
-        costReportFileProcessDAO.insertCostReportFileProcess(costReportFileProcess);
+        fileErrDAO.insertFileErr(fileErr);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        return costReportFileProcess;
+        return fileErr;
     }
 
 
-    private void saveRDSFileToStepExecution(RDSFile rdsFile)
+    private void saveRDSFileIdToStepExecution(int rdsFileId)
     {
         final String METHOD_NAME = "saveRDSFileToStepExecution";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        stepExecutionContext.put("rdsFileId", String.valueOf(rdsFile.getFileId()));
+        stepExecutionContext.put("RDSFileId", String.valueOf(rdsFileId));
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
@@ -176,8 +167,6 @@ public class FileExists implements Tasklet
         this.rdsFileDAO = rdsFileDAO;
     }
 
-    public void setCostReportFileProcessDAO(CostReportFileProcessDAO costReportFileProcessDAO)
-    {
-        this.costReportFileProcessDAO = costReportFileProcessDAO;
-    }
+
+    public void setFileErrDAO(FileErrDAO fileErrDAO) { this.fileErrDAO = fileErrDAO; }
 }

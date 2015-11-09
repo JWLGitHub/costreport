@@ -10,13 +10,13 @@ import java.util.Date;
 public class RDSFile
 {
     private int       fileId;
-    private char      fileDirCd;
+    private String    fileDirCd;
     private String    fileTypeCd;
     private Date      fileDtTm;
     private String    fileName;
     private String    fileDescTxt;
     private String    submOrgId;
-    private char      orgTypCd;
+    private String    orgTypCd;
     private String    orgId;
     private String    stusCtgryCd;
     private String    stusCd;
@@ -35,13 +35,13 @@ public class RDSFile
 
 
     public RDSFile(int       fileId,
-                   char      fileDirCd,
+                   String    fileDirCd,
                    String    fileTypeCd,
                    Date      fileDtTm,
                    String    fileName,
                    String    fileDescTxt,
                    String    submOrgId,
-                   char      orgTypCd,
+                   String    orgTypCd,
                    String    orgId,
                    String    stusCtgryCd,
                    String    stusCd,
@@ -79,7 +79,7 @@ public class RDSFile
         return fileId;
     }
 
-    public char getFileDirCd() {
+    public String getFileDirCd() {
         return fileDirCd;
     }
 
@@ -103,7 +103,7 @@ public class RDSFile
         return submOrgId;
     }
 
-    public char getOrgTypCd() {
+    public String getOrgTypCd() {
         return orgTypCd;
     }
 
@@ -151,7 +151,7 @@ public class RDSFile
         this.fileId = fileId;
     }
 
-    public void setFileDirCd(char fileDirCd) {
+    public void setFileDirCd(String fileDirCd) {
         this.fileDirCd = fileDirCd;
     }
 
@@ -175,7 +175,7 @@ public class RDSFile
         this.submOrgId = submOrgId;
     }
 
-    public void setOrgTypCd(char orgTypCd) {
+    public void setOrgTypCd(String orgTypCd) {
         this.orgTypCd = orgTypCd;
     }
 

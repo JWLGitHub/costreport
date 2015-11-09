@@ -62,20 +62,20 @@
     <bean id="fileExistsTasklet" class="jwl.prp.retiree.costreport.tasklet.FileExists" scope="step">
         <property name="inputFilePath"     value="#{jobParameters['inputFilePath']}" />
         <property name="rdsFileDAO"        ref="rdsFileDAO"/>
-        <property name="costReportFileProcessDAO" ref="costReportFileProcessDAO"/>
+        <property name="fileErrDAO"        ref="fileErrDAO"/>
     </bean>
 
     <!-- File Exists PromotionListener -->
     <bean id="fileExistsPromotionListener" class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
-        <property name="keys" value="rdsFileId" />
+        <property name="keys" value="RDSFileId" />
     </bean>
 
 
     <!-- File Empty Tasklet -->
     <bean id="fileEmptyTasklet" class="jwl.prp.retiree.costreport.tasklet.FileEmpty" scope="step">
-        <property name="inputFilePath"            value="#{jobParameters['inputFilePath']}" />
-        <property name="costReportFileDAO"        ref="costReportFileDAO"/>
-        <property name="costReportFileProcessDAO" ref="costReportFileProcessDAO"/>
+        <property name="inputFilePath"     value="#{jobParameters['inputFilePath']}" />
+        <property name="rdsFileDAO"        ref="rdsFileDAO"/>
+        <property name="fileErrDAO"        ref="fileErrDAO"/>
     </bean>
 
 
@@ -272,6 +272,10 @@
     </bean>
 
     <bean id="rdsFileDAO" class="jwl.prp.retiree.costreport.dao.RDSFileDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="fileErrDAO" class="jwl.prp.retiree.costreport.dao.FileErrDAO">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
     </bean>
 </beans>

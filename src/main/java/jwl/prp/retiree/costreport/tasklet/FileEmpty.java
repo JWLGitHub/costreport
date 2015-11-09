@@ -1,10 +1,11 @@
 package jwl.prp.retiree.costreport.tasklet;
 
-import jwl.prp.retiree.costreport.dao.CostReportFileDAO;
-import jwl.prp.retiree.costreport.dao.CostReportFileProcessDAO;
-import jwl.prp.retiree.costreport.entity.CostReportFile;
-import jwl.prp.retiree.costreport.entity.CostReportFileProcess;
-import jwl.prp.retiree.costreport.entity.FileStatus;
+
+import jwl.prp.retiree.costreport.dao.FileErrDAO;
+import jwl.prp.retiree.costreport.dao.RDSFileDAO;
+import jwl.prp.retiree.costreport.entity.RDSFile;
+import jwl.prp.retiree.costreport.entity.FileErr;
+
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
@@ -15,6 +16,7 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -31,8 +33,12 @@ public class FileEmpty implements Tasklet
 
     private String            inputFilePath;
 
-    private CostReportFileDAO        costReportFileDAO;
-    private CostReportFileProcessDAO costReportFileProcessDAO;
+    private static final String EMPTY  = "EM";
+
+    private RDSFileDAO        rdsFileDAO;
+    private FileErrDAO        fileErrDAO;
+
+
 
 
     @Override
@@ -53,9 +59,9 @@ public class FileEmpty implements Tasklet
 
         if (inputFile.length() == 0)
         {
-            int costReportFileID = getCostReportFileID();
-            updateCostReportFileInfo(costReportFileID);
-            insertCostReportFileProcess(costReportFileID);
+            int rdsFileId = getRDSFileId();
+            updateRDSFile(rdsFileId);
+            insertFileErr(rdsFileId);
             stepExecution.setExitStatus(ExitStatus.FAILED);
         }
 
@@ -64,59 +70,53 @@ public class FileEmpty implements Tasklet
     }
 
 
-    private int getCostReportFileID()
+    private int getRDSFileId()
     {
-        final String METHOD_NAME = "getCostReportFileID";
+        final String METHOD_NAME = "getRDSFileId";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        Object costReportFileID = jobExecutionContext.get("costReportFileID");
-        if (null == costReportFileID  ||
-            costReportFileID.toString().equalsIgnoreCase(""))
+        Object rdsFileId = jobExecutionContext.get("RDSFileId");
+        if (null == rdsFileId  ||
+            rdsFileId.toString().equalsIgnoreCase(""))
         {
-            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - costReportFileID: MISSING");
+            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - RDSFileId: MISSING");
             throw new RuntimeException("'costReportFileID' MISSING from jobExecutionContext");
         }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        return Integer.parseInt(costReportFileID.toString());
+        return Integer.parseInt(rdsFileId.toString());
     }
 
 
-    private void updateCostReportFileInfo(int costReportFileID)
+    private void updateRDSFile(int rdsFileId)
     {
-        final String METHOD_NAME = "updateCostReportFileInfo";
+        final String METHOD_NAME = "updateRDSFile";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        CostReportFile costReportFile = costReportFileDAO.findByCostReportFileID(costReportFileID);
-        costReportFile.setStatus(CostReportFile.STATUS_TYPE.FILE_IS_EMPTY.name());
-        costReportFile.setUpdateJob(jobExecution.getJobInstance().getJobName());
-        costReportFile.setUpdateStep(stepExecution.getStepName());
-        costReportFile.setUpdateProgram(SIMPLE_NAME);
-        costReportFile.setUpdateMethod(METHOD_NAME);
-        costReportFile.setUpdateDateTime(new Date());
-        costReportFileDAO.updateCostReportFile(costReportFile);
+        RDSFile rdsFile = rdsFileDAO.findByFileId(rdsFileId);
+        rdsFile.setStusCtgryCd("XX");
+        rdsFile.setStusCd(EMPTY);
+        rdsFile.setUptdPgm(SIMPLE_NAME);
+        rdsFile.setUpdtTs(new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
+        rdsFileDAO.updateRDSFile(rdsFile);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
 
-    private void insertCostReportFileProcess(int costReportFileID)
+    private void insertFileErr(int rdsFileId)
     {
-        final String METHOD_NAME = "insertCostReportFileProcess";
+        final String METHOD_NAME = "insertFileErr";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        CostReportFileProcess costReportFileProcess = new CostReportFileProcess(0,
-                                                                                costReportFileID,
-                                                                                CostReportFileProcess.PROCESS_TYPE.CRFILE_IS_EMPTY.name(),
-                                                                                null,
-                                                                                jobExecution.getJobInstance().getJobName(),
-                                                                                stepExecution.getStepName(),
-                                                                                SIMPLE_NAME,
-                                                                                METHOD_NAME,
-                                                                                new Date());
+        FileErr fileErr = new FileErr(rdsFileId,
+                                      "0100",
+                                      "FE",
+                                      1,
+                                      null);
 
-        costReportFileProcessDAO.insertCostReportFileProcess(costReportFileProcess);
+        fileErrDAO.insertFileErr(fileErr);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
@@ -132,13 +132,12 @@ public class FileEmpty implements Tasklet
         this.inputFilePath = inputFilePath;
     }
 
-    public void setCostReportFileDAO(CostReportFileDAO costReportFileDAO)
+
+    public void setRdsFileDAO(RDSFileDAO rdsFileDAO)
     {
-        this.costReportFileDAO = costReportFileDAO;
+        this.rdsFileDAO = rdsFileDAO;
     }
 
-    public void setCostReportFileProcessDAO(CostReportFileProcessDAO costReportFileProcessDAO)
-    {
-        this.costReportFileProcessDAO = costReportFileProcessDAO;
-    }
+
+    public void setFileErrDAO(FileErrDAO fileErrDAO) { this.fileErrDAO = fileErrDAO; }
 }

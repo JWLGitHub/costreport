@@ -123,7 +123,8 @@ public class RDSFileDAO {
     }
 
 
-    public RDSFile updateRDSFile(RDSFile rdsFile) {
+    public RDSFile updateRDSFile(RDSFile rdsFile)
+    {
         final String METHOD_NAME = "updateRDSFile";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
@@ -147,6 +148,8 @@ public class RDSFileDAO {
                 "RECEIPT_DT = ? " +
                 "WHERE " + RDS_FILE_ID + " = ?";
 
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
         jdbcTemplate.update(updateSQL,
                             rdsFile.getFileDirCd(),
                             rdsFile.getFileTypeCd(),
@@ -158,6 +161,7 @@ public class RDSFileDAO {
                             rdsFile.getOrgId(),
                             rdsFile.getStusCtgryCd(),
                             rdsFile.getStusCd(),
+                            rdsFile.getStusTs(),
                             rdsFile.getStusPgm(),
                             rdsFile.getUptdPgm(),
                             rdsFile.getUpdtTs(),
