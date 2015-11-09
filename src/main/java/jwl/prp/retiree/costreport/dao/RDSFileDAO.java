@@ -106,7 +106,7 @@ public class RDSFileDAO {
         parameters.put("FILE_DESC_TXT", rdsFile.getFileDescTxt());
         parameters.put("SUBM_ORG_ID",   rdsFile.getSubmOrgId());
         parameters.put("ORG_TYP_CD",    rdsFile.getOrgTypCd());
-        parameters.put("ORG_ID ",       rdsFile.getOrgId());
+        parameters.put("ORG_ID",        rdsFile.getOrgId());
         parameters.put("STUS_CTGRY_CD", rdsFile.getStusCtgryCd());
         parameters.put("STUS_CD",       rdsFile.getStusCd());
         parameters.put("STUS_TS",       rdsFile.getStusTs());

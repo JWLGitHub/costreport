@@ -238,18 +238,4 @@ public class RDSFile
                 "processDt: " + processDt + ", " +
                 "receiptDt: " + receiptDt;
     }
-
-
-    public static enum STATUS_TYPE
-    {
-        EXISTS,
-        MISSING,
-        PROCESSING,
-        ACCEPTED,
-        ACCEPTED_WITH_ERRORS,
-        REJECTED_DUE_TO_STRUCTURAL_ERRORS,
-        REJECTED_DUE_TO_DATE_ERRORS,
-        REJECTED_DUE_TO_ALL_APPLICATIONS_BEING_REJECTED,
-        FILE_IS_EMPTY
-    }
 }
