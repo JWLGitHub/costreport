@@ -25,13 +25,10 @@ public class DummyItemWriter implements ItemWriter<CostReportRecord>
         final String METHOD_NAME = "write";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        System.out.println("costReportRecords = " + costReportRecords.size());
-
         for (CostReportRecord costReportRecord : costReportRecords)
             System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + costReportRecord.toString());
 
-
-        this.costReportRecords.addAll(costReportRecords);
+        // this.costReportRecords.addAll(costReportRecords);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }

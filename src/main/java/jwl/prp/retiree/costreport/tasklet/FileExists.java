@@ -1,22 +1,22 @@
 package jwl.prp.retiree.costreport.tasklet;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
-import jwl.prp.retiree.costreport.dao.CostReportFileDAO;
-import jwl.prp.retiree.costreport.dao.CostReportFileProcessDAO;
 import jwl.prp.retiree.costreport.dao.FileErrDAO;
 import jwl.prp.retiree.costreport.dao.RDSFileDAO;
 import jwl.prp.retiree.costreport.entity.*;
+import jwl.prp.retiree.costreport.enums.ErrCtgRef;
+import jwl.prp.retiree.costreport.enums.ErrRef;
+import jwl.prp.retiree.costreport.enums.StusCtgry;
+import jwl.prp.retiree.costreport.enums.StusRef;
 
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
-
 
 
 /**
@@ -33,8 +33,7 @@ public class FileExists implements Tasklet
 
     private String  inputFilePath;
 
-    private static final String EXISTS  = "EX";
-    private static final String MISSING = "MI";
+    private static final String RDS_FILE_ID = "rdsFileId";
 
     private RDSFileDAO rdsFileDAO;
     private FileErrDAO fileErrDAO;
@@ -56,16 +55,16 @@ public class FileExists implements Tasklet
 
         File inputFile = new File( inputFilePath );
 
-        String rdsFileStusCd;
+        StusRef fileStatus;
         if (inputFile.exists())
-            rdsFileStusCd = EXISTS;
+            fileStatus = StusRef.EXISTS;
         else
-            rdsFileStusCd = MISSING;
+            fileStatus= StusRef.MISSING;
 
-        RDSFile rdsFile = createRDSFileInfo(rdsFileStusCd);
+        RDSFile rdsFile = createRDSFileInfo(fileStatus);
 
-        if (rdsFile.getStusCd().equalsIgnoreCase(EXISTS))
-            saveRDSFileIdToStepExecution(rdsFile.getFileId());
+        if (fileStatus == StusRef.EXISTS)
+            saveRdsFileIdToStepExecution(rdsFile.getFileId());
         else
             stepExecution.setExitStatus(ExitStatus.FAILED);
 
@@ -74,14 +73,14 @@ public class FileExists implements Tasklet
     }
 
 
-    private RDSFile createRDSFileInfo(String rdsFileStusCd)
+    private RDSFile createRDSFileInfo(StusRef fileStatus)
     {
         final String METHOD_NAME = "createRDSFileInfo";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + inputFilePath + ": " + rdsFileStusCd);
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + inputFilePath + ": " + fileStatus.name());
 
-        RDSFile rdsFile = insertRDSFile(rdsFileStusCd);
+        RDSFile rdsFile = insertRDSFile(fileStatus);
 
-        if (rdsFile.getStusCd().equalsIgnoreCase(MISSING))
+        if (fileStatus ==  StusRef.MISSING)
             insertFileErr(rdsFile.getFileId());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -90,7 +89,7 @@ public class FileExists implements Tasklet
     }
 
 
-    private RDSFile insertRDSFile(String rdsFileStusCd)
+    private RDSFile insertRDSFile(StusRef fileStatus)
     {
         final String METHOD_NAME = "insertRDSFile";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -104,8 +103,8 @@ public class FileExists implements Tasklet
                                       null,
                                       "O",
                                       "1234567890",
-                                      "XX",
-                                      rdsFileStusCd,
+                                      StusCtgry.FILE_STATUS.getStusCtgryCd(),
+                                      fileStatus.getStusCd(),
                                       new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()),
                                       SIMPLE_NAME,
                                       null,
@@ -127,8 +126,8 @@ public class FileExists implements Tasklet
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         FileErr fileErr = new FileErr(rdsFileId,
-                                      "0440",
-                                      "FE",
+                                      ErrRef.CRFILE_IS_MISSING.getErrCd(),
+                                      ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
                                       1,
                                       null);
 
@@ -140,12 +139,12 @@ public class FileExists implements Tasklet
     }
 
 
-    private void saveRDSFileIdToStepExecution(int rdsFileId)
+    private void saveRdsFileIdToStepExecution(int rdsFileId)
     {
-        final String METHOD_NAME = "saveRDSFileToStepExecution";
+        final String METHOD_NAME = "saveRdsFileIdToStepExecution";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        stepExecutionContext.put("RDSFileId", String.valueOf(rdsFileId));
+        stepExecutionContext.put(RDS_FILE_ID, String.valueOf(rdsFileId));
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }

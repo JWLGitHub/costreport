@@ -1,28 +1,29 @@
 package jwl.prp.retiree.costreport.processor;
 
-import jwl.prp.retiree.costreport.dao.CostReportFileDAO;
-import jwl.prp.retiree.costreport.dao.CostReportFileProcessDAO;
-import jwl.prp.retiree.costreport.entity.CostReportFile;
-import jwl.prp.retiree.costreport.entity.CostReportFileProcess;
-import jwl.prp.retiree.costreport.entity.CostReportRecord;
 
-import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.StepExecutionListener;
-import org.springframework.batch.core.listener.SkipListenerSupport;
+import jwl.prp.retiree.costreport.dao.FileErrDAO;
+import jwl.prp.retiree.costreport.dao.RDSFileDAO;
+import jwl.prp.retiree.costreport.entity.*;
+
+import jwl.prp.retiree.costreport.enums.ErrCtgRef;
+import jwl.prp.retiree.costreport.enums.ErrRef;
+import jwl.prp.retiree.costreport.enums.StusCtgry;
+import jwl.prp.retiree.costreport.enums.StusRef;
+import org.springframework.batch.core.*;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.Date;
+import java.util.Calendar;
+import java.util.List;
+
 
 /**
  * Created by jwleader on 11/5/15.
  */
-public class CostReportFileProcessor extends    SkipListenerSupport<CostReportRecord, CostReportRecord>
-                                     implements StepExecutionListener
+public class CostReportFileProcessor implements StepExecutionListener,
+                                                ItemReadListener<CostReportRecord>
 {
     private static String CLASS_NAME  = CostReportFileProcessor.class.getName();
     private static String SIMPLE_NAME = CostReportFileProcessor.class.getSimpleName();
@@ -32,21 +33,28 @@ public class CostReportFileProcessor extends    SkipListenerSupport<CostReportRe
     private StepExecution    stepExecution;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate     jdbcTemplate;
 
-    private CostReportFileDAO        costReportFileDAO;
-    private CostReportFileProcessDAO costReportFileProcessDAO;
+    private RDSFileDAO       rdsFileDAO;
+    private FileErrDAO       fileErrDAO;
 
-    private String inputFilePath;
+    private String           inputFilePath;
 
-    private int costReportFileID;
+    private static final String RDS_FILE_ID = "rdsFileId";
+
+
+    /*
+    *---   JOB EXECUTION CONTEXT
+    */
+    private int              rdsFileId;
 
     /*
     *---   FILE HEADER WORK AREA
     */
-    private int fileHeaderCount = 0;
+    private int     fileErrSeqNum   = 0;
+    private int     fileHeaderCount = 0;
     private boolean validFileHeader = false;
-    private String fileHeaderSubmitterID;
+    private String  fileHeaderSubmitterID;
 
     /*
      *---   APPLICATION WORK AREA
@@ -77,41 +85,56 @@ public class CostReportFileProcessor extends    SkipListenerSupport<CostReportRe
         this.jobExecution        = stepExecution.getJobExecution();
         this.jobExecutionContext = jobExecution.getExecutionContext();
 
-        getCostReportFileID();
-        updateCostReportFileInfo(CostReportFile.STATUS_TYPE.PROCESSING);
+        this.rdsFileId = getRdsFileId();
+        updateRDSFile(StusRef.PROCESSING);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
 
-    private void getCostReportFileID()
+    private int getRdsFileId()
     {
-        final String METHOD_NAME = "getCostReportFileID";
+        final String METHOD_NAME = "getRdsFileId";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        Object costReportFileID = jobExecutionContext.get("costReportFileID");
-        if (null == costReportFileID ||
-            costReportFileID.toString().equalsIgnoreCase(""))
+        Object rdsFileId = jobExecutionContext.get(RDS_FILE_ID);
+        if (null == rdsFileId  ||
+            rdsFileId.toString().equalsIgnoreCase(""))
         {
-            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - costReportFileID: MISSING");
-            throw new RuntimeException("'costReportFileID' MISSING from jobExecutionContext");
+            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + RDS_FILE_ID + ": MISSING");
+            throw new RuntimeException("'" + RDS_FILE_ID + "' MISSING from jobExecutionContext");
         }
 
-        this.costReportFileID = Integer.parseInt(costReportFileID.toString());
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        return Integer.parseInt(rdsFileId.toString());
+    }
+
+
+    /*
+    *****                                        *****
+    *****     -----     BEFORE READ    -----     *****
+    *****                                        *****
+    */
+    @Override
+    public void beforeRead()
+    {
+        final String METHOD_NAME = "beforeRead";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
 
     /*
-     *****                                             *****
-     *****     -----     ON SKIP IN READ     -----     *****
-     *****                                             *****
+     *****                                          *****
+     *****     -----     ON READ ERROR    -----     *****
+     *****                                          *****
      */
     @Override
-    public void onSkipInRead(Throwable exception)
+    public void onReadError(Exception exception)
     {
-        final String METHOD_NAME = "onSkipInRead";
+        final String METHOD_NAME = "onReadError";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         if (exception instanceof FlatFileParseException)
@@ -119,8 +142,9 @@ public class CostReportFileProcessor extends    SkipListenerSupport<CostReportRe
             FlatFileParseException flatFileParseException = (FlatFileParseException) exception;
             String processText = "Record No.: " + flatFileParseException.getLineNumber() +
                                  " Record Layout: " + flatFileParseException.getInput();
-            insertCostReportFileProcess(CostReportFileProcess.PROCESS_TYPE.CRFILE_BAD_RECORD_TYPE,
-                                        processText);
+            insertFileErr(ErrRef.CRFILE_BAD_RECORD_TYPE.getErrCd(),
+                          ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                          processText);
         }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -128,15 +152,14 @@ public class CostReportFileProcessor extends    SkipListenerSupport<CostReportRe
 
 
     /*
-     *****                                                *****
-     *****     -----     ON SKIP IN PROCESS     -----     *****
-     *****                                                *****
-     */
+    *****                                       *****
+    *****     -----     AFTER READ    -----     *****
+    *****                                       *****
+    */
     @Override
-    public void onSkipInProcess(CostReportRecord costReportRecord,
-                                Throwable        exception)
+    public void afterRead(CostReportRecord costReportRecord)
     {
-        final String METHOD_NAME = "onSkipInProcess";
+        final String METHOD_NAME = "afterRead";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -145,7 +168,7 @@ public class CostReportFileProcessor extends    SkipListenerSupport<CostReportRe
 
     /*
      *****                                         *****
-     *****     -----     AFTER STEP     -----     *****
+     *****     -----     AFTER STEP     -----      *****
      *****                                         *****
      */
     @Override
@@ -154,7 +177,20 @@ public class CostReportFileProcessor extends    SkipListenerSupport<CostReportRe
         final String METHOD_NAME = "afterStep";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        updateCostReportFileInfo(CostReportFile.STATUS_TYPE.ACCEPTED);
+        List<Throwable> throwables = stepExecution.getFailureExceptions();
+
+        if (stepExecution.getFailureExceptions().size() > 0)
+        {
+            for (Throwable throwable : throwables)
+            {
+                System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + throwable.toString());
+                if (throwable instanceof FlatFileParseException)
+                    updateRDSFile(StusRef.REJECTED_DUE_TO_STRUCTURAL_ERRORS);
+
+            }
+        }
+        else
+            updateRDSFile(StusRef.ACCEPTED);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
@@ -162,41 +198,38 @@ public class CostReportFileProcessor extends    SkipListenerSupport<CostReportRe
     }
 
 
-    private void updateCostReportFileInfo(CostReportFile.STATUS_TYPE costReportFileStatusType)
+    private void updateRDSFile(StusRef fileStatus)
     {
-        final String METHOD_NAME = "updateCostReportFileInfo";
+        final String METHOD_NAME = "updateRDSFile";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        CostReportFile costReportFile = costReportFileDAO.findByCostReportFileID(this.costReportFileID);
-        costReportFile.setStatus(costReportFileStatusType.name());
-        costReportFile.setUpdateJob(jobExecution.getJobInstance().getJobName());
-        costReportFile.setUpdateStep(stepExecution.getStepName());
-        costReportFile.setUpdateProgram(SIMPLE_NAME);
-        costReportFile.setUpdateMethod(METHOD_NAME);
-        costReportFile.setUpdateDateTime(new Date());
-        costReportFileDAO.updateCostReportFile(costReportFile);
+        RDSFile rdsFile = rdsFileDAO.findByFileId(this.rdsFileId);
+        rdsFile.setStusCtgryCd(StusCtgry.FILE_STATUS.getStusCtgryCd());
+        rdsFile.setStusCd(fileStatus.getStusCd());
+        rdsFile.setUptdPgm(SIMPLE_NAME);
+        rdsFile.setUpdtTs(new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
+        rdsFileDAO.updateRDSFile(rdsFile);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
 
-    private void insertCostReportFileProcess(CostReportFileProcess.PROCESS_TYPE costReportFileProcessType,
-                                             String                             processText)
+    private void insertFileErr(String errCd,
+                               String errCtgryCd,
+                               String errInfo)
     {
-        final String METHOD_NAME = "insertCostReportFileProcess";
+        final String METHOD_NAME = "insertFileErr";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        CostReportFileProcess costReportFileProcess = new CostReportFileProcess(0,
-                                                                                this.costReportFileID,
-                                                                                costReportFileProcessType.name(),
-                                                                                processText,
-                                                                                jobExecution.getJobInstance().getJobName(),
-                                                                                stepExecution.getStepName(),
-                                                                                SIMPLE_NAME,
-                                                                                METHOD_NAME,
-                                                                                new Date());
+        fileErrSeqNum++;
 
-        costReportFileProcessDAO.insertCostReportFileProcess(costReportFileProcess);
+        FileErr fileErr = new FileErr(this.rdsFileId,
+                                      errCd,
+                                      errCtgryCd,
+                                      fileErrSeqNum,
+                                      errInfo);
+
+        fileErrDAO.insertFileErr(fileErr);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
@@ -212,13 +245,10 @@ public class CostReportFileProcessor extends    SkipListenerSupport<CostReportRe
         this.inputFilePath = inputFilePath;
     }
 
-    public void setCostReportFileDAO(CostReportFileDAO costReportFileDAO)
+    public void setRdsFileDAO(RDSFileDAO rdsFileDAO)
     {
-        this.costReportFileDAO = costReportFileDAO;
+        this.rdsFileDAO = rdsFileDAO;
     }
 
-    public void setCostReportFileProcessDAO(CostReportFileProcessDAO costReportFileProcessDAO)
-    {
-        this.costReportFileProcessDAO = costReportFileProcessDAO;
-    }
+    public void setFileErrDAO(FileErrDAO fileErrDAO) { this.fileErrDAO = fileErrDAO; }
 }

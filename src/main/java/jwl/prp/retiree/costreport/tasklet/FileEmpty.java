@@ -6,6 +6,10 @@ import jwl.prp.retiree.costreport.dao.RDSFileDAO;
 import jwl.prp.retiree.costreport.entity.RDSFile;
 import jwl.prp.retiree.costreport.entity.FileErr;
 
+import jwl.prp.retiree.costreport.enums.ErrCtgRef;
+import jwl.prp.retiree.costreport.enums.ErrRef;
+import jwl.prp.retiree.costreport.enums.StusCtgry;
+import jwl.prp.retiree.costreport.enums.StusRef;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
@@ -17,7 +21,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 
 import java.io.File;
 import java.util.Calendar;
-import java.util.Date;
+
 
 /**
  * Created by jwleader on 11/3/15.
@@ -33,12 +37,10 @@ public class FileEmpty implements Tasklet
 
     private String            inputFilePath;
 
-    private static final String EMPTY  = "EM";
+    private static final String RDS_FILE_ID = "rdsFileId";
 
     private RDSFileDAO        rdsFileDAO;
     private FileErrDAO        fileErrDAO;
-
-
 
 
     @Override
@@ -59,7 +61,7 @@ public class FileEmpty implements Tasklet
 
         if (inputFile.length() == 0)
         {
-            int rdsFileId = getRDSFileId();
+            int rdsFileId = getRdsFileId();
             updateRDSFile(rdsFileId);
             insertFileErr(rdsFileId);
             stepExecution.setExitStatus(ExitStatus.FAILED);
@@ -70,17 +72,17 @@ public class FileEmpty implements Tasklet
     }
 
 
-    private int getRDSFileId()
+    private int getRdsFileId()
     {
-        final String METHOD_NAME = "getRDSFileId";
+        final String METHOD_NAME = "getRdsFileId";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        Object rdsFileId = jobExecutionContext.get("RDSFileId");
+        Object rdsFileId = jobExecutionContext.get(RDS_FILE_ID);
         if (null == rdsFileId  ||
             rdsFileId.toString().equalsIgnoreCase(""))
         {
-            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - RDSFileId: MISSING");
-            throw new RuntimeException("'costReportFileID' MISSING from jobExecutionContext");
+            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + RDS_FILE_ID + ": MISSING");
+            throw new RuntimeException("'" + RDS_FILE_ID + "' MISSING from jobExecutionContext");
         }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -95,8 +97,8 @@ public class FileEmpty implements Tasklet
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         RDSFile rdsFile = rdsFileDAO.findByFileId(rdsFileId);
-        rdsFile.setStusCtgryCd("XX");
-        rdsFile.setStusCd(EMPTY);
+        rdsFile.setStusCtgryCd(StusCtgry.FILE_STATUS.getStusCtgryCd());
+        rdsFile.setStusCd(StusRef.EMPTY.getStusCd());
         rdsFile.setUptdPgm(SIMPLE_NAME);
         rdsFile.setUpdtTs(new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
         rdsFileDAO.updateRDSFile(rdsFile);
@@ -111,8 +113,8 @@ public class FileEmpty implements Tasklet
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         FileErr fileErr = new FileErr(rdsFileId,
-                                      "0100",
-                                      "FE",
+                                      ErrRef.CRFILE_IS_EMPTY.getErrCd(),
+                                      ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
                                       1,
                                       null);
 

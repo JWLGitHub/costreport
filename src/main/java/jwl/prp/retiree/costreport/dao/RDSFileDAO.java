@@ -148,8 +148,6 @@ public class RDSFileDAO {
                 "RECEIPT_DT = ? " +
                 "WHERE " + RDS_FILE_ID + " = ?";
 
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
         jdbcTemplate.update(updateSQL,
                             rdsFile.getFileDirCd(),
                             rdsFile.getFileTypeCd(),

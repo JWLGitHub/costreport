@@ -67,7 +67,7 @@
 
     <!-- File Exists PromotionListener -->
     <bean id="fileExistsPromotionListener" class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
-        <property name="keys" value="RDSFileId" />
+        <property name="keys" value="rdsFileId" />
     </bean>
 
 
@@ -79,7 +79,7 @@
     </bean>
 
 
-    <!-- Cost Report Item Reader -->
+    <!-- RDS File Item Reader -->
     <bean id="costReportItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
         <property name="resource"   value="file:#{jobParameters['inputFilePath']}" />
         <property name="lineMapper" ref="costReportLineMapper"/>
@@ -254,9 +254,9 @@
 
     <!-- Import File First Pass Listener -->
     <bean id="importFileFirstPassListener" class="jwl.prp.retiree.costreport.processor.CostReportFileProcessor" scope="step">
-        <property name="inputFilePath"            value="#{jobParameters['inputFilePath']}" />
-        <property name="costReportFileDAO"        ref="costReportFileDAO"/>
-        <property name="costReportFileProcessDAO" ref="costReportFileProcessDAO"/>
+        <property name="inputFilePath"      value="#{jobParameters['inputFilePath']}" />
+        <property name="rdsFileDAO"         ref="rdsFileDAO"/>
+        <property name="fileErrDAO"         ref="fileErrDAO"/>
     </bean>
 
 
