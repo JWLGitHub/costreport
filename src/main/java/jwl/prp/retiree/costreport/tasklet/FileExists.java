@@ -57,13 +57,13 @@ public class FileExists implements Tasklet
 
         StusRef fileStatus;
         if (inputFile.exists())
-            fileStatus = StusRef.EXISTS;
+            fileStatus = StusRef.FILE_EXISTS;
         else
-            fileStatus= StusRef.MISSING;
+            fileStatus= StusRef.FILE_MISSING;
 
         RDSFile rdsFile = createRDSFileInfo(fileStatus);
 
-        if (fileStatus == StusRef.EXISTS)
+        if (fileStatus == StusRef.FILE_EXISTS)
             saveRdsFileIdToStepExecution(rdsFile.getFileId());
         else
             stepExecution.setExitStatus(ExitStatus.FAILED);
@@ -80,7 +80,7 @@ public class FileExists implements Tasklet
 
         RDSFile rdsFile = insertRDSFile(fileStatus);
 
-        if (fileStatus ==  StusRef.MISSING)
+        if (fileStatus ==  StusRef.FILE_MISSING)
             insertFileErr(rdsFile.getFileId());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);

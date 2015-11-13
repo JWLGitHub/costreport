@@ -6,8 +6,10 @@ package jwl.prp.retiree.costreport.enums;
 public enum StusCtgry
 {
 
-    APPLICATION_STATUS("AS", "Application Status"),
-    FILE_STATUS("FS", "File Status");
+    APPLICATION_STATUS  ("AS", "Application Status"),
+    BENEFICIARY_STATUS  ("BN", "Beneficiary Status"),
+    FILE_STATUS         ("FS", "File Status"),
+    ORGANIZATION_STATUS ("OS", "Organization Status");
 
 
     private final String stusCtgryCd;

@@ -86,7 +86,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
         this.jobExecutionContext = jobExecution.getExecutionContext();
 
         this.rdsFileId = getRdsFileId();
-        updateRDSFile(StusRef.PROCESSING);
+        updateRDSFile(StusRef.FILE_PROCESSING);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
@@ -137,16 +137,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
         final String METHOD_NAME = "onReadError";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        if (exception instanceof FlatFileParseException)
-        {
-            FlatFileParseException flatFileParseException = (FlatFileParseException) exception;
-            String processText = "Record No.: " + flatFileParseException.getLineNumber() +
-                                 " Record Layout: " + flatFileParseException.getInput();
-            insertFileErr(ErrRef.CRFILE_BAD_RECORD_TYPE.getErrCd(),
-                          ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                          processText);
-        }
-
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
@@ -185,12 +175,22 @@ public class CostReportFileProcessor implements StepExecutionListener,
             {
                 System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + throwable.toString());
                 if (throwable instanceof FlatFileParseException)
-                    updateRDSFile(StusRef.REJECTED_DUE_TO_STRUCTURAL_ERRORS);
+                {
+                    FlatFileParseException flatFileParseException = (FlatFileParseException) throwable;
+                    String processText = "Record No.: " + flatFileParseException.getLineNumber() +
+                                         " Record Layout: " + flatFileParseException.getInput();
+
+                    insertFileErr(ErrRef.CRFILE_BAD_RECORD_TYPE.getErrCd(),
+                                  ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                                  processText);
+
+                    updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
+                }
 
             }
         }
         else
-            updateRDSFile(StusRef.ACCEPTED);
+            updateRDSFile(StusRef.FILE_ACCEPTED_NO_ERRORS);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 

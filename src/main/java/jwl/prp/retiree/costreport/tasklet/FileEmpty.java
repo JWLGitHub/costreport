@@ -98,7 +98,7 @@ public class FileEmpty implements Tasklet
 
         RDSFile rdsFile = rdsFileDAO.findByFileId(rdsFileId);
         rdsFile.setStusCtgryCd(StusCtgry.FILE_STATUS.getStusCtgryCd());
-        rdsFile.setStusCd(StusRef.EMPTY.getStusCd());
+        rdsFile.setStusCd(StusRef.FILE_EMPTY.getStusCd());
         rdsFile.setUptdPgm(SIMPLE_NAME);
         rdsFile.setUpdtTs(new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
         rdsFileDAO.updateRDSFile(rdsFile);
