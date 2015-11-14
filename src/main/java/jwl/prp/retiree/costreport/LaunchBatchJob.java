@@ -30,6 +30,6 @@ public class LaunchBatchJob
         JobLauncher jobLauncher = applicationContext.getBean(JobLauncher.class);
         Job job = applicationContext.getBean(Job.class);
 
-        jobLauncher.run(job, new JobParametersBuilder().addString("inputFilePath", "input/goodCostReport.txt").toJobParameters());
+        jobLauncher.run(job, new JobParametersBuilder().addString("inputFilePath", "input/badStructureCostReport.txt").toJobParameters());
     }
 }

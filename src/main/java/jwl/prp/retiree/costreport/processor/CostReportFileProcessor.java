@@ -11,10 +11,13 @@ import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
 import org.springframework.batch.core.*;
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.file.FlatFileParseException;
+import org.springframework.batch.item.validator.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -23,7 +26,8 @@ import java.util.List;
  * Created by jwleader on 11/5/15.
  */
 public class CostReportFileProcessor implements StepExecutionListener,
-                                                ItemReadListener<CostReportRecord>
+                                                ItemReadListener<CostReportRecord>,
+                                                ItemProcessor<CostReportRecord, CostReportRecord>
 {
     private static String CLASS_NAME  = CostReportFileProcessor.class.getName();
     private static String SIMPLE_NAME = CostReportFileProcessor.class.getSimpleName();
@@ -41,6 +45,8 @@ public class CostReportFileProcessor implements StepExecutionListener,
     private String           inputFilePath;
 
     private static final String RDS_FILE_ID = "rdsFileId";
+
+    private static final List<String> VALID_RECORD_TYPES = Arrays.asList("FHDR", "AHDR", "DETL", "ATRL", "FTRL");
 
 
     /*
@@ -157,6 +163,127 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
 
     /*
+    *****                                    *****
+    *****     -----     PROCESS    -----     *****
+    *****                                    *****
+    */
+    @Override
+    public CostReportRecord process(CostReportRecord costReportRecord)
+                                    throws Exception
+    {
+        final String METHOD_NAME = "process";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FHDR.name()))
+        {
+            processFileHeaderRecord((FileHeader) costReportRecord);
+        }
+        else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.AHDR.name()))
+        {
+            processApplicationHeaderRecord((ApplicationHeader) costReportRecord);
+        }
+        else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.DETL.name()))
+        {
+            processApplicationDetailRecord((ApplicationDetail) costReportRecord);
+        }
+        else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.ATRL.name()))
+        {
+            processApplicationTrailerRecord((ApplicationTrailer) costReportRecord);
+        }
+        else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FTRL.name()))
+        {
+            processFileTrailerRecord((FileTrailer) costReportRecord);
+        }
+        else
+            throw new ValidationException("INVALID COST REPORT RECORD: " + costReportRecord);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        return costReportRecord;
+    }
+
+
+    /*
+     *****                                    *****
+     *****     PROCESS FILE HEADER RECORD     *****
+     *****                                    *****
+     */
+    private CostReportRecord processFileHeaderRecord(FileHeader fileHeader)
+                                                     throws Exception
+    {
+        final String METHOD_NAME = "processFileHeaderRecord";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+        return fileHeader;
+    }
+
+
+    /*
+    *****                                           *****
+    *****     PROCESS APPLICATION HEADER RECORD     *****
+    *****                                           *****
+    */
+    private CostReportRecord processApplicationHeaderRecord(ApplicationHeader applicationHeader)
+                                                            throws Exception
+    {
+        final String METHOD_NAME = "processApplicationHeaderRecord";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+        return applicationHeader;
+    }
+
+
+    /*
+    *****                                           *****
+    *****     PROCESS APPLICATION DETAIL RECORD     *****
+    *****                                           *****
+    */
+    private CostReportRecord processApplicationDetailRecord(ApplicationDetail applicationDetail)
+                                                            throws Exception
+    {
+        final String METHOD_NAME = "processApplicationDetailRecord";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+        return applicationDetail;
+    }
+
+
+    /*
+    *****                                            *****
+    *****     PROCESS APPLICATION TRAILER RECORD     *****
+    *****                                            *****
+    */
+    private CostReportRecord processApplicationTrailerRecord(ApplicationTrailer applicationTrailer)
+                                                             throws Exception
+    {
+        final String METHOD_NAME = "processApplicationTrailerRecord";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+        return applicationTrailer;
+    }
+
+
+    /*
+    *****                                     *****
+    *****     PROCESS FILE TRAILER RECORD     *****
+    *****                                     *****
+    */
+    private CostReportRecord processFileTrailerRecord(FileTrailer fileTrailer)
+                                                      throws Exception
+    {
+        final String METHOD_NAME = "processFileTrailerRecord";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+        return fileTrailer;
+    }
+
+
+    /*
      *****                                         *****
      *****     -----     AFTER STEP     -----      *****
      *****                                         *****
@@ -180,13 +307,32 @@ public class CostReportFileProcessor implements StepExecutionListener,
                     String processText = "Record No.: " + flatFileParseException.getLineNumber() +
                                          " Record Layout: " + flatFileParseException.getInput();
 
-                    insertFileErr(ErrRef.CRFILE_BAD_RECORD_TYPE.getErrCd(),
-                                  ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                                  processText);
+                    if (flatFileParseException.getInput().length() != 110)
+                    {
+                        insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
+                                      ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                                      processText);
+                    }
+                    else
+                    {
+                        String inputRecordType = flatFileParseException.getInput().substring(0, 4);
+                        System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - InputRecordType: " + inputRecordType);
+                        if (!VALID_RECORD_TYPES.contains(inputRecordType))
+                        {
+                            insertFileErr(ErrRef.CRFILE_BAD_RECORD_TYPE.getErrCd(),
+                                          ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                                          processText);
+                        }
+                        else
+                        {
+                            insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
+                                          ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                                          processText);
+                        }
+                    }
 
                     updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
                 }
-
             }
         }
         else

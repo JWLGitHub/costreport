@@ -53,12 +53,13 @@
         <step id="importFileFirstPass">
             <tasklet>
                 <chunk reader="costReportItemReader"
+                       processor="costReportFileProcessor"
                        writer="dummyItemWriter"
                        commit-interval="1" >
                 </chunk>
 
                 <listeners>
-                    <listener ref="importFileFirstPassListener" />
+                    <listener ref="costReportFileProcessor" />
                 </listeners>
             </tasklet>
         </step>

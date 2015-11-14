@@ -222,6 +222,15 @@
     </bean>
 
 
+    <!-- Cost Report File Processor -->
+    <bean id="costReportFileProcessor" class="jwl.prp.retiree.costreport.processor.CostReportFileProcessor" scope="step">
+        <property name="inputFilePath"      value="#{jobParameters['inputFilePath']}" />
+
+        <property name="rdsFileDAO"         ref="rdsFileDAO"/>
+        <property name="fileErrDAO"         ref="fileErrDAO"/>
+    </bean>
+
+
     <!--                         -->
     <!--        VALIDATOR(s)     -->
     <!--                         -->
@@ -252,12 +261,7 @@
         <property name="inputFilePath" value="#{jobParameters['inputFilePath']}" />
     </bean>
 
-    <!-- Import File First Pass Listener -->
-    <bean id="importFileFirstPassListener" class="jwl.prp.retiree.costreport.processor.CostReportFileProcessor" scope="step">
-        <property name="inputFilePath"      value="#{jobParameters['inputFilePath']}" />
-        <property name="rdsFileDAO"         ref="rdsFileDAO"/>
-        <property name="fileErrDAO"         ref="fileErrDAO"/>
-    </bean>
+
 
 
     <!--                          -->
