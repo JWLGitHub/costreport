@@ -1,6 +1,7 @@
 package jwl.prp.retiree.costreport.processor;
 
 
+import jwl.prp.retiree.costreport.Validation.FileStructure.FileContext;
 import jwl.prp.retiree.costreport.Validation.Validator;
 import jwl.prp.retiree.costreport.entity.*;
 
@@ -284,7 +285,7 @@ public class CostReportItemProcessor implements StepExecutionListener,
         {
             for (Validator costReportValidator : costReportValidators)
             {
-                if (!costReportValidator.validate(costReportRecord))
+                if (null != costReportValidator.validate(costReportRecord, new FileContext()))
                     return false;
             }
         }
@@ -304,7 +305,7 @@ public class CostReportItemProcessor implements StepExecutionListener,
         {
             for (Validator applicationValidator : applicationValidators)
             {
-                if (!applicationValidator.validate(costReportRecords))
+                if (null != applicationValidator.validate(costReportRecords.get(0), new FileContext()))
                     return false;
             }
         }

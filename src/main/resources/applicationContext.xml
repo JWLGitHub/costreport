@@ -228,6 +228,41 @@
 
         <property name="rdsFileDAO"         ref="rdsFileDAO"/>
         <property name="fileErrDAO"         ref="fileErrDAO"/>
+
+        <!-- File Header Validator(s) -->
+        <property name="fileHeaderValidators">
+            <list>
+                <ref bean="firstValidator"/>
+            </list>
+        </property>
+
+        <!-- Application Header Validator(s) -->
+        <property name="applicationHeaderValidators">
+            <list>
+                <ref bean="fileHeaderExists"/>
+            </list>
+        </property>
+
+        <!-- Application Detail Validator(s) -->
+        <property name="applicationDetailValidators">
+            <list>
+                <ref bean="fileHeaderExists"/>
+            </list>
+        </property>
+
+        <!-- Application Trailer Validator(s) -->
+        <property name="applicationTrailerValidators">
+            <list>
+                <ref bean="fileHeaderExists"/>
+            </list>
+        </property>
+
+        <!-- File Trailer Validator(s) -->
+        <property name="fileTraileralidators">
+            <list>
+                <ref bean="fileHeaderExists"/>
+            </list>
+        </property>
     </bean>
 
 
@@ -239,6 +274,8 @@
     <bean id="secondValidator"      class="jwl.prp.retiree.costreport.Validation.FileHeader.FalseValidator"/>
 
     <bean id="applicationValidator" class="jwl.prp.retiree.costreport.Validation.FileHeader.ApplicationValidator"/>
+
+    <bean id="fileHeaderExists"     class="jwl.prp.retiree.costreport.Validation.FileStructure.FileHeaderExists"/>
 
 
     <!--                         -->
