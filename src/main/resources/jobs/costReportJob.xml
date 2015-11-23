@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+    <!-- Import our beans -->
+    <import resource="classpath:/applicationContext.xml" />
+
+    <job id="costReportJob" xmlns="http://www.springframework.org/schema/batch">
+        <step id="fileExists" >
+            <tasklet ref="fileExistsTasklet" >
+                <listeners>
+                    <listener ref="fileExistsPromotionListener" />
+                </listeners>
+            </tasklet>
+
+            <fail on="FAILED" exit-code="FILE MISSING"/>
+            <next on="*" to="fileEmpty" />
+        </step>
+
+        <step id="fileEmpty" >
+            <tasklet ref="fileEmptyTasklet" />
+
+            <next on="FAILED" to="moveBadFile" />
+            <next on="*"      to="importFileFirstPass" />
+        </step>
+
+        <!--
+        <step id="importFile">
+            <tasklet>
+                <chunk reader="costReportItemReader"
+                       processor="costReportItemProcessor"
+                       writer="costReportItemWriter"
+                       commit-interval="3"
+                       skip-limit="10" >
+                    <skippable-exception-classes>
+                        <include class="org.springframework.batch.item.file.FlatFileParseException" />
+                        <include class="org.springframework.batch.item.validator.ValidationException" />
+                    </skippable-exception-classes>
+                </chunk>
+
+                <listeners>
+                    <listener ref="importFileListener" />
+                </listeners>
+            </tasklet>
+        </step>
+        -->
+
+        <step id="importFileFirstPass">
+            <tasklet>
+                <chunk reader="costReportItemReader"
+                       processor="costReportFileProcessor"
+                       writer="dummyItemWriter"
+                       commit-interval="1" >
+                </chunk>
+
+                <listeners>
+                    <listener ref="costReportFileProcessor" />
+                </listeners>
+            </tasklet>
+
+            <next on="STOPPED" to="moveBadFile" />
+            <end  on="COMPLETED" exit-code="GOOD FILE"/>
+        </step>
+
+        <step id="moveBadFile" >
+            <tasklet ref="moveBadFileTasklet" />
+
+            <fail on="*" exit-code="BAD FILE"/>
+        </step>
+    </job>
+</beans>

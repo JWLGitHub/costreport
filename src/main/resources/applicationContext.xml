@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+                http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+
+    <context:annotation-config />
+
+    <!-- Component scan to find all Spring components -->
+    <context:component-scan base-package="jwl.prp.retiree.costreport" />
+
+
+    <!-- Data source - connect to a MySQL instance running on the local machine -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url"             value="jdbc:mysql://localhost/cost_report"/>
+        <property name="username"        value="jwl"/>
+        <property name="password"        value="jwl"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <!-- create job-meta tables automatically -->
+    <jdbc:initialize-database data-source="dataSource">
+        <jdbc:script location="org/springframework/batch/core/schema-drop-mysql.sql" />
+        <jdbc:script location="org/springframework/batch/core/schema-mysql.sql" />
+    </jdbc:initialize-database>
+
+
+    <!-- Job Repository: used to persist the state of the batch job -->
+    <!--
+    <bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+        <property name="transactionManager" ref="transactionManager" />
+    </bean>
+    -->
+
+
+    <bean id="jobRepository" class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean">
+        <property name="dataSource"         ref="dataSource" />
+        <property name="transactionManager" ref="transactionManager" />
+    </bean>
+
+    <!-- Job Launcher: creates the job and the job state before launching it -->
+    <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="jobRepository" />
+    </bean>
+
+    <!--                              -->
+    <!--          Tasklet(s)          -->
+    <!--                              -->
+
+    <!-- File Exists Tasklet -->
+    <bean id="fileExistsTasklet" class="jwl.prp.retiree.costreport.tasklet.FileExists" scope="step">
+        <property name="inputFilePath"     value="#{jobParameters['inputFilePath']}" />
+        <property name="rdsFileDAO"        ref="rdsFileDAO"/>
+        <property name="fileErrDAO"        ref="fileErrDAO"/>
+    </bean>
+
+    <!-- File Empty Tasklet -->
+    <bean id="fileEmptyTasklet" class="jwl.prp.retiree.costreport.tasklet.FileEmpty" scope="step">
+        <property name="inputFilePath"     value="#{jobParameters['inputFilePath']}" />
+        <property name="rdsFileDAO"        ref="rdsFileDAO"/>
+        <property name="fileErrDAO"        ref="fileErrDAO"/>
+    </bean>
+
+    <!-- Move Bad File Tasklet -->
+    <bean id="moveBadFileTasklet" class="jwl.prp.retiree.costreport.tasklet.MoveFile" scope="step">
+        <property name="inputFilePath"        value="#{jobParameters['inputFilePath']}" />
+        <property name="outputFileDirectory"  value="#{jobParameters['outputFileDirectory']}" />
+    </bean>
+
+
+    <!-- RDS file Item Reader -->
+    <bean id="costReportItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
+        <property name="resource"   value="file:#{jobParameters['inputFilePath']}" />
+        <property name="lineMapper" ref="costReportLineMapper"/>
+    </bean>
+
+    <bean id="costReportLineMapper" class="org.springframework.batch.item.file.mapping.PatternMatchingCompositeLineMapper">
+        <property name="tokenizers">
+            <map>
+                <entry key="FHDR*" value-ref="fileHeaderLineTokenizer"/>
+                <entry key="AHDR*" value-ref="applicationHeaderLineTokenizer"/>
+                <entry key="DETL*" value-ref="applicationDetailLineTokenizer"/>
+                <entry key="ATRL*" value-ref="applicationTrailerLineTokenizer"/>
+                <entry key="FTRL*" value-ref="fileTrailerLineTokenizer"/>
+            </map>
+        </property>
+        <property name="fieldSetMappers">
+            <map>
+                <entry key="FHDR*" value-ref="fileHeaderFieldSetMapper"/>
+                <entry key="AHDR*" value-ref="applicationHeaderFieldSetMapper"/>
+                <entry key="DETL*" value-ref="applicationDetailFieldSetMapper"/>
+                <entry key="ATRL*" value-ref="applicationTrailerFieldSetMapper"/>
+                <entry key="FTRL*" value-ref="fileTrailerFieldSetMapper"/>
+            </map>
+        </property>
+    </bean>
+
+
+    <!-- file header -->
+    <bean id="fileHeaderLineTokenizer" class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
+        <property name="columns" value="1-4,5,6-15,16-23,24-31,32-110"/>
+        <property name="names"   value="recordType,submitterType,submitterID,submitterDate,submitterTime,filler"/>
+    </bean>
+
+    <bean id="fileHeaderFieldSetMapper" class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+        <property name="prototypeBeanName"   value="fileHeader"/>
+    </bean>
+
+    <bean id="fileHeader" class="jwl.prp.retiree.costreport.entity.FileHeader" scope="prototype" />
+
+
+    <!-- application header -->
+    <bean id="applicationHeaderLineTokenizer" class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
+        <property name="columns" value="1-4,5-14,15-110"/>
+        <property name="names"   value="recordType,applicationID,filler"/>
+    </bean>
+
+    <bean id="applicationHeaderFieldSetMapper" class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+        <property name="prototypeBeanName"   value="applicationHeader"/>
+    </bean>
+
+    <bean id="applicationHeader" class="jwl.prp.retiree.costreport.entity.ApplicationHeader" scope="prototype" />
+
+
+    <!-- application detail -->
+    <bean id="applicationDetailLineTokenizer" class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
+        <property name="columns" value="1-4,5-24,25-30,31-42,43-54,55-66,67-78,79-90,91-110"/>
+        <property name="names"   value="recordType,uniqueBenefitOptionIdentifier,rxCostYearMonth,estimatedPremium,grossRetireeCost,thresholdReduction,limitReduction,estimatedCostAdjustment,filler"/>
+    </bean>
+
+    <bean id="applicationDetailFieldSetMapper" class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+        <property name="prototypeBeanName"   value="applicationDetail"/>
+    </bean>
+
+    <bean id="applicationDetail" class="jwl.prp.retiree.costreport.entity.ApplicationDetail" scope="prototype" />
+
+
+    <!-- application trailer -->
+    <bean id="applicationTrailerLineTokenizer" class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
+        <property name="columns" value="1-4,5-14,15-21,22-36,37-51,52-66,67-81,82-96,97-110"/>
+        <property name="names"   value="recordType,applicationID,recordCount,totalEstimatedPremium,totalGrossRetireeCost,totalThresholdReduction,totalLimitReduction,totalEstimatedCostAdjustment,filler"/>
+    </bean>
+
+    <bean id="applicationTrailerFieldSetMapper" class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+        <property name="prototypeBeanName"   value="applicationTrailer"/>
+    </bean>
+
+    <bean id="applicationTrailer" class="jwl.prp.retiree.costreport.entity.ApplicationTrailer" scope="prototype" />
+
+
+    <!-- file trailer -->
+    <bean id="fileTrailerLineTokenizer" class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
+        <property name="columns" value="1-4,5-14,15-19,20-35,36-51,52-67,68-83,84-99,100-110"/>
+        <property name="names"   value="recordType,submitterID,applicationCount,grabdEstimatedPremium,grandGrossRetireeCost,grandThresholdReduction,grandLimitReduction,grandEstimatedCostAdjustment,filler"/>
+    </bean>
+
+    <bean id="fileTrailerFieldSetMapper" class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+        <property name="prototypeBeanName"   value="fileTrailer"/>
+    </bean>
+
+    <bean id="fileTrailer" class="jwl.prp.retiree.costreport.entity.FileTrailer" scope="prototype" />
+
+
+    <!-- Cost Report Item Processor -->
+    <bean id="costReportItemProcessor" class="jwl.prp.retiree.costreport.processor.CostReportItemProcessor" scope="step">
+
+        <property name="inputFilePath" value="#{jobParameters['inputFilePath']}" />
+
+        <!-- file header Validator(s) -->
+        <property name="fileHeaderValidators">
+            <list>
+                <ref bean="firstValidator"/>
+                <ref bean="firstValidator"/>
+            </list>
+        </property>
+
+        <!-- application header Validator(s) -->
+        <property name="applicationHeaderValidators">
+            <list>
+                <ref bean="firstValidator"/>
+            </list>
+        </property>
+
+        <!-- application detail Validator(s) -->
+        <property name="applicationDetailValidators">
+            <list>
+                <ref bean="firstValidator"/>
+            </list>
+        </property>
+
+        <!-- application trailer Validator(s) -->
+        <property name="applicationTrailerValidators">
+            <list>
+                <ref bean="firstValidator"/>
+            </list>
+        </property>
+
+        <!-- application Validator(s) -->
+        <property name="applicationValidators">
+            <list>
+                <ref bean="secondValidator"/>
+            </list>
+        </property>
+
+        <!-- file trailer Validator(s) -->
+        <property name="fileTraileralidators">
+            <list>
+                <ref bean="firstValidator"/>
+            </list>
+        </property>
+    </bean>
+
+
+    <!-- Cost Report file Processor -->
+    <bean id="costReportFileProcessor" class="jwl.prp.retiree.costreport.processor.CostReportFileProcessor" scope="step">
+        <property name="inputFilePath"      value="#{jobParameters['inputFilePath']}" />
+
+        <property name="rdsFileDAO"         ref="rdsFileDAO"/>
+        <property name="fileErrDAO"         ref="fileErrDAO"/>
+
+        <!-- file header Validator(s) -->
+        <property name="fileHeaderValidators">
+            <list>
+            </list>
+        </property>
+
+        <!-- application header Validator(s) -->
+        <property name="applicationHeaderValidators">
+            <list>
+                <ref bean="fileHeaderExists"/>
+                <ref bean="applicationIDValid"/>
+            </list>
+        </property>
+
+        <!-- application detail Validator(s) -->
+        <property name="applicationDetailValidators">
+            <list>
+                <ref bean="fileHeaderExists"/>
+                <ref bean="uniqueBenefitOptionIdentifierCorrect"/>
+                <ref bean="aplctnDetailGrossRetireeCountNumeric"/>
+            </list>
+        </property>
+
+        <!-- application trailer Validator(s) -->
+        <property name="applicationTrailerValidators">
+            <list>
+                <ref bean="fileHeaderExists"/>
+                <ref bean="aplctnTrailerRecordCountCorrect"/>
+                <ref bean="aplctnTrailerGrossRetireeCostCorrect"/>
+            </list>
+        </property>
+
+        <!-- file trailer Validator(s) -->
+        <property name="fileTraileralidators">
+            <list>
+                <!-- <ref bean="fileHeaderExists"/> -->
+                <ref bean="fileTrailerApplicationCountCorrect"/>
+                <ref bean="fileTrailerGrossRetireeCostCorrect"/>
+            </list>
+        </property>
+    </bean>
+
+
+    <!--                         -->
+    <!--        VALIDATOR(s)     -->
+    <!--                         -->
+    <bean id="firstValidator"                        class="jwl.prp.retiree.costreport.validation.TrueValidator"/>
+
+    <bean id="secondValidator"                       class="jwl.prp.retiree.costreport.validation.FalseValidator"/>
+
+    <bean id="fileHeaderExists"                      class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderExists"/>
+
+    <bean id="applicationIDValid"                    class="jwl.prp.retiree.costreport.validation.application.header.ApplicationIDValid">
+        <property name="applicationDAO"  ref="applicationDAO"/>
+    </bean>
+
+    <bean id="uniqueBenefitOptionIdentifierCorrect"  class="jwl.prp.retiree.costreport.validation.application.detail.UniqueBenefitOptionIdentifierCorrect">
+        <property name="planOptionsDAO"  ref="planOptionsDAO"/>
+    </bean>
+    <bean id="aplctnDetailGrossRetireeCountNumeric"  class="jwl.prp.retiree.costreport.validation.application.detail.GrossRetireeCostNumeric"/>
+
+    <bean id="aplctnTrailerRecordCountCorrect"       class="jwl.prp.retiree.costreport.validation.application.trailer.RecordCountCorrect"/>
+    <bean id="aplctnTrailerGrossRetireeCostCorrect"  class="jwl.prp.retiree.costreport.validation.application.trailer.GrossRetireeCostCorrect"/>
+
+    <bean id="fileTrailerApplicationCountCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationCountCorrect"/>
+    <bean id="fileTrailerGrossRetireeCostCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.GrossRetireeCostCorrect"/>
+
+
+    <!--                         -->
+    <!--        WRITER(s)        -->
+    <!--                         -->
+
+    <!-- Cost Report Item Writer -->
+    <bean id="costReportItemWriter" class="jwl.prp.retiree.costreport.writer.CostReportItemWriter"/>
+
+    <!-- Dummy Item Writer -->
+    <bean id="dummyItemWriter" class="jwl.prp.retiree.costreport.writer.DummyItemWriter"/>
+
+
+    <!--                         -->
+    <!--        LISTENER(s)      -->
+    <!--                         -->
+
+    <!-- file Exists PromotionListener -->
+    <bean id="fileExistsPromotionListener" class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
+        <property name="keys" value="rdsFileId" />
+    </bean>
+
+    <!-- Import file Listener -->
+    <bean id="importFileListener" class="jwl.prp.retiree.costreport.listener.ImportFileListener" scope="step">
+        <property name="inputFilePath" value="#{jobParameters['inputFilePath']}" />
+    </bean>
+
+
+    <!--                          -->
+    <!--          DAO(s)          -->
+    <!--                          -->
+    <bean id="costReportFileDAO" class="jwl.prp.retiree.costreport.dao.CostReportFileDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="costReportFileProcessDAO" class="jwl.prp.retiree.costreport.dao.CostReportFileProcessDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="rdsFileDAO" class="jwl.prp.retiree.costreport.dao.RDSFileDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="fileErrDAO" class="jwl.prp.retiree.costreport.dao.FileErrDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="applicationDAO" class="jwl.prp.retiree.costreport.dao.ApplicationDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="planOptionsDAO" class="jwl.prp.retiree.costreport.dao.PlanOptionsDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+</beans>
