@@ -29,16 +29,10 @@ import java.util.List;
  * Created by jwleader on 11/5/15.
  */
 public class CostReportFileProcessor implements StepExecutionListener,
-                                                ItemReadListener<CostReportRecord>,
-                                                ItemProcessor<CostReportRecord, CostReportRecord>,
-                                                ItemProcessListener<CostReportRecord, CostReportRecord>
+                                                ItemProcessor<CostReportRecord, CostReportRecord>
 {
     private static String CLASS_NAME  = CostReportFileProcessor.class.getName();
     private static String SIMPLE_NAME = CostReportFileProcessor.class.getSimpleName();
-
-    private JobExecution     jobExecution;
-    private ExecutionContext jobExecutionContext;
-    private StepExecution    stepExecution;
 
     private RDSFileDAO       rdsFileDAO;
     private FileErrDAO       fileErrDAO;
@@ -83,23 +77,19 @@ public class CostReportFileProcessor implements StepExecutionListener,
         final String METHOD_NAME = "beforeStep";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        this.stepExecution       = stepExecution;
-        this.jobExecution        = stepExecution.getJobExecution();
-        this.jobExecutionContext = jobExecution.getExecutionContext();
-
-        this.rdsFileId = getRdsFileId();
+        this.rdsFileId = getRdsFileId(stepExecution);
         updateRDSFile(StusRef.FILE_PROCESSING);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
 
-    private int getRdsFileId()
+    private int getRdsFileId(StepExecution stepExecution)
     {
         final String METHOD_NAME = "getRdsFileId";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        Object rdsFileId = jobExecutionContext.get(RDS_FILE_ID);
+        Object rdsFileId = stepExecution.getJobExecution().getExecutionContext().get(RDS_FILE_ID);
         if (null == rdsFileId  ||
             rdsFileId.toString().equalsIgnoreCase(""))
         {
@@ -110,72 +100,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         return Integer.parseInt(rdsFileId.toString());
-    }
-
-
-    /*
-    *****                                         *****
-    *****     -----     BEFORE READ     -----     *****
-    *****                                         *****
-    */
-    @Override
-    public void beforeRead()
-    {
-        final String METHOD_NAME = "beforeRead";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    /*
-     *****                                           *****
-     *****     -----     ON READ ERROR     -----     *****
-     *****                                           *****
-     */
-    @Override
-    public void onReadError(Exception exception)
-    {
-        final String METHOD_NAME = "onReadError";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    /*
-    *****                                        *****
-    *****     -----     AFTER READ     -----     *****
-    *****                                        *****
-    */
-    @Override
-    public void afterRead(CostReportRecord costReportRecord)
-    {
-        final String METHOD_NAME = "afterRead";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    /*
-    *****                                            *****
-    *****     -----     BEFORE PROCESS     -----     *****
-    *****                                            *****
-    */
-    @Override
-    public void beforeProcess(CostReportRecord costReportRecord)
-    {
-        final String METHOD_NAME = "beforeProcess";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    /*
-     *****                                              *****
-     *****     -----     ON PROCESS ERROR     -----     *****
-     *****                                              *****
-     */
-    @Override
-    public void onProcessError(CostReportRecord costReportRecord,
-                               Exception        exception)
-    {
-        final String METHOD_NAME = "onProcessError";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
 
@@ -344,7 +268,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
     private ValidationError validateCostReportRecord(CostReportRecord    costReportRecord,
                                                      List<BaseValidator> costReportValidators)
-                                                     throws Exception
     {
         final String METHOD_NAME = "validateCostReportRecord";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -363,20 +286,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
         }
 
         return null;
-    }
-
-
-    /*
-    *****                                           *****
-    *****     -----     AFTER PROCESS     -----     *****
-    *****                                           *****
-    */
-    @Override
-    public void afterProcess(CostReportRecord costReportRecordIncoming,
-                             CostReportRecord costReportRecordOutgoing)
-    {
-        final String METHOD_NAME = "afterProcess";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
 
