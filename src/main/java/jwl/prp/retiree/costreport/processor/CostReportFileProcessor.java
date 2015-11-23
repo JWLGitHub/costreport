@@ -14,7 +14,6 @@ import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
 
 import org.springframework.batch.core.*;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.validator.ValidationException;
@@ -41,7 +40,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
     private static final List<String> VALID_RECORD_TYPES = Arrays.asList("FHDR", "AHDR", "DETL", "ATRL", "FTRL");
 
-    private int     fileErrSeqNum;
+    private int fileErrSeqNum;
 
     private FileContext fileContext = new FileContext();
 
@@ -49,7 +48,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
     /*
     *---   JOB EXECUTION CONTEXT
     */
-    private int              rdsFileId;
+    private int   rdsFileId;
 
 
     /*
@@ -289,11 +288,48 @@ public class CostReportFileProcessor implements StepExecutionListener,
     }
 
 
+    private void updateRDSFile(StusRef fileStatus)
+    {
+        final String METHOD_NAME = "updateRDSFile";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        RDSFile rdsFile = rdsFileDAO.findByFileId(this.rdsFileId);
+        rdsFile.setStusCtgryCd(StusCtgry.FILE_STATUS.getStusCtgryCd());
+        rdsFile.setStusCd(fileStatus.getStusCd());
+        rdsFile.setUptdPgm(SIMPLE_NAME);
+        rdsFile.setUpdtTs(new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
+        rdsFileDAO.updateRDSFile(rdsFile);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+    }
+
+
+    private void insertFileErr(String errCd,
+                               String errCtgryCd,
+                               String errInfo)
+    {
+        final String METHOD_NAME = "insertFileErr";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        fileErrSeqNum++;
+
+        FileErr fileErr = new FileErr(this.rdsFileId,
+                                      errCd,
+                                      errCtgryCd,
+                                      fileErrSeqNum,
+                                      errInfo);
+
+        fileErrDAO.insertFileErr(fileErr);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+    }
+
+
     /*
-     *****                                         *****
-     *****     -----     AFTER STEP     -----      *****
-     *****                                         *****
-     */
+    *****                                         *****
+    *****     -----     AFTER STEP     -----      *****
+    *****                                         *****
+    */
     @Override
     public ExitStatus afterStep(StepExecution stepExecution)
     {
@@ -329,13 +365,13 @@ public class CostReportFileProcessor implements StepExecutionListener,
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         String processText = "Record No.: " + flatFileParseException.getLineNumber() +
-                             " Record Layout: " + flatFileParseException.getInput();
+                " Record Layout: " + flatFileParseException.getInput();
 
         if (flatFileParseException.getInput().length() != 110)
         {
             insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
-                          ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                          processText);
+                    ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                    processText);
         }
         else
         {
@@ -344,14 +380,14 @@ public class CostReportFileProcessor implements StepExecutionListener,
             if (!VALID_RECORD_TYPES.contains(inputRecordType))
             {
                 insertFileErr(ErrRef.CRFILE_BAD_RECORD_TYPE.getErrCd(),
-                              ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                              processText);
+                        ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                        processText);
             }
             else
             {
                 insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
-                              ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                              processText);
+                        ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                        processText);
             }
         }
 
@@ -367,45 +403,8 @@ public class CostReportFileProcessor implements StepExecutionListener,
         ValidationError validationError = costReportException.getValidationError();
 
         insertFileErr(validationError.getErrRef().getErrCd(),
-                      validationError.getErrRef().getErrCtgryCd(),
-                      validationError.getErrMessage());
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    private void updateRDSFile(StusRef fileStatus)
-    {
-        final String METHOD_NAME = "updateRDSFile";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        RDSFile rdsFile = rdsFileDAO.findByFileId(this.rdsFileId);
-        rdsFile.setStusCtgryCd(StusCtgry.FILE_STATUS.getStusCtgryCd());
-        rdsFile.setStusCd(fileStatus.getStusCd());
-        rdsFile.setUptdPgm(SIMPLE_NAME);
-        rdsFile.setUpdtTs(new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
-        rdsFileDAO.updateRDSFile(rdsFile);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    private void insertFileErr(String errCd,
-                               String errCtgryCd,
-                               String errInfo)
-    {
-        final String METHOD_NAME = "insertFileErr";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        fileErrSeqNum++;
-
-        FileErr fileErr = new FileErr(this.rdsFileId,
-                                      errCd,
-                                      errCtgryCd,
-                                      fileErrSeqNum,
-                                      errInfo);
-
-        fileErrDAO.insertFileErr(fileErr);
+                validationError.getErrRef().getErrCtgryCd(),
+                validationError.getErrMessage());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
