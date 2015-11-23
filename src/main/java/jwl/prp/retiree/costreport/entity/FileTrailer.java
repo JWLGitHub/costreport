@@ -137,4 +137,19 @@ public class FileTrailer extends CostReportRecord
                 "GrandEstimatedCostAdjustment: " + grandEstimatedCostAdjustment + ", " +
                 "Filler: " + filler;
     }
+
+
+    @Override
+    public String toFixedString()
+    {
+        return super.toFixedString() +
+               submitterID + ", " +
+               applicationCount + ", " +
+               grandEstimatedPremium + ", " +
+               grandGrossRetireeCost + ", " +
+               grandThresholdReduction + ", " +
+               grandLimitReduction + ", " +
+               grandEstimatedCostAdjustment + ", " +
+               filler;
+    }
 }

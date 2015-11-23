@@ -19,7 +19,7 @@
             </tasklet>
 
             <fail on="FAILED" exit-code="FILE MISSING"/>
-            <next on="*" to="fileEmpty" />
+            <next on="*"      to="fileEmpty" />
         </step>
 
         <step id="fileEmpty" >
@@ -64,6 +64,22 @@
             </tasklet>
 
             <next on="STOPPED" to="moveBadFile" />
+            <next on="*"       to="importFileSecondPass"/>
+        </step>
+
+        <step id="importFileSecondPass">
+            <tasklet>
+                <chunk reader="costReportItemReader"
+                       writer="databaseItemWriter"
+                       commit-interval="1" >
+                </chunk>
+
+                <listeners>
+                    <listener ref="databaseItemWriter" />
+                </listeners>
+            </tasklet>
+
+            <next on="STOPPED"   to="moveBadFile" />
             <end  on="COMPLETED" exit-code="GOOD FILE"/>
         </step>
 

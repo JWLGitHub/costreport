@@ -137,6 +137,21 @@ public class ApplicationTrailer extends CostReportRecord
                 "TotalEstimatedCostAdjustment: " + totalEstimatedCostAdjustment + ", " +
                 "Filler: " + filler;
     }
+
+
+    @Override
+    public String toFixedString()
+    {
+        return super.toFixedString() +
+               applicationID + ", " +
+               recordCount + ", " +
+               totalEstimatedPremium + ", " +
+               totalGrossRetireeCost + ", " +
+               totalThresholdReduction + ", " +
+               totalLimitReduction + ", " +
+               totalEstimatedCostAdjustment + ", " +
+               filler;
+    }
 }
 
 

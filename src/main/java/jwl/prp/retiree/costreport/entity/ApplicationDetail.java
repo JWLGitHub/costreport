@@ -139,4 +139,19 @@ public class ApplicationDetail extends CostReportRecord
                 "EstimatedCostAdjustment: " + estimatedCostAdjustment + ", " +
                 "Filler: " + filler;
     }
+
+
+    @Override
+    public String toFixedString()
+    {
+        return super.toFixedString() +
+               uniqueBenefitOptionIdentifier + ", " +
+               rxCostYearMonth + ", " +
+               estimatedPremium + ", " +
+               grossRetireeCost + ", " +
+               thresholdReduction + ", " +
+               limitReduction + ", " +
+               estimatedCostAdjustment + ", " +
+               filler;
+    }
 }

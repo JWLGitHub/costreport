@@ -54,4 +54,13 @@ public class ApplicationHeader extends CostReportRecord
                 "ApplicationID: " + applicationID + ", " +
                 "Filler: " + filler;
     }
+
+
+    @Override
+    public String toFixedString()
+    {
+        return super.toFixedString() +
+               applicationID +
+               filler;
+    }
 }

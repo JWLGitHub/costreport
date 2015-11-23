@@ -17,8 +17,6 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.validator.ValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -41,13 +39,8 @@ public class CostReportFileProcessor implements StepExecutionListener,
     private ExecutionContext jobExecutionContext;
     private StepExecution    stepExecution;
 
-    @Autowired
-    private JdbcTemplate     jdbcTemplate;
-
     private RDSFileDAO       rdsFileDAO;
     private FileErrDAO       fileErrDAO;
-
-    private String           inputFilePath;
 
     private static final String RDS_FILE_ID = "rdsFileId";
 
@@ -512,15 +505,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
      *****     -----     SETTER(s)     -----     *****
      *****                                       *****
      */
-    public void setInputFilePath(String inputFilePath)
-    {
-        this.inputFilePath = inputFilePath;
-    }
-
-    public void setRdsFileDAO(RDSFileDAO rdsFileDAO)
-    {
-        this.rdsFileDAO = rdsFileDAO;
-    }
+    public void setRdsFileDAO(RDSFileDAO rdsFileDAO) { this.rdsFileDAO = rdsFileDAO; }
 
     public void setFileErrDAO(FileErrDAO fileErrDAO) { this.fileErrDAO = fileErrDAO; }
 

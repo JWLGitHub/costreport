@@ -15,9 +15,7 @@ public class CostReportRecord
     private String recordType;
 
 
-    public CostReportRecord()
-    {
-    }
+    public CostReportRecord() { }
 
     public CostReportRecord(String recordType)
     {
@@ -41,4 +39,6 @@ public class CostReportRecord
     {
         return "RecordType: " + recordType;
     }
+
+    public String toFixedString() { return recordType; }
 }

@@ -97,4 +97,16 @@ public class FileHeader extends CostReportRecord
                 "submitterTime: " + submitterTime + ", " +
                 "Filler: " + filler;
     }
+
+
+    @Override
+    public String toFixedString()
+    {
+        return super.toFixedString() +
+               submitterType +
+               submitterID +
+               submitterDate +
+               submitterTime +
+               filler;
+    }
 }

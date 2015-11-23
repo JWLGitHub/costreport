@@ -226,8 +226,7 @@
 
 
     <!-- Cost Report file Processor -->
-    <bean id="costReportFileProcessor" class="jwl.prp.retiree.costreport.processor.CostReportFileProcessor" scope="step">
-        <property name="inputFilePath"      value="#{jobParameters['inputFilePath']}" />
+    <bean id="costReportFileProcessor" class="jwl.prp.retiree.costreport.processor.CostReportFileProcessor" >
 
         <property name="rdsFileDAO"         ref="rdsFileDAO"/>
         <property name="fileErrDAO"         ref="fileErrDAO"/>
@@ -267,7 +266,7 @@
         <!-- file trailer Validator(s) -->
         <property name="fileTraileralidators">
             <list>
-                <!-- <ref bean="fileHeaderExists"/> -->
+                <ref bean="fileHeaderExists"/>
                 <ref bean="fileTrailerApplicationCountCorrect"/>
                 <ref bean="fileTrailerGrossRetireeCostCorrect"/>
             </list>
@@ -310,6 +309,11 @@
     <!-- Dummy Item Writer -->
     <bean id="dummyItemWriter" class="jwl.prp.retiree.costreport.writer.DummyItemWriter"/>
 
+    <!-- Database Item Writer -->
+    <bean id="databaseItemWriter" class="jwl.prp.retiree.costreport.writer.DatabaseItemWriter">
+        <property name="costReportImportDAO"         ref="costReportImportDAO"/>
+    </bean>
+
 
     <!--                         -->
     <!--        LISTENER(s)      -->
@@ -350,6 +354,10 @@
     </bean>
 
     <bean id="planOptionsDAO" class="jwl.prp.retiree.costreport.dao.PlanOptionsDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="costReportImportDAO" class="jwl.prp.retiree.costreport.dao.CostReportImportDAO">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
     </bean>
 </beans>

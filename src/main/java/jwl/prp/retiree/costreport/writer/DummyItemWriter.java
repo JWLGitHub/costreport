@@ -15,9 +15,6 @@ public class DummyItemWriter implements ItemWriter<CostReportRecord>
     private static String SIMPLE_NAME = DummyItemWriter.class.getSimpleName();
 
 
-    public List<CostReportRecord> costReportRecords = new ArrayList<CostReportRecord>();
-
-
     @Override
     public void write(List<? extends CostReportRecord> costReportRecords)
                       throws Exception
@@ -28,14 +25,6 @@ public class DummyItemWriter implements ItemWriter<CostReportRecord>
         for (CostReportRecord costReportRecord : costReportRecords)
             System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + costReportRecord.toString());
 
-        // this.costReportRecords.addAll(costReportRecords);
-
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    public List<CostReportRecord> getCostReportRecords()
-    {
-        return costReportRecords;
     }
 }
