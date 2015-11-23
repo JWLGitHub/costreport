@@ -63,8 +63,8 @@
                 </listeners>
             </tasklet>
 
-            <next on="STOPPED" to="moveBadFile" />
-            <next on="*"       to="importFileSecondPass"/>
+            <next on="COMPLETED" to="importFileSecondPass"/>
+            <next on="*"         to="moveBadFile" />
         </step>
 
         <step id="importFileSecondPass">
