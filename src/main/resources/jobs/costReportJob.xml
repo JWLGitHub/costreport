@@ -79,8 +79,8 @@
                 </listeners>
             </tasklet>
 
-            <next on="STOPPED"   to="moveBadFile" />
             <end  on="COMPLETED" exit-code="GOOD FILE"/>
+            <next on="*"         to="moveBadFile" />
         </step>
 
         <step id="moveBadFile" >

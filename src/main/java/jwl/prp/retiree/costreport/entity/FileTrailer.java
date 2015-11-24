@@ -143,13 +143,13 @@ public class FileTrailer extends CostReportRecord
     public String toFixedString()
     {
         return super.toFixedString() +
-               submitterID + ", " +
-               applicationCount + ", " +
-               grandEstimatedPremium + ", " +
-               grandGrossRetireeCost + ", " +
-               grandThresholdReduction + ", " +
-               grandLimitReduction + ", " +
-               grandEstimatedCostAdjustment + ", " +
+               submitterID +
+               applicationCount +
+               grandEstimatedPremium +
+               grandGrossRetireeCost +
+               grandThresholdReduction +
+               grandLimitReduction +
+               grandEstimatedCostAdjustment +
                filler;
     }
 }

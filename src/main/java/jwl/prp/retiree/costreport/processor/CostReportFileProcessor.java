@@ -350,8 +350,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
             updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
         }
-        else
-            updateRDSFile(StusRef.FILE_ACCEPTED_NO_ERRORS);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 

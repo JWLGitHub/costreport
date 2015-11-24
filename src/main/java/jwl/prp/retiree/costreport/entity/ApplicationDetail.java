@@ -145,13 +145,13 @@ public class ApplicationDetail extends CostReportRecord
     public String toFixedString()
     {
         return super.toFixedString() +
-               uniqueBenefitOptionIdentifier + ", " +
-               rxCostYearMonth + ", " +
-               estimatedPremium + ", " +
-               grossRetireeCost + ", " +
-               thresholdReduction + ", " +
-               limitReduction + ", " +
-               estimatedCostAdjustment + ", " +
+               uniqueBenefitOptionIdentifier +
+               rxCostYearMonth +
+               estimatedPremium +
+               grossRetireeCost +
+               thresholdReduction +
+               limitReduction +
+               estimatedCostAdjustment +
                filler;
     }
 }

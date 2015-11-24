@@ -24,7 +24,7 @@ public class CostReportException extends Exception
 
     public CostReportException(ValidationError validationError)
     {
-        super();
+        super(validationError.getErrRef().getDescTxt() + " - " + validationError.getErrMessage());
         this.validationError = validationError;
     }
 

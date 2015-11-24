@@ -143,13 +143,13 @@ public class ApplicationTrailer extends CostReportRecord
     public String toFixedString()
     {
         return super.toFixedString() +
-               applicationID + ", " +
-               recordCount + ", " +
-               totalEstimatedPremium + ", " +
-               totalGrossRetireeCost + ", " +
-               totalThresholdReduction + ", " +
-               totalLimitReduction + ", " +
-               totalEstimatedCostAdjustment + ", " +
+               applicationID +
+               recordCount +
+               totalEstimatedPremium +
+               totalGrossRetireeCost +
+               totalThresholdReduction +
+               totalLimitReduction +
+               totalEstimatedCostAdjustment +
                filler;
     }
 }

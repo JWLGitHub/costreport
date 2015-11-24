@@ -311,6 +311,7 @@
 
     <!-- Database Item Writer -->
     <bean id="databaseItemWriter" class="jwl.prp.retiree.costreport.writer.DatabaseItemWriter">
+        <property name="rdsFileDAO"                  ref="rdsFileDAO"/>
         <property name="costReportImportDAO"         ref="costReportImportDAO"/>
     </bean>
 
