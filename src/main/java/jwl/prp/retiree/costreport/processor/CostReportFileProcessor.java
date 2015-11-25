@@ -277,9 +277,12 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
                 if (null != validationError)
                 {
-                    if (validationError.getErrRef().equals(ErrRef.INVALID_UBOI_ON_DETL))
+                    if (validationError.getErrRef().equals(ErrRef.RX_GROUP_NUMBER_NOT_AN_ERR))
                     {
-                        // NOT AN ERROR
+                        // *** NOT AN ERROR ***    (BUT . . .  We'll still track this)
+                        insertFileErr(validationError.getErrRef().getErrCd(),
+                                      validationError.getErrRef().getErrCtgryCd(),
+                                      validationError.getErrMessage());
                     }
                     else
                         return validationError;
@@ -371,8 +374,8 @@ public class CostReportFileProcessor implements StepExecutionListener,
         if (flatFileParseException.getInput().length() != 110)
         {
             insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
-                    ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                    processText);
+                          ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                          processText);
         }
         else
         {
@@ -381,14 +384,14 @@ public class CostReportFileProcessor implements StepExecutionListener,
             if (!VALID_RECORD_TYPES.contains(inputRecordType))
             {
                 insertFileErr(ErrRef.CRFILE_BAD_RECORD_TYPE.getErrCd(),
-                        ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                        processText);
+                              ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                              processText);
             }
             else
             {
                 insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
-                        ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                        processText);
+                              ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                              processText);
             }
         }
 
@@ -404,8 +407,8 @@ public class CostReportFileProcessor implements StepExecutionListener,
         ValidationError validationError = costReportException.getValidationError();
 
         insertFileErr(validationError.getErrRef().getErrCd(),
-                validationError.getErrRef().getErrCtgryCd(),
-                validationError.getErrMessage());
+                      validationError.getErrRef().getErrCtgryCd(),
+                      validationError.getErrMessage());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
