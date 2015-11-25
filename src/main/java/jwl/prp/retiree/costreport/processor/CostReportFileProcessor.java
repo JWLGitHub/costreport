@@ -18,7 +18,6 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.validator.ValidationException;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -155,12 +154,12 @@ public class CostReportFileProcessor implements StepExecutionListener,
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         ValidationError validationError = validateCostReportRecord(fileHeader,
-                                                                  fileHeaderValidators);
+                                                                   fileHeaderValidators);
 
         if (null != validationError)
             throw new CostReportException(validationError);
 
-        fileContext.setFileHeaderCounter(fileContext.getFileHeaderCounter() + 1);
+        fileContext.initializeFileVariables();
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return fileHeader;
@@ -209,8 +208,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
             throw new CostReportException(validationError);
 
         fileContext.setApplicationRecordCount(fileContext.getApplicationRecordCount() + 1);
-        BigDecimal grossRetireeCost = BaseValidator.stringv99ToBigDecimal(applicationDetail.getGrossRetireeCost());
-        fileContext.setApplicationGrossRetireeCost(fileContext.getApplicationGrossRetireeCost().add(grossRetireeCost));
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return applicationDetail;
@@ -234,9 +231,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
         if (null != validationError)
             throw new CostReportException(validationError);
 
-        fileContext.setFileTrailerApplicationCount(fileContext.getFileTrailerApplicationCount() + 1);
-        BigDecimal totalGrossRetireeCost = BaseValidator.stringv99ToBigDecimal(applicationTrailer.getTotalGrossRetireeCost());
-        fileContext.setFileTrailerGrossRetireeCost(fileContext.getFileTrailerGrossRetireeCost().add(totalGrossRetireeCost));
+        fileContext.setFileApplicationCount(fileContext.getFileApplicationCount() + 1);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return applicationTrailer;
@@ -267,6 +262,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
     private ValidationError validateCostReportRecord(CostReportRecord    costReportRecord,
                                                      List<BaseValidator> costReportValidators)
+                                                     throws Exception
     {
         final String METHOD_NAME = "validateCostReportRecord";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -280,7 +276,14 @@ public class CostReportFileProcessor implements StepExecutionListener,
                                                                                fileContext);
 
                 if (null != validationError)
-                    return validationError;
+                {
+                    if (validationError.getErrRef().equals(ErrRef.INVALID_UBOI_ON_DETL))
+                    {
+                        // NOT AN ERROR
+                    }
+                    else
+                        return validationError;
+                }
             }
         }
 

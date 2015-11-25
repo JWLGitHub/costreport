@@ -21,9 +21,13 @@ public class GrossRetireeCostCorrect extends BaseValidator
     @Override
     public ValidationError validate(CostReportRecord costReportRecord,
                                     FileContext      fileContext)
+                                    throws Exception
     {
         final String METHOD_NAME = "validate";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        if (!(costReportRecord instanceof FileTrailer))
+            throw new RuntimeException(SIMPLE_NAME + " " + METHOD_NAME + " - Validator passed INVALID CostReportRecord Type: " + costReportRecord);
 
         FileTrailer fileTrailer = (FileTrailer) costReportRecord;
 
@@ -39,12 +43,12 @@ public class GrossRetireeCostCorrect extends BaseValidator
                                        fileTrailer.toString());
         }
 
-        if (grandGrossRetireeCost.subtract(fileContext.getFileTrailerGrossRetireeCost()) != ZERO_DOLLARS)
+        if (grandGrossRetireeCost.subtract(fileContext.getFileGrossRetireeCost()) != ZERO_DOLLARS)
             return new ValidationError(ErrRef.FILE_TRAILER_RET_COST_AMOUNT_INCORRECT,
                                        "FTRL Gross Retiree Cost: " +
                                        grandGrossRetireeCost +
                                        " Computed Gross Retiree Cost : " +
-                                       fileContext.getFileTrailerGrossRetireeCost());
+                                       fileContext.getFileGrossRetireeCost());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

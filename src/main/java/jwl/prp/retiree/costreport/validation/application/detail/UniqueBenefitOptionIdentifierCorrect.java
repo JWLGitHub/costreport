@@ -23,19 +23,23 @@ public class UniqueBenefitOptionIdentifierCorrect extends BaseValidator
     @Override
     public ValidationError validate(CostReportRecord costReportRecord,
                                     FileContext      fileContext)
+                                    throws Exception
     {
         final String METHOD_NAME = "validate";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
+        if (!(costReportRecord instanceof ApplicationDetail))
+            throw new RuntimeException(SIMPLE_NAME + " " + METHOD_NAME + " - Validator passed INVALID CostReportRecord Type: " + costReportRecord);
+
         ApplicationDetail applicationDetail = (ApplicationDetail) costReportRecord;
 
-        PlanOptions planOptions = planOptionsDAO.findByApplicationIdGroupNumber(fileContext.getApplicationApplicationID(),
+        PlanOptions planOptions = planOptionsDAO.findByApplicationIdGroupNumber(fileContext.getApplicationID(),
                                                                                 applicationDetail.getUniqueBenefitOptionIdentifier());
 
         if (null == planOptions)
             return new ValidationError(ErrRef.INVALID_UBOI_ON_DETL,
                                        "Application ID: " +
-                                       fileContext.getApplicationApplicationID() +
+                                       fileContext.getApplicationID() +
                                        " Unique Benefit Option ID: " +
                                        applicationDetail.getUniqueBenefitOptionIdentifier());
 

@@ -28,5 +28,6 @@ public abstract class BaseValidator
 
 
     abstract public ValidationError validate(CostReportRecord costReportRecord,
-                                             FileContext      fileContext);
+                                             FileContext      fileContext)
+                                             throws Exception;
 }

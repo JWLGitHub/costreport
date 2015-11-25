@@ -8,30 +8,31 @@ public class FileContext
 {
 
     /*
-     *---   FILE HEADER VARIABLES
+     *---   FILE VARIABLES
      */
-    private int fileHeaderCounter;
+    private int        fileHeaderCounter;
 
+    private int        fileApplicationCount;
+    private BigDecimal fileGrossRetireeCost = new BigDecimal("0");
 
 
     /*
      *---   APPLICATION VARIABLES
      */
-    private String     applicationApplicationID;
+    private String     applicationID;
     private int        applicationRecordCount;
     private BigDecimal applicationGrossRetireeCost = new BigDecimal("0");
 
 
-    /*
-     *---   FILE TRAILER VARIABLES
-     */
-    private int        fileTrailerApplicationCount;
-    private BigDecimal fileTrailerGrossRetireeCost = new BigDecimal("0");
-
-
-    public void initializeApplicationVariables(String applicationApplicationID)
+    public void initializeFileVariables()
     {
-        setApplicationApplicationID(applicationApplicationID);
+        setFileHeaderCounter(getFileHeaderCounter() + 1);
+    }
+
+
+    public void initializeApplicationVariables(String applicationID)
+    {
+        setApplicationID(applicationID);
         setApplicationRecordCount(0);
         setApplicationGrossRetireeCost(new BigDecimal("0"));
     }
@@ -40,29 +41,27 @@ public class FileContext
     // --- Getter(s) ---
     public int getFileHeaderCounter() { return fileHeaderCounter; }
 
-    public String getApplicationApplicationID() { return applicationApplicationID; }
+    public String getApplicationID() { return applicationID; }
 
     public int getApplicationRecordCount() { return applicationRecordCount; }
 
     public BigDecimal getApplicationGrossRetireeCost() { return applicationGrossRetireeCost; }
 
-    public int getFileTrailerApplicationCount() { return fileTrailerApplicationCount; }
+    public int getFileApplicationCount() { return fileApplicationCount; }
 
-    public BigDecimal getFileTrailerGrossRetireeCost() { return fileTrailerGrossRetireeCost; }
-
-
+    public BigDecimal getFileGrossRetireeCost() { return fileGrossRetireeCost; }
 
 
     // --- Setter(s) ---
     public void setFileHeaderCounter(int fileHeaderCounter) { this.fileHeaderCounter = fileHeaderCounter; }
 
-    public void setApplicationApplicationID(String applicationApplicationID) { this.applicationApplicationID = applicationApplicationID; }
+    public void setApplicationID(String applicationID) { this.applicationID = applicationID; }
 
     public void setApplicationRecordCount(int applicationRecordCount) { this.applicationRecordCount = applicationRecordCount; }
 
     public void setApplicationGrossRetireeCost(BigDecimal applicationGrossRetireeCost) { this.applicationGrossRetireeCost = applicationGrossRetireeCost; }
 
-    public void setFileTrailerApplicationCount(int fileTrailerApplicationCount) { this.fileTrailerApplicationCount = fileTrailerApplicationCount; }
+    public void setFileApplicationCount(int fileApplicationCount) { this.fileApplicationCount = fileApplicationCount; }
 
-    public void setFileTrailerGrossRetireeCost(BigDecimal fileTrailerGrossRetireeCost) { this.fileTrailerGrossRetireeCost = fileTrailerGrossRetireeCost; }
+    public void setFileGrossRetireeCost(BigDecimal fileGrossRetireeCost) { this.fileGrossRetireeCost = fileGrossRetireeCost; }
 }

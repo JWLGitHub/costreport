@@ -20,9 +20,13 @@ public class ApplicationCountCorrect extends BaseValidator
     @Override
     public ValidationError validate(CostReportRecord costReportRecord,
                                     FileContext      fileContext)
+                                    throws Exception
     {
         final String METHOD_NAME = "validate";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        if (!(costReportRecord instanceof FileTrailer))
+            throw new RuntimeException(SIMPLE_NAME + " " + METHOD_NAME + " - Validator passed INVALID CostReportRecord Type: " + costReportRecord);
 
         FileTrailer fileTrailer = (FileTrailer) costReportRecord;
 
@@ -38,12 +42,12 @@ public class ApplicationCountCorrect extends BaseValidator
                                        fileTrailer.toString());
         }
 
-        if (applicationCount != fileContext.getFileTrailerApplicationCount())
+        if (applicationCount != fileContext.getFileApplicationCount())
             return new ValidationError(ErrRef.FILE_TRAILER_APPLICATION_COUNT_INCORRECT,
                                        "FTRL Application Count: " +
                                        applicationCount +
                                        " Computed Application Count: " +
-                                       fileContext.getFileTrailerApplicationCount());
+                                       fileContext.getFileApplicationCount());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

@@ -20,9 +20,13 @@ public class ApplicationCountNumeric extends BaseValidator
     @Override
     public ValidationError validate(CostReportRecord costReportRecord,
                                     FileContext      fileContext)
+                                    throws Exception
     {
         final String METHOD_NAME = "validate";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        if (!(costReportRecord instanceof FileTrailer))
+            throw new RuntimeException(SIMPLE_NAME + " " + METHOD_NAME + " - Validator passed INVALID CostReportRecord Type: " + costReportRecord);
 
         FileTrailer fileTrailer = (FileTrailer) costReportRecord;
 
