@@ -278,8 +278,8 @@ public class CostReportFileProcessor implements StepExecutionListener,
         {
             for (BaseValidator costReportValidator : costReportValidators)
             {
-                ValidationError validationError = costReportValidator.validate(costReportRecord,
-                                                                               fileContext);
+                ValidationError validationError = costReportValidator.execute(costReportRecord,
+                                                                              fileContext);
 
                 if (null != validationError)
                 {
