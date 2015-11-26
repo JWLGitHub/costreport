@@ -23,21 +23,20 @@ import java.util.Calendar;
 import java.util.List;
 
 
-/**
- * Created by jwleader on 11/5/15.
- */
 public class CostReportFileProcessor implements StepExecutionListener,
                                                 ItemProcessor<CostReportRecord, CostReportRecord>
 {
     private static String CLASS_NAME  = CostReportFileProcessor.class.getName();
     private static String SIMPLE_NAME = CostReportFileProcessor.class.getSimpleName();
 
-    private RDSFileDAO       rdsFileDAO;
-    private FileErrDAO       fileErrDAO;
+    private RDSFileDAO rdsFileDAO;
+    private FileErrDAO fileErrDAO;
 
     private static final String RDS_FILE_ID = "rdsFileId";
 
     private static final List<String> VALID_RECORD_TYPES = Arrays.asList("FHDR", "AHDR", "DETL", "ATRL", "FTRL");
+
+    private static final int COST_REPORT_RECORD_LENGTH = 110;
 
     private int fileErrSeqNum;
 
@@ -47,7 +46,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
     /*
     *---   JOB EXECUTION CONTEXT
     */
-    private int   rdsFileId;
+    private int rdsFileId;
 
 
     /*
@@ -64,10 +63,10 @@ public class CostReportFileProcessor implements StepExecutionListener,
     private List<BaseValidator> fileTrailerValidators;
 
 
-     /*
-     *---   Err Ref(s) NOT Error(s)
-     */
-     private List<ErrRef> errRefsNotErrors;
+    /*
+    *---   Err Ref(s) NOT Error(s)
+    */
+    private List<ErrRef> errRefsNotErrors;
 
 
     /*
@@ -94,12 +93,9 @@ public class CostReportFileProcessor implements StepExecutionListener,
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         Object rdsFileId = stepExecution.getJobExecution().getExecutionContext().get(RDS_FILE_ID);
-        if (null == rdsFileId  ||
+        if (null == rdsFileId ||
             rdsFileId.toString().equalsIgnoreCase(""))
-        {
-            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + RDS_FILE_ID + ": MISSING");
             throw new RuntimeException("'" + RDS_FILE_ID + "' MISSING from jobExecutionContext");
-        }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
@@ -121,23 +117,28 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
         if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FHDR.name()))
         {
-            processFileHeaderRecord((FileHeader) costReportRecord);
+            validateCostReportRecord(costReportRecord,
+                                     fileHeaderValidators);
         }
         else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.AHDR.name()))
         {
-            processApplicationHeaderRecord((ApplicationHeader) costReportRecord);
+            validateCostReportRecord(costReportRecord,
+                                     applicationHeaderValidators);
         }
         else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.DETL.name()))
         {
-            processApplicationDetailRecord((ApplicationDetail) costReportRecord);
+            validateCostReportRecord(costReportRecord,
+                                     applicationDetailValidators);
         }
         else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.ATRL.name()))
         {
-            processApplicationTrailerRecord((ApplicationTrailer) costReportRecord);
+            validateCostReportRecord(costReportRecord,
+                                     applicationTrailerValidators);
         }
         else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FTRL.name()))
         {
-            processFileTrailerRecord((FileTrailer) costReportRecord);
+            validateCostReportRecord(costReportRecord,
+                    fileTrailerValidators);
         }
         else
             throw new ValidationException("INVALID COST REPORT RECORD: " + costReportRecord);
@@ -148,124 +149,14 @@ public class CostReportFileProcessor implements StepExecutionListener,
     }
 
 
-    /*
-     *****                                    *****
-     *****     PROCESS FILE HEADER RECORD     *****
-     *****                                    *****
-     */
-    private CostReportRecord processFileHeaderRecord(FileHeader fileHeader)
-                                                     throws Exception
-    {
-        final String METHOD_NAME = "processFileHeaderRecord";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        ValidationError validationError = validateCostReportRecord(fileHeader,
-                                                                   fileHeaderValidators);
-
-        if (null != validationError)
-            throw new CostReportException(validationError);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-        return fileHeader;
-    }
-
-
-    /*
-    *****                                           *****
-    *****     PROCESS APPLICATION HEADER RECORD     *****
-    *****                                           *****
-    */
-    private CostReportRecord processApplicationHeaderRecord(ApplicationHeader applicationHeader)
-                                                            throws Exception
-    {
-        final String METHOD_NAME = "processApplicationHeaderRecord";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        ValidationError validationError = validateCostReportRecord(applicationHeader,
-                                                                   applicationHeaderValidators);
-
-        if (null != validationError)
-            throw new CostReportException(validationError);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-        return applicationHeader;
-    }
-
-
-    /*
-    *****                                           *****
-    *****     PROCESS APPLICATION DETAIL RECORD     *****
-    *****                                           *****
-    */
-    private CostReportRecord processApplicationDetailRecord(ApplicationDetail applicationDetail)
-                                                            throws Exception
-    {
-        final String METHOD_NAME = "processApplicationDetailRecord";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        ValidationError validationError = validateCostReportRecord(applicationDetail,
-                                                                   applicationDetailValidators);
-
-        if (null != validationError)
-            throw new CostReportException(validationError);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-        return applicationDetail;
-    }
-
-
-    /*
-    *****                                            *****
-    *****     PROCESS APPLICATION TRAILER RECORD     *****
-    *****                                            *****
-    */
-    private CostReportRecord processApplicationTrailerRecord(ApplicationTrailer applicationTrailer)
-                                                             throws Exception
-    {
-        final String METHOD_NAME = "processApplicationTrailerRecord";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        ValidationError validationError = validateCostReportRecord(applicationTrailer,
-                                                                   applicationTrailerValidators);
-
-        if (null != validationError)
-            throw new CostReportException(validationError);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-        return applicationTrailer;
-    }
-
-
-    /*
-    *****                                     *****
-    *****     PROCESS FILE TRAILER RECORD     *****
-    *****                                     *****
-    */
-    private CostReportRecord processFileTrailerRecord(FileTrailer fileTrailer)
+    private CostReportRecord validateCostReportRecord(CostReportRecord    costReportRecord,
+                                                      List<BaseValidator> costReportValidators)
                                                       throws Exception
     {
-        final String METHOD_NAME = "processFileTrailerRecord";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        ValidationError validationError = validateCostReportRecord(fileTrailer,
-                                                                   fileTrailerValidators);
-
-        if (null != validationError)
-            throw new CostReportException(validationError);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-        return fileTrailer;
-    }
-
-
-    private ValidationError validateCostReportRecord(CostReportRecord    costReportRecord,
-                                                     List<BaseValidator> costReportValidators)
-                                                     throws Exception
-    {
         final String METHOD_NAME = "validateCostReportRecord";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - CostReportRecord: " + costReportRecord);
 
-        if (null != costReportValidators   &&
+        if (null != costReportValidators &&
             !costReportValidators.isEmpty())
         {
             for (BaseValidator costReportValidator : costReportValidators)
@@ -283,12 +174,14 @@ public class CostReportFileProcessor implements StepExecutionListener,
                                       validationError.getErrMessage());
                     }
                     else
-                        return validationError;
+                        throw new CostReportException(validationError);
                 }
             }
         }
 
-        return null;
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        return costReportRecord;
     }
 
 
@@ -369,7 +262,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
         String processText = "Record No.: " + flatFileParseException.getLineNumber() +
                 " Record Layout: " + flatFileParseException.getInput();
 
-        if (flatFileParseException.getInput().length() != 110)
+        if (flatFileParseException.getInput().length() != COST_REPORT_RECORD_LENGTH)
         {
             insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
                           ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
@@ -465,6 +358,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
         this.fileTrailerValidators = fileTrailerValidators;
     }
 
+    
     public void setErrRefsNotErrors(List<ErrRef> errRefsNotErrors)
     {
         final String METHOD_NAME = "setErrRefsNotErrors";
