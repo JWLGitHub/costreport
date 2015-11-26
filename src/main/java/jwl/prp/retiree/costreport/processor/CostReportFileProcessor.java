@@ -165,8 +165,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
         if (null != validationError)
             throw new CostReportException(validationError);
 
-        fileContext.initializeFileVariables();
-
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return fileHeader;
     }
@@ -188,8 +186,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
         if (null != validationError)
             throw new CostReportException(validationError);
-
-        fileContext.initializeApplicationVariables(applicationHeader.getApplicationID());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return applicationHeader;
@@ -213,8 +209,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
         if (null != validationError)
             throw new CostReportException(validationError);
 
-        fileContext.setApplicationRecordCount(fileContext.getApplicationRecordCount() + 1);
-
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return applicationDetail;
     }
@@ -236,8 +230,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
         if (null != validationError)
             throw new CostReportException(validationError);
-
-        fileContext.setFileApplicationCount(fileContext.getFileApplicationCount() + 1);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return applicationTrailer;

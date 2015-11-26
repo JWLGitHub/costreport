@@ -57,6 +57,7 @@
         <property name="jobRepository" ref="jobRepository" />
     </bean>
 
+
     <!--                              -->
     <!--          Tasklet(s)          -->
     <!--                              -->
@@ -81,6 +82,10 @@
         <property name="outputFileDirectory"  value="#{jobParameters['outputFileDirectory']}" />
     </bean>
 
+
+    <!--                         -->
+    <!--        READER(s)        -->
+    <!--                         -->
 
     <!-- RDS file Item Reader -->
     <bean id="costReportItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
@@ -108,7 +113,6 @@
             </map>
         </property>
     </bean>
-
 
     <!-- file header -->
     <bean id="fileHeaderLineTokenizer" class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
@@ -175,55 +179,9 @@
     <bean id="fileTrailer" class="jwl.prp.retiree.costreport.entity.FileTrailer" scope="prototype" />
 
 
-    <!-- Cost Report Item Processor -->
-    <bean id="costReportItemProcessor" class="jwl.prp.retiree.costreport.processor.CostReportItemProcessor" scope="step">
-
-        <property name="inputFilePath" value="#{jobParameters['inputFilePath']}" />
-
-        <!-- file header Validator(s) -->
-        <property name="fileHeaderValidators">
-            <list>
-                <ref bean="firstValidator"/>
-                <ref bean="firstValidator"/>
-            </list>
-        </property>
-
-        <!-- application header Validator(s) -->
-        <property name="applicationHeaderValidators">
-            <list>
-                <ref bean="firstValidator"/>
-            </list>
-        </property>
-
-        <!-- application detail Validator(s) -->
-        <property name="applicationDetailValidators">
-            <list>
-                <ref bean="firstValidator"/>
-            </list>
-        </property>
-
-        <!-- application trailer Validator(s) -->
-        <property name="applicationTrailerValidators">
-            <list>
-                <ref bean="firstValidator"/>
-            </list>
-        </property>
-
-        <!-- application Validator(s) -->
-        <property name="applicationValidators">
-            <list>
-                <ref bean="secondValidator"/>
-            </list>
-        </property>
-
-        <!-- file trailer Validator(s) -->
-        <property name="fileTraileralidators">
-            <list>
-                <ref bean="firstValidator"/>
-            </list>
-        </property>
-    </bean>
-
+    <!--                            -->
+    <!--        PROCESSER(s)        -->
+    <!--                            -->
 
     <!-- Cost Report file Processor -->
     <bean id="costReportFileProcessor" class="jwl.prp.retiree.costreport.processor.CostReportFileProcessor" >
@@ -234,6 +192,7 @@
         <!-- file header Validator(s) -->
         <property name="fileHeaderValidators">
             <list>
+                <ref bean="initializeFileVariables"/>
             </list>
         </property>
 
@@ -242,6 +201,7 @@
             <list>
                 <ref bean="fileHeaderExists"/>
                 <ref bean="applicationIDValid"/>
+                <ref bean="initializeApplicationVariables"/>
             </list>
         </property>
 
@@ -251,6 +211,7 @@
                 <ref bean="fileHeaderExists"/>
                 <ref bean="uniqueBenefitOptionIdentifierCorrect"/>
                 <ref bean="aplctnDetailGrossRetireeCountNumeric"/>
+                <ref bean="incrementApplicationRecordCount"/>
             </list>
         </property>
 
@@ -260,6 +221,7 @@
                 <ref bean="fileHeaderExists"/>
                 <ref bean="aplctnTrailerRecordCountCorrect"/>
                 <ref bean="aplctnTrailerGrossRetireeCostCorrect"/>
+                <ref bean="incrementApplicationCount"/>
             </list>
         </property>
 
@@ -284,27 +246,34 @@
     <!--                         -->
     <!--        VALIDATOR(s)     -->
     <!--                         -->
-    <bean id="firstValidator"                        class="jwl.prp.retiree.costreport.validation.TrueValidator"/>
+    <bean id="firstValidator"                        class="jwl.prp.retiree.costreport.validation.TrueValidator"/>      <!--  NOT USED     -->
+    <bean id="secondValidator"                       class="jwl.prp.retiree.costreport.validation.FalseValidator"/>     <!--  NOT USED     -->
 
-    <bean id="secondValidator"                       class="jwl.prp.retiree.costreport.validation.FalseValidator"/>
-
+    <!-- File Header Validator(s) -->
     <bean id="fileHeaderExists"                      class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderExists"/>
+    <bean id="initializeFileVariables"               class="jwl.prp.retiree.costreport.validation.file.header.InitializeFileVariables"/>
 
+    <!-- File Trailer Validator(s) -->
+    <bean id="fileTrailerApplicationCountCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationCountCorrect"/>
+    <bean id="fileTrailerGrossRetireeCostCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.GrossRetireeCostCorrect"/>
+
+    <!-- Application Header Validator(s) -->
     <bean id="applicationIDValid"                    class="jwl.prp.retiree.costreport.validation.application.header.ApplicationIDValid">
         <property name="applicationDAO"  ref="applicationDAO"/>
     </bean>
+    <bean id="initializeApplicationVariables"        class="jwl.prp.retiree.costreport.validation.application.header.InitializeApplicationVariables"/>
 
+    <!-- Application Detail Validator(s) -->
     <bean id="uniqueBenefitOptionIdentifierCorrect"  class="jwl.prp.retiree.costreport.validation.application.detail.UniqueBenefitOptionIdentifierCorrect">
         <property name="planOptionsDAO"  ref="planOptionsDAO"/>
     </bean>
-
     <bean id="aplctnDetailGrossRetireeCountNumeric"  class="jwl.prp.retiree.costreport.validation.application.detail.GrossRetireeCostNumeric"/>
+    <bean id="incrementApplicationRecordCount"       class="jwl.prp.retiree.costreport.validation.application.detail.IncrementApplicationRecordCount"/>
 
+    <!-- Application Trailer Validator(s) -->
     <bean id="aplctnTrailerRecordCountCorrect"       class="jwl.prp.retiree.costreport.validation.application.trailer.RecordCountCorrect"/>
     <bean id="aplctnTrailerGrossRetireeCostCorrect"  class="jwl.prp.retiree.costreport.validation.application.trailer.GrossRetireeCostCorrect"/>
-
-    <bean id="fileTrailerApplicationCountCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationCountCorrect"/>
-    <bean id="fileTrailerGrossRetireeCostCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.GrossRetireeCostCorrect"/>
+    <bean id="incrementApplicationCount"             class="jwl.prp.retiree.costreport.validation.application.trailer.IncrementApplicationCount"/>
 
 
     <!--                         -->

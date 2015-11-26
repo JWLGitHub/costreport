@@ -6,16 +6,18 @@ import jwl.prp.retiree.costreport.enums.ErrRef;
 /**
  * Created by jwleader on 10/26/15.
  */
-public class FalseValidator implements Validator<CostReportRecord, FileContext>
+public class FalseValidator extends BaseValidator
 {
     private static String CLASS_NAME  = FalseValidator.class.getName();
     private static String SIMPLE_NAME = FalseValidator.class.getSimpleName();
 
 
-    public ValidationError validate(CostReportRecord costReportRecord,
-                            FileContext      fileContext)
+    @Override
+    public ValidationError execute(CostReportRecord costReportRecord,
+                                   FileContext      fileContext)
+                                   throws Exception
     {
-        final String METHOD_NAME = "validate";
+        final String METHOD_NAME = "execute";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
 
