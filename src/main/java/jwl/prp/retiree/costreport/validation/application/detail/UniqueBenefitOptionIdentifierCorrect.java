@@ -45,7 +45,7 @@ public class UniqueBenefitOptionIdentifierCorrect extends BaseValidator
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        // *** NOT AN ERROR ***    (BUT . . .  We'll still track this)
+        // *** NOT AN ERROR ***    (BUT . . .  We'll still track it)
         return new ValidationError(ErrRef.RX_GROUP_NUMBER_NOT_AN_ERR,
                                    "Application ID: " +
                                    fileContext.getApplicationID() +

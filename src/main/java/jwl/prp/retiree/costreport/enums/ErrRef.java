@@ -5,7 +5,6 @@ package jwl.prp.retiree.costreport.enums;
  */
 public enum ErrRef
 {
-
     RX_GROUP_NUMBER_NOT_AN_ERR                      (ErrCtgRef.APPLICATION_ERROR.getErrCtgryCd(), "0000", "RX GROUP NUMBER (NOT AN ERROR)"),
     INVALID_APPLICATION_ID_ON_AHDR                  (ErrCtgRef.APPLICATION_ERROR.getErrCtgryCd(), "0010", "INVALID APPLICATION ID ON AHDR"),
     INVALID_UBOI_ON_DETL                            (ErrCtgRef.APPLICATION_ERROR.getErrCtgryCd(), "0020", "INVALID UBOI ON DETL"),

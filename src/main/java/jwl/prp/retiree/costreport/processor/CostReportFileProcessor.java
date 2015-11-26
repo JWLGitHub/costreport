@@ -64,6 +64,12 @@ public class CostReportFileProcessor implements StepExecutionListener,
     private List<BaseValidator> fileTrailerValidators;
 
 
+     /*
+     *---   Err Ref(s) NOT Error(s)
+     */
+     private List<ErrRef> errRefsNotErrors;
+
+
     /*
      *****                                         *****
      *****     -----     BEFORE STEP     -----     *****
@@ -277,9 +283,9 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
                 if (null != validationError)
                 {
-                    if (validationError.getErrRef().equals(ErrRef.RX_GROUP_NUMBER_NOT_AN_ERR))
+                    if (errRefsNotErrors.contains(validationError.getErrRef()))
                     {
-                        // *** NOT AN ERROR ***    (BUT . . .  We'll still track this)
+                        // *** NOT AN ERROR ***    (BUT . . .  We'll still track it)
                         insertFileErr(validationError.getErrRef().getErrCd(),
                                       validationError.getErrRef().getErrCtgryCd(),
                                       validationError.getErrMessage());
@@ -465,5 +471,13 @@ public class CostReportFileProcessor implements StepExecutionListener,
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         this.fileTrailerValidators = fileTrailerValidators;
+    }
+
+    public void setErrRefsNotErrors(List<ErrRef> errRefsNotErrors)
+    {
+        final String METHOD_NAME = "setErrRefsNotErrors";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        this.errRefsNotErrors = errRefsNotErrors;
     }
 }
