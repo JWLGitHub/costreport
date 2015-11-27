@@ -76,10 +76,16 @@
         <property name="fileErrDAO"        ref="fileErrDAO"/>
     </bean>
 
+    <!-- Move Good File Tasklet -->
+    <bean id="moveGoodFileTasklet" class="jwl.prp.retiree.costreport.tasklet.MoveFile" scope="step">
+        <property name="inputFilePath"        value="#{jobParameters['inputFilePath']}" />
+        <property name="outputFileDirectory"  value="#{jobParameters['goodFileDirectory']}" />
+    </bean>
+
     <!-- Move Bad File Tasklet -->
     <bean id="moveBadFileTasklet" class="jwl.prp.retiree.costreport.tasklet.MoveFile" scope="step">
         <property name="inputFilePath"        value="#{jobParameters['inputFilePath']}" />
-        <property name="outputFileDirectory"  value="#{jobParameters['outputFileDirectory']}" />
+        <property name="outputFileDirectory"  value="#{jobParameters['badFileDirectory']}" />
     </bean>
 
 

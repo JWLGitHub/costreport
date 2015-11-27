@@ -79,8 +79,15 @@
                 </listeners>
             </tasklet>
 
-            <end  on="COMPLETED" exit-code="GOOD FILE"/>
+            <next on="COMPLETED" to="moveGoodFile"/>
             <next on="*"         to="moveBadFile" />
+        </step>
+
+        <step id="moveGoodFile" >
+            <tasklet ref="moveGoodFileTasklet" />
+
+            <end  on="COMPLETED" exit-code="GOOD FILE"/>
+            <fail on="*"         exit-code="BAD FILE"/>
         </step>
 
         <step id="moveBadFile" >

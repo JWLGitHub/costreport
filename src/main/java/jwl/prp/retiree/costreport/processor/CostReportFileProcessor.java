@@ -358,7 +358,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
         this.fileTrailerValidators = fileTrailerValidators;
     }
 
-    
+
     public void setErrRefsNotErrors(List<ErrRef> errRefsNotErrors)
     {
         final String METHOD_NAME = "setErrRefsNotErrors";
