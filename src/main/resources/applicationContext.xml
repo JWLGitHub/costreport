@@ -198,6 +198,9 @@
         <!-- file header Validator(s) -->
         <property name="fileHeaderValidators">
             <list>
+                <ref bean="fileHeaderOutOfSequence"/>
+                <ref bean="fileHeaderDateFormatValid"/>
+                <ref bean="fileHeaderTimeFormatValid"/>
                 <ref bean="initializeFileVariables"/>
             </list>
         </property>
@@ -216,6 +219,7 @@
             <list>
                 <ref bean="fileHeaderExists"/>
                 <ref bean="uniqueBenefitOptionIdentifierCorrect"/>
+                <ref bean="aplctnDetailDateFormatValid"/>
                 <ref bean="aplctnDetailGrossRetireeCountNumeric"/>
                 <ref bean="incrementApplicationRecordCount"/>
             </list>
@@ -235,6 +239,7 @@
         <property name="fileTraileralidators">
             <list>
                 <ref bean="fileHeaderExists"/>
+                <ref bean="applicationsExist"/>
                 <ref bean="fileTrailerApplicationCountCorrect"/>
                 <ref bean="fileTrailerGrossRetireeCostCorrect"/>
             </list>
@@ -257,11 +262,10 @@
 
     <!-- File Header Validator(s) -->
     <bean id="fileHeaderExists"                      class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderExists"/>
+    <bean id="fileHeaderOutOfSequence"               class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderOutOfSequence"/>
+    <bean id="fileHeaderDateFormatValid"             class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderDateFormatValid"/>
+    <bean id="fileHeaderTimeFormatValid"             class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderTimeFormatValid"/>
     <bean id="initializeFileVariables"               class="jwl.prp.retiree.costreport.validation.file.header.InitializeFileVariables"/>
-
-    <!-- File Trailer Validator(s) -->
-    <bean id="fileTrailerApplicationCountCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationCountCorrect"/>
-    <bean id="fileTrailerGrossRetireeCostCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.GrossRetireeCostCorrect"/>
 
     <!-- Application Header Validator(s) -->
     <bean id="applicationIDValid"                    class="jwl.prp.retiree.costreport.validation.application.header.ApplicationIDValid">
@@ -273,6 +277,7 @@
     <bean id="uniqueBenefitOptionIdentifierCorrect"  class="jwl.prp.retiree.costreport.validation.application.detail.UniqueBenefitOptionIdentifierCorrect">
         <property name="planOptionsDAO"  ref="planOptionsDAO"/>
     </bean>
+    <bean id="aplctnDetailDateFormatValid"           class="jwl.prp.retiree.costreport.validation.application.detail.RXCostYearMonthFormatValid"/>
     <bean id="aplctnDetailGrossRetireeCountNumeric"  class="jwl.prp.retiree.costreport.validation.application.detail.GrossRetireeCostNumeric"/>
     <bean id="incrementApplicationRecordCount"       class="jwl.prp.retiree.costreport.validation.application.detail.IncrementApplicationRecordCount"/>
 
@@ -280,6 +285,11 @@
     <bean id="aplctnTrailerRecordCountCorrect"       class="jwl.prp.retiree.costreport.validation.application.trailer.RecordCountCorrect"/>
     <bean id="aplctnTrailerGrossRetireeCostCorrect"  class="jwl.prp.retiree.costreport.validation.application.trailer.GrossRetireeCostCorrect"/>
     <bean id="incrementApplicationCount"             class="jwl.prp.retiree.costreport.validation.application.trailer.IncrementApplicationCount"/>
+
+    <!-- File Trailer Validator(s) -->
+    <bean id="applicationsExist"                     class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationsExist"/>
+    <bean id="fileTrailerApplicationCountCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationCountCorrect"/>
+    <bean id="fileTrailerGrossRetireeCostCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.GrossRetireeCostCorrect"/>
 
 
     <!--                         -->
