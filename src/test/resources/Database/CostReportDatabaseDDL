@@ -1,41 +1,4 @@
 
-CREATE TABLE RDS_FILE
-(
-     FILE_ID          INTEGER UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-     FILE_DIR_CD      CHAR(1)          NOT NULL,
-     FILE_TYPE_CD     CHAR(2)          NOT NULL,
-     FILE_DT_TM       DATETIME         NOT NULL,
-     FILE_NAME        VARCHAR(54)      NOT NULL,
-     FILE_DESC_TXT    VARCHAR(255)     NULL,
-     SUBM_ORG_ID      CHAR(10)         NULL,
-     ORG_TYP_CD       CHAR(1)          NOT NULL,
-     ORG_ID           CHAR(10)         NOT NULL,
-     STUS_CTGRY_CD    CHAR(2)          NOT NULL,
-     STUS_CD          CHAR(2)          NOT NULL,
-     STUS_TS          TIMESTAMP        NOT NULL,
-     STUS_PGM         VARCHAR(30)      NOT NULL,
-     UPTD_PGM         VARCHAR(30)      NULL,
-     UPDT_TS          TIMESTAMP        NULL,
-     PROCESS_DT       DATE             NOT NULL,
-     RECEIPT_DT       DATE             NOT NULL,
-     FOREIGN KEY (STUS_CTGRY_CD, STUS_CD) REFERENCES STUS_REF(STUS_CTGRY_CD, STUS_CD)
-);
-
-
-
-CREATE TABLE FILE_ERR
-(
-     FILE_ID          INTEGER UNSIGNED NOT NULL,
-     ERR_CD           CHAR(4)          NOT NULL,
-     ERR_CTGRY_CD     CHAR(2)          NOT NULL,
-     ERR_SEQ_NUM      INTEGER UNSIGNED NOT NULL,
-     ERR_INFO         VARCHAR(350)     NULL,
-     PRIMARY KEY (FILE_ID, ERR_CD, ERR_CTGRY_CD, ERR_SEQ_NUM),
-     FOREIGN KEY (FILE_ID) REFERENCES RDS_FILE(FILE_ID),
-     FOREIGN KEY (ERR_CTGRY_CD, ERR_CD) REFERENCES ERR_REF(ERR_CTGRY_CD, ERR_CD)
-);
-
-
 
 CREATE TABLE ERR_CTG_REF
 (
@@ -172,6 +135,44 @@ INSERT INTO STUS_REF VALUES ('FS', 'FZ', "No records in a file except for header
 INSERT INTO STUS_REF VALUES ('FS', 'NW', "New file");
 INSERT INTO STUS_REF VALUES ('OS', 'DL', "Organization deleted");
 INSERT INTO STUS_REF VALUES ('OS', 'NW', "New organization added");
+
+
+
+CREATE TABLE RDS_FILE
+(
+     FILE_ID          INTEGER UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+     FILE_DIR_CD      CHAR(1)          NOT NULL,
+     FILE_TYPE_CD     CHAR(2)          NOT NULL,
+     FILE_DT_TM       DATETIME         NOT NULL,
+     FILE_NAME        VARCHAR(54)      NOT NULL,
+     FILE_DESC_TXT    VARCHAR(255)     NULL,
+     SUBM_ORG_ID      CHAR(10)         NULL,
+     ORG_TYP_CD       CHAR(1)          NOT NULL,
+     ORG_ID           CHAR(10)         NOT NULL,
+     STUS_CTGRY_CD    CHAR(2)          NOT NULL,
+     STUS_CD          CHAR(2)          NOT NULL,
+     STUS_TS          TIMESTAMP        NOT NULL,
+     STUS_PGM         VARCHAR(30)      NOT NULL,
+     UPTD_PGM         VARCHAR(30)      NULL,
+     UPDT_TS          TIMESTAMP        NULL,
+     PROCESS_DT       DATE             NOT NULL,
+     RECEIPT_DT       DATE             NOT NULL,
+     FOREIGN KEY (STUS_CTGRY_CD, STUS_CD) REFERENCES STUS_REF(STUS_CTGRY_CD, STUS_CD)
+);
+
+
+
+CREATE TABLE FILE_ERR
+(
+     FILE_ID          INTEGER UNSIGNED NOT NULL,
+     ERR_CD           CHAR(4)          NOT NULL,
+     ERR_CTGRY_CD     CHAR(2)          NOT NULL,
+     ERR_SEQ_NUM      INTEGER UNSIGNED NOT NULL,
+     ERR_INFO         VARCHAR(350)     NULL,
+     PRIMARY KEY (FILE_ID, ERR_CD, ERR_CTGRY_CD, ERR_SEQ_NUM),
+     FOREIGN KEY (FILE_ID) REFERENCES RDS_FILE(FILE_ID),
+     FOREIGN KEY (ERR_CTGRY_CD, ERR_CD) REFERENCES ERR_REF(ERR_CTGRY_CD, ERR_CD)
+);
 
 
 
