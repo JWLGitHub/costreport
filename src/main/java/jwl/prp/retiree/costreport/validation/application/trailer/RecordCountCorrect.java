@@ -51,6 +51,8 @@ public class RecordCountCorrect extends BaseValidator
                                        " Computed Record Count: " +
                                        fileContext.getApplicationRecordCount());
 
+        fileContext.setApplicationRecordCount(0);
+
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;
     }

@@ -201,24 +201,25 @@
                 <ref bean="fileHeaderOutOfSequence"/>
                 <ref bean="fileHeaderDateFormatValid"/>
                 <ref bean="fileHeaderTimeFormatValid"/>
-                <ref bean="initializeFileVariables"/>
+                <ref bean="incrementFileHeaderCounter"/>
             </list>
         </property>
 
         <!-- application header Validator(s) -->
         <property name="applicationHeaderValidators">
             <list>
-                <ref bean="fileHeaderExists"/>
+                <ref bean="fileHeaderMissing"/>
+                <ref bean="applicationHeaderOutOfSequence"/>
                 <ref bean="applicationIDValid"/>
                 <ref bean="applicationIDUniqueWithinFile"/>
-                <ref bean="initializeApplicationVariables"/>
+                <ref bean="setApplicationHeaderVariables"/>
             </list>
         </property>
 
         <!-- application detail Validator(s) -->
         <property name="applicationDetailValidators">
             <list>
-                <ref bean="fileHeaderExists"/>
+                <ref bean="fileHeaderMissing"/>
                 <ref bean="uniqueBenefitOptionIdentifierCorrect"/>
                 <ref bean="aplctnDetailDateFormatValid"/>
                 <ref bean="aplctnDetailGrossRetireeCountNumeric"/>
@@ -229,7 +230,7 @@
         <!-- application trailer Validator(s) -->
         <property name="applicationTrailerValidators">
             <list>
-                <ref bean="fileHeaderExists"/>
+                <ref bean="fileHeaderMissing"/>
                 <ref bean="aplctnTrailerApplicationIDMatches"/>
                 <ref bean="aplctnTrailerRecordCountCorrect"/>
                 <ref bean="aplctnTrailerGrossRetireeCostCorrect"/>
@@ -240,10 +241,11 @@
         <!-- file trailer Validator(s) -->
         <property name="fileTraileralidators">
             <list>
-                <ref bean="fileHeaderExists"/>
+                <ref bean="fileHeaderMissing"/>
                 <ref bean="applicationsExist"/>
                 <ref bean="fileTrailerApplicationCountCorrect"/>
                 <ref bean="fileTrailerGrossRetireeCostCorrect"/>
+                <ref bean="incrementFileTrailerCounter"/>
             </list>
         </property>
 
@@ -263,18 +265,19 @@
     <bean id="secondValidator"                       class="jwl.prp.retiree.costreport.validation.FalseValidator"/>     <!--  NOT USED     -->
 
     <!-- File Header Validator(s) -->
-    <bean id="fileHeaderExists"                      class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderExists"/>
+    <bean id="fileHeaderMissing"                     class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderMissing"/>
     <bean id="fileHeaderOutOfSequence"               class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderOutOfSequence"/>
     <bean id="fileHeaderDateFormatValid"             class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderDateFormatValid"/>
     <bean id="fileHeaderTimeFormatValid"             class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderTimeFormatValid"/>
-    <bean id="initializeFileVariables"               class="jwl.prp.retiree.costreport.validation.file.header.InitializeFileVariables"/>
+    <bean id="incrementFileHeaderCounter"            class="jwl.prp.retiree.costreport.validation.file.header.IncrementFileHeaderCounter"/>
 
     <!-- Application Header Validator(s) -->
+    <bean id="applicationHeaderOutOfSequence"        class="jwl.prp.retiree.costreport.validation.application.header.ApplicationHeaderOutOfSequence"/>
     <bean id="applicationIDValid"                    class="jwl.prp.retiree.costreport.validation.application.header.ApplicationIDValid">
         <property name="applicationDAO"  ref="applicationDAO"/>
     </bean>
     <bean id="applicationIDUniqueWithinFile"         class="jwl.prp.retiree.costreport.validation.application.header.ApplicationIDUniqueWithinFile"/>
-    <bean id="initializeApplicationVariables"        class="jwl.prp.retiree.costreport.validation.application.header.InitializeApplicationVariables"/>
+    <bean id="setApplicationHeaderVariables"         class="jwl.prp.retiree.costreport.validation.application.header.SetApplicationHeaderVariables"/>
 
     <!-- Application Detail Validator(s) -->
     <bean id="uniqueBenefitOptionIdentifierCorrect"  class="jwl.prp.retiree.costreport.validation.application.detail.UniqueBenefitOptionIdentifierCorrect">
@@ -294,6 +297,7 @@
     <bean id="applicationsExist"                     class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationsExist"/>
     <bean id="fileTrailerApplicationCountCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationCountCorrect"/>
     <bean id="fileTrailerGrossRetireeCostCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.GrossRetireeCostCorrect"/>
+    <bean id="incrementFileTrailerCounter"           class="jwl.prp.retiree.costreport.validation.file.trailer.IncrementFileTrailerCounter"/>
 
 
     <!--                         -->

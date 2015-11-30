@@ -1,16 +1,18 @@
 package jwl.prp.retiree.costreport.validation.file.header;
 
-
-import jwl.prp.retiree.costreport.entity.*;
+import jwl.prp.retiree.costreport.entity.CostReportRecord;
+import jwl.prp.retiree.costreport.entity.FileHeader;
 import jwl.prp.retiree.costreport.validation.BaseValidator;
 import jwl.prp.retiree.costreport.validation.FileContext;
 import jwl.prp.retiree.costreport.validation.ValidationError;
 
-
-public class InitializeFileVariables extends BaseValidator
+/**
+ * Created by jwleader on 11/30/15.
+ */
+public class IncrementFileHeaderCounter extends BaseValidator
 {
-    private static String CLASS_NAME  = InitializeFileVariables.class.getName();
-    private static String SIMPLE_NAME = InitializeFileVariables.class.getSimpleName();
+    private static String CLASS_NAME  = IncrementFileHeaderCounter.class.getName();
+    private static String SIMPLE_NAME = IncrementFileHeaderCounter.class.getSimpleName();
 
 
     @Override
@@ -24,7 +26,7 @@ public class InitializeFileVariables extends BaseValidator
         if (!(costReportRecord instanceof FileHeader))
             throw new RuntimeException(SIMPLE_NAME + " " + METHOD_NAME + " - Validator passed INVALID CostReportRecord Type: " + costReportRecord);
 
-        fileContext.initializeFileVariables();
+        fileContext.setFileHeaderCounter(fileContext.getFileHeaderCounter() + 1);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

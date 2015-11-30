@@ -7,18 +7,18 @@ import jwl.prp.retiree.costreport.validation.FileContext;
 import jwl.prp.retiree.costreport.validation.ValidationError;
 
 /**
- * Created by jwleader on 11/26/15.
+ * Created by jwleader on 11/30/15.
  */
-public class InitializeApplicationVariables extends BaseValidator
+public class SetApplicationHeaderVariables extends BaseValidator
 {
-    private static String CLASS_NAME  = InitializeApplicationVariables.class.getName();
-    private static String SIMPLE_NAME = InitializeApplicationVariables.class.getSimpleName();
+    private static String CLASS_NAME  = SetApplicationHeaderVariables.class.getName();
+    private static String SIMPLE_NAME = SetApplicationHeaderVariables.class.getSimpleName();
 
 
     @Override
     public ValidationError execute(CostReportRecord costReportRecord,
                                    FileContext      fileContext)
-            throws Exception
+                                   throws Exception
     {
         final String METHOD_NAME = "execute";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -28,7 +28,7 @@ public class InitializeApplicationVariables extends BaseValidator
 
         ApplicationHeader applicationHeader = (ApplicationHeader) costReportRecord;
 
-        fileContext.initializeApplicationVariables(applicationHeader.getApplicationID());
+        fileContext.setApplicationHeaderVariables(applicationHeader.getApplicationID());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

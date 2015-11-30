@@ -54,6 +54,7 @@ public class GrossRetireeCostCorrect extends BaseValidator
                                        fileContext.getApplicationGrossRetireeCost());
 
         fileContext.setFileGrossRetireeCost(fileContext.getFileGrossRetireeCost().add(totalGrossRetireeCost));
+        fileContext.setApplicationGrossRetireeCost(new BigDecimal("0"));
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

@@ -13,25 +13,25 @@ public class FileContext
      */
     private int               fileHeaderCounter;
     private int               fileApplicationCount;
-    private ArrayList<String> fileApplicationIDs;
-    private BigDecimal        fileGrossRetireeCost;
+    private ArrayList<String> fileApplicationIDs   = new ArrayList<String>();
+    private BigDecimal        fileGrossRetireeCost = new BigDecimal("0");
+    private int               fileTrailerCounter;
 
 
     /*
      *---   APPLICATION VARIABLES
      */
+
+    // --- HEADER ---
+    private int        applicationHeaderCounter;
     private String     applicationID;
+
+    // --- TRAILER ---
     private int        applicationRecordCount;
-    private BigDecimal applicationGrossRetireeCost;
+    private BigDecimal applicationGrossRetireeCost = new BigDecimal("0");
 
 
-    public void initializeFileVariables()
-    {
-        setFileHeaderCounter(getFileHeaderCounter() + 1);
-        setFileApplicationCount(0);
-        setFileApplicationIDs(new ArrayList<String>());
-        setFileGrossRetireeCost(new BigDecimal("0"));
-    }
+
 
 
     public void addFileApplicationID(String applicationID)
@@ -40,12 +40,11 @@ public class FileContext
     }
 
 
-    public void initializeApplicationVariables(String applicationID)
+    public void setApplicationHeaderVariables(String applicationID)
     {
+        setApplicationHeaderCounter(getApplicationHeaderCounter() + 1);
         setApplicationID(applicationID);
         addFileApplicationID(applicationID);
-        setApplicationRecordCount(0);
-        setApplicationGrossRetireeCost(new BigDecimal("0"));
     }
 
 
@@ -62,7 +61,11 @@ public class FileContext
 
     public BigDecimal getFileGrossRetireeCost() { return fileGrossRetireeCost; }
 
+    public int getFileTrailerCounter() { return fileTrailerCounter; }
+
     // --- APPLICATION ---
+    public int getApplicationHeaderCounter() { return applicationHeaderCounter; }
+
     public String getApplicationID() { return applicationID; }
 
     public int getApplicationRecordCount() { return applicationRecordCount; }
@@ -83,7 +86,11 @@ public class FileContext
 
     public void setFileGrossRetireeCost(BigDecimal fileGrossRetireeCost) { this.fileGrossRetireeCost = fileGrossRetireeCost; }
 
+    public void setFileTrailerCounter(int fileTrailerCounter) { this.fileTrailerCounter = fileTrailerCounter; }
+
     // --- APPLICATION ---
+    public void setApplicationHeaderCounter(int applicationHeaderCounter) { this.applicationHeaderCounter = applicationHeaderCounter; }
+
     public void setApplicationID(String applicationID) { this.applicationID = applicationID; }
 
     public void setApplicationRecordCount(int applicationRecordCount) { this.applicationRecordCount = applicationRecordCount; }
