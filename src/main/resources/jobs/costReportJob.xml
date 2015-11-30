@@ -7,7 +7,7 @@
                 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                 http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
 
-    <!-- Import our beans -->
+    <!-- Import Application Context beans -->
     <import resource="classpath:/applicationContext.xml" />
 
     <job id="costReportJob" xmlns="http://www.springframework.org/schema/batch">

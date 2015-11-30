@@ -210,6 +210,7 @@
             <list>
                 <ref bean="fileHeaderExists"/>
                 <ref bean="applicationIDValid"/>
+                <ref bean="applicationIDUniqueWithinFile"/>
                 <ref bean="initializeApplicationVariables"/>
             </list>
         </property>
@@ -229,6 +230,7 @@
         <property name="applicationTrailerValidators">
             <list>
                 <ref bean="fileHeaderExists"/>
+                <ref bean="aplctnTrailerApplicationIDMatches"/>
                 <ref bean="aplctnTrailerRecordCountCorrect"/>
                 <ref bean="aplctnTrailerGrossRetireeCostCorrect"/>
                 <ref bean="incrementApplicationCount"/>
@@ -271,6 +273,7 @@
     <bean id="applicationIDValid"                    class="jwl.prp.retiree.costreport.validation.application.header.ApplicationIDValid">
         <property name="applicationDAO"  ref="applicationDAO"/>
     </bean>
+    <bean id="applicationIDUniqueWithinFile"         class="jwl.prp.retiree.costreport.validation.application.header.ApplicationIDUniqueWithinFile"/>
     <bean id="initializeApplicationVariables"        class="jwl.prp.retiree.costreport.validation.application.header.InitializeApplicationVariables"/>
 
     <!-- Application Detail Validator(s) -->
@@ -282,6 +285,7 @@
     <bean id="incrementApplicationRecordCount"       class="jwl.prp.retiree.costreport.validation.application.detail.IncrementApplicationRecordCount"/>
 
     <!-- Application Trailer Validator(s) -->
+    <bean id="aplctnTrailerApplicationIDMatches"     class="jwl.prp.retiree.costreport.validation.application.trailer.ApplicationIDMatchesApplicationHeader"/>
     <bean id="aplctnTrailerRecordCountCorrect"       class="jwl.prp.retiree.costreport.validation.application.trailer.RecordCountCorrect"/>
     <bean id="aplctnTrailerGrossRetireeCostCorrect"  class="jwl.prp.retiree.costreport.validation.application.trailer.GrossRetireeCostCorrect"/>
     <bean id="incrementApplicationCount"             class="jwl.prp.retiree.costreport.validation.application.trailer.IncrementApplicationCount"/>
