@@ -1,24 +1,24 @@
 package jwl.prp.retiree.costreport.validation.file.trailer;
 
-import jwl.prp.retiree.costreport.entity.CostReportRecord;
 import jwl.prp.retiree.costreport.entity.FileTrailer;
+import jwl.prp.retiree.costreport.entity.CostReportRecord;
 import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.validation.BaseValidator;
 import jwl.prp.retiree.costreport.validation.FileContext;
 import jwl.prp.retiree.costreport.validation.ValidationError;
 
 /**
- * Created by jwleader on 11/28/15.
+ * Created by jwleader on 12/1/15.
  */
-public class ApplicationsExist extends BaseValidator
+public class FileTrailerOutOfSequence extends BaseValidator
 {
-    private static String CLASS_NAME  = ApplicationsExist.class.getName();
-    private static String SIMPLE_NAME = ApplicationsExist.class.getSimpleName();
+    private static String CLASS_NAME  = FileTrailerOutOfSequence.class.getName();
+    private static String SIMPLE_NAME = FileTrailerOutOfSequence.class.getSimpleName();
 
 
     @Override
     public ValidationError execute(CostReportRecord costReportRecord,
-                                   FileContext fileContext)
+                                   FileContext      fileContext)
                                    throws Exception
     {
         final String METHOD_NAME = "execute";
@@ -26,11 +26,14 @@ public class ApplicationsExist extends BaseValidator
 
         if (!(costReportRecord instanceof FileTrailer))
             throw new RuntimeException(SIMPLE_NAME + " " + METHOD_NAME + " - Validator passed INVALID CostReportRecord Type: " + costReportRecord);
-        
-        if (fileContext.getFileApplicationCount() == 0)
-            return new ValidationError(ErrRef.CRFILE_CONTAINS_NO_APPLICATIONS,
-                                       "Computed Application Count: " +
-                                       fileContext.getFileApplicationCount());
+
+        FileTrailer fileTrailer = (FileTrailer) costReportRecord;
+
+        if (fileContext.getFileHeaderCounter()         != 1                                       ||
+            fileContext.getApplicationHeaderCounter()  != fileContext.getFileApplicationCount()   ||
+            fileContext.getFileTrailerCounter()        != 0)
+            return new ValidationError(ErrRef.FILE_TRAILER_OUT_OF_SEQUENCE,
+                    costReportRecord.toString());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;
