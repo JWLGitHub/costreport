@@ -220,6 +220,7 @@
         <property name="applicationDetailValidators">
             <list>
                 <ref bean="fileHeaderMissing"/>
+                <ref bean="applicationDetailOutOfSequence"/>
                 <ref bean="uniqueBenefitOptionIdentifierCorrect"/>
                 <ref bean="aplctnDetailDateFormatValid"/>
                 <ref bean="aplctnDetailGrossRetireeCountNumeric"/>
@@ -231,6 +232,7 @@
         <property name="applicationTrailerValidators">
             <list>
                 <ref bean="fileHeaderMissing"/>
+                <ref bean="applicationTrailerOutOfSequence"/>
                 <ref bean="aplctnTrailerApplicationIDMatches"/>
                 <ref bean="aplctnTrailerRecordCountCorrect"/>
                 <ref bean="aplctnTrailerGrossRetireeCostCorrect"/>
@@ -280,6 +282,7 @@
     <bean id="setApplicationHeaderVariables"         class="jwl.prp.retiree.costreport.validation.application.header.SetApplicationHeaderVariables"/>
 
     <!-- Application Detail Validator(s) -->
+    <bean id="applicationDetailOutOfSequence"        class="jwl.prp.retiree.costreport.validation.application.detail.ApplicationDetailOutOfSequence"/>
     <bean id="uniqueBenefitOptionIdentifierCorrect"  class="jwl.prp.retiree.costreport.validation.application.detail.UniqueBenefitOptionIdentifierCorrect">
         <property name="planOptionsDAO"  ref="planOptionsDAO"/>
     </bean>
@@ -288,6 +291,7 @@
     <bean id="incrementApplicationRecordCount"       class="jwl.prp.retiree.costreport.validation.application.detail.IncrementApplicationRecordCount"/>
 
     <!-- Application Trailer Validator(s) -->
+    <bean id="applicationTrailerOutOfSequence"       class="jwl.prp.retiree.costreport.validation.application.trailer.ApplicationTrailerOutOfSequence"/>
     <bean id="aplctnTrailerApplicationIDMatches"     class="jwl.prp.retiree.costreport.validation.application.trailer.ApplicationIDMatchesApplicationHeader"/>
     <bean id="aplctnTrailerRecordCountCorrect"       class="jwl.prp.retiree.costreport.validation.application.trailer.RecordCountCorrect"/>
     <bean id="aplctnTrailerGrossRetireeCostCorrect"  class="jwl.prp.retiree.costreport.validation.application.trailer.GrossRetireeCostCorrect"/>
