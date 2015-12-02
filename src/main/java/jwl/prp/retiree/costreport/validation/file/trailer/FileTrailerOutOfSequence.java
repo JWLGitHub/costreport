@@ -33,7 +33,7 @@ public class FileTrailerOutOfSequence extends BaseValidator
             fileContext.getApplicationHeaderCounter()  != fileContext.getFileApplicationCount()   ||
             fileContext.getFileTrailerCounter()        != 0)
             return new ValidationError(ErrRef.FILE_TRAILER_OUT_OF_SEQUENCE,
-                    costReportRecord.toString());
+                                       costReportRecord.toString());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

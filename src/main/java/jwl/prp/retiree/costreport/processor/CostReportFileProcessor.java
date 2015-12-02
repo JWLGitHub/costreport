@@ -234,23 +234,34 @@ public class CostReportFileProcessor implements StepExecutionListener,
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         if (stepExecution.getFailureExceptions().size() > 0)
-        {
-            stepExecution.setExitStatus(ExitStatus.FAILED);
-
-            for (Throwable throwable : stepExecution.getFailureExceptions())
-            {
-                if (throwable instanceof FlatFileParseException)
-                    handleFlatFileParseException((FlatFileParseException) throwable);
-                else if (throwable instanceof CostReportException)
-                    handleCostReportException((CostReportException) throwable);
-            }
-
-            updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
-        }
+            handleFailureExceptions(stepExecution);
+        else if (fileContext.getFileTrailerCounter() == 0)
+            handleFileTrailerMissing(stepExecution);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         return null;
+    }
+
+
+    private void handleFailureExceptions(StepExecution stepExecution)
+    {
+        final String METHOD_NAME = "handleFailureExceptions";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        stepExecution.setExitStatus(ExitStatus.FAILED);
+
+        for (Throwable throwable : stepExecution.getFailureExceptions())
+        {
+            if (throwable instanceof FlatFileParseException)
+                handleFlatFileParseException((FlatFileParseException) throwable);
+            else if (throwable instanceof CostReportException)
+                handleCostReportException((CostReportException) throwable);
+        }
+
+        updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
 
@@ -260,7 +271,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         String processText = "Record No.: " + flatFileParseException.getLineNumber() +
-                " Record Layout: " + flatFileParseException.getInput();
+                             " Record Layout: " + flatFileParseException.getInput();
 
         if (flatFileParseException.getInput().length() != COST_REPORT_RECORD_LENGTH)
         {
@@ -300,6 +311,23 @@ public class CostReportFileProcessor implements StepExecutionListener,
         insertFileErr(validationError.getErrRef().getErrCd(),
                       validationError.getErrRef().getErrCtgryCd(),
                       validationError.getErrMessage());
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+    }
+
+
+    private void handleFileTrailerMissing(StepExecution stepExecution)
+    {
+        final String METHOD_NAME = "handleFileTrailerMissing";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        stepExecution.setExitStatus(ExitStatus.FAILED);
+
+        insertFileErr(ErrRef.FILE_TRAILER_MISSING.getErrCd(),
+                      ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                      "EOF Reached - " + ErrRef.FILE_TRAILER_MISSING.getDescTxt());
+
+        updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
