@@ -235,8 +235,10 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
         if (stepExecution.getFailureExceptions().size() > 0)
             handleFailureExceptions(stepExecution);
-        else if (fileContext.getFileTrailerCounter() == 0)
-            handleFileTrailerMissing(stepExecution);
+        else if (fileContext.getFileHeaderCounter() != 1                                              ||
+                 fileContext.getApplicationHeaderCounter() != fileContext.getFileApplicationCount()   ||
+                 fileContext.getFileTrailerCounter() == 0)
+            handleEndOfFileError(stepExecution);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
@@ -274,27 +276,21 @@ public class CostReportFileProcessor implements StepExecutionListener,
                              " Record Layout: " + flatFileParseException.getInput();
 
         if (flatFileParseException.getInput().length() != COST_REPORT_RECORD_LENGTH)
-        {
             insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
                           ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
                           processText);
-        }
         else
         {
             String inputRecordType = flatFileParseException.getInput().substring(0, 4);
             System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - InputRecordType: " + inputRecordType);
             if (!VALID_RECORD_TYPES.contains(inputRecordType))
-            {
                 insertFileErr(ErrRef.CRFILE_BAD_RECORD_TYPE.getErrCd(),
                               ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
                               processText);
-            }
             else
-            {
                 insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
                               ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
                               processText);
-            }
         }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -316,16 +312,22 @@ public class CostReportFileProcessor implements StepExecutionListener,
     }
 
 
-    private void handleFileTrailerMissing(StepExecution stepExecution)
+    private void handleEndOfFileError(StepExecution stepExecution)
     {
-        final String METHOD_NAME = "handleFileTrailerMissing";
+        final String METHOD_NAME = "handleEndOfFileError";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         stepExecution.setExitStatus(ExitStatus.FAILED);
 
-        insertFileErr(ErrRef.FILE_TRAILER_MISSING.getErrCd(),
-                      ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                      "EOF Reached - " + ErrRef.FILE_TRAILER_MISSING.getDescTxt());
+        if (fileContext.getFileHeaderCounter() != 1         ||
+            fileContext.getApplicationHeaderCounter() != fileContext.getFileApplicationCount())
+            insertFileErr(ErrRef.UNEXPECTED_EOF_FILE_SEQUENCE_ERROR.getErrCd(),
+                          ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                          "EOF Reached - " + ErrRef.UNEXPECTED_EOF_FILE_SEQUENCE_ERROR.getDescTxt());
+        else
+            insertFileErr(ErrRef.FILE_TRAILER_MISSING.getErrCd(),
+                          ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                          "EOF Reached - " + ErrRef.FILE_TRAILER_MISSING.getDescTxt());
 
         updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
 
