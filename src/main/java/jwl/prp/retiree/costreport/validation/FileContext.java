@@ -1,8 +1,11 @@
 package jwl.prp.retiree.costreport.validation;
 
 
+import jwl.prp.retiree.costreport.entity.CostReportRecord;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class FileContext
@@ -22,6 +25,9 @@ public class FileContext
      *---   APPLICATION VARIABLES
      */
 
+    private List<CostReportRecord> applicationRecords = new ArrayList<CostReportRecord>();
+    private boolean    applicationValid;
+
     // --- HEADER ---
     private int        applicationHeaderCounter;
     private String     applicationID;
@@ -33,11 +39,12 @@ public class FileContext
 
 
 
-
     public void addFileApplicationID(String applicationID)
     {
         getFileApplicationIDs().add(applicationID);
     }
+
+    public void addApplicationRecord(CostReportRecord costReportRecord) { getApplicationRecords().add(costReportRecord); }
 
 
     public void setApplicationHeaderVariables(String applicationID)
@@ -45,6 +52,8 @@ public class FileContext
         setApplicationHeaderCounter(getApplicationHeaderCounter() + 1);
         setApplicationID(applicationID);
         addFileApplicationID(applicationID);
+        setApplicationValid(true);
+        setApplicationRecords(new ArrayList<CostReportRecord>());
     }
 
 
@@ -64,6 +73,10 @@ public class FileContext
     public int getFileTrailerCounter() { return fileTrailerCounter; }
 
     // --- APPLICATION ---
+    public boolean isApplicationValid() { return applicationValid; }
+
+    public List<CostReportRecord> getApplicationRecords() { return applicationRecords; }
+
     public int getApplicationHeaderCounter() { return applicationHeaderCounter; }
 
     public String getApplicationID() { return applicationID; }
@@ -89,6 +102,10 @@ public class FileContext
     public void setFileTrailerCounter(int fileTrailerCounter) { this.fileTrailerCounter = fileTrailerCounter; }
 
     // --- APPLICATION ---
+    public void setApplicationValid(boolean applicationValid) { this.applicationValid = applicationValid; }
+
+    public void setApplicationRecords(List<CostReportRecord> applicationRecords) { this.applicationRecords = applicationRecords; }
+
     public void setApplicationHeaderCounter(int applicationHeaderCounter) { this.applicationHeaderCounter = applicationHeaderCounter; }
 
     public void setApplicationID(String applicationID) { this.applicationID = applicationID; }

@@ -210,8 +210,6 @@
             <list>
                 <ref bean="fileHeaderMissing"/>
                 <ref bean="applicationHeaderOutOfSequence"/>
-                <ref bean="applicationIDValid"/>
-                <ref bean="applicationIDUniqueWithinFile"/>
                 <ref bean="setApplicationHeaderVariables"/>
             </list>
         </property>
@@ -221,6 +219,60 @@
             <list>
                 <ref bean="fileHeaderMissing"/>
                 <ref bean="applicationDetailOutOfSequence"/>
+                <ref bean="incrementApplicationRecordCount"/>
+            </list>
+        </property>
+
+        <!-- application trailer Validator(s) -->
+        <property name="applicationTrailerValidators">
+            <list>
+                <ref bean="fileHeaderMissing"/>
+                <ref bean="applicationTrailerOutOfSequence"/>
+                <ref bean="incrementApplicationCount"/>
+            </list>
+        </property>
+
+        <!-- file trailer Validator(s) -->
+        <property name="fileTrailerValidators">
+            <list>
+                <ref bean="fileHeaderMissing"/>
+                <ref bean="fileTrailerOutOfSequence"/>
+                <ref bean="applicationsExist"/>
+                <ref bean="incrementFileTrailerCounter"/>
+            </list>
+        </property>
+
+        <!-- Err Ref(s) NOT Error(s) -->
+        <property name="errRefsNotErrors">
+            <list value-type="jwl.prp.retiree.costreport.enums.ErrRef">
+            </list>
+        </property>
+    </bean>
+
+    <!-- Cost Report Application Processor -->
+    <bean id="costReportApplicationProcessor" class="jwl.prp.retiree.costreport.processor.CostReportApplicationProcessor" >
+
+        <property name="rdsFileDAO"         ref="rdsFileDAO"/>
+        <property name="fileErrDAO"         ref="fileErrDAO"/>
+
+        <!-- file header Validator(s) -->
+        <property name="fileHeaderValidators">
+            <list>
+            </list>
+        </property>
+
+        <!-- application header Validator(s) -->
+        <property name="applicationHeaderValidators">
+            <list>
+                <ref bean="applicationIDValid"/>
+                <ref bean="applicationIDUniqueWithinFile"/>
+                <ref bean="setApplicationHeaderVariables"/>
+            </list>
+        </property>
+
+        <!-- application detail Validator(s) -->
+        <property name="applicationDetailValidators">
+            <list>
                 <ref bean="uniqueBenefitOptionIdentifierCorrect"/>
                 <ref bean="aplctnDetailDateFormatValid"/>
                 <ref bean="aplctnDetailGrossRetireeCountNumeric"/>
@@ -231,8 +283,6 @@
         <!-- application trailer Validator(s) -->
         <property name="applicationTrailerValidators">
             <list>
-                <ref bean="fileHeaderMissing"/>
-                <ref bean="applicationTrailerOutOfSequence"/>
                 <ref bean="aplctnTrailerApplicationIDMatches"/>
                 <ref bean="aplctnTrailerRecordCountCorrect"/>
                 <ref bean="aplctnTrailerGrossRetireeCostCorrect"/>
@@ -241,11 +291,8 @@
         </property>
 
         <!-- file trailer Validator(s) -->
-        <property name="fileTraileralidators">
+        <property name="fileTrailerValidators">
             <list>
-                <ref bean="fileHeaderMissing"/>
-                <ref bean="fileTrailerOutOfSequence"/>
-                <ref bean="applicationsExist"/>
                 <ref bean="fileTrailerApplicationCountCorrect"/>
                 <ref bean="fileTrailerGrossRetireeCostCorrect"/>
                 <ref bean="incrementFileTrailerCounter"/>

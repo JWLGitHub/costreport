@@ -70,6 +70,7 @@
         <step id="importFileSecondPass">
             <tasklet>
                 <chunk reader="costReportItemReader"
+                       processor="costReportApplicationProcessor"
                        writer="databaseItemWriter"
                        commit-interval="1" >
                 </chunk>

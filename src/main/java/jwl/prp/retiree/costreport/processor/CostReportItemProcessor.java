@@ -389,7 +389,7 @@ public class CostReportItemProcessor implements StepExecutionListener,
     }
 
 
-    public void setFileTraileralidators(List<Validator> fileTrailerValidators)
+    public void setFileTrailerValidators(List<Validator> fileTrailerValidators)
     {
         final String METHOD_NAME = "setFileTrailerValidators";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);

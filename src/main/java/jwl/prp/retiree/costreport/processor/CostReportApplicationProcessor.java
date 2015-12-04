@@ -1,33 +1,38 @@
 package jwl.prp.retiree.costreport.processor;
 
-
-import jwl.prp.retiree.costreport.exception.CostReportException;
-import jwl.prp.retiree.costreport.validation.BaseValidator;
-import jwl.prp.retiree.costreport.validation.FileContext;
-import jwl.prp.retiree.costreport.validation.ValidationError;
 import jwl.prp.retiree.costreport.dao.FileErrDAO;
 import jwl.prp.retiree.costreport.dao.RDSFileDAO;
-import jwl.prp.retiree.costreport.entity.*;
+import jwl.prp.retiree.costreport.entity.CostReportRecord;
+import jwl.prp.retiree.costreport.entity.FileErr;
+import jwl.prp.retiree.costreport.entity.RDSFile;
 import jwl.prp.retiree.costreport.enums.ErrCtgRef;
 import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
+import jwl.prp.retiree.costreport.exception.CostReportException;
+import jwl.prp.retiree.costreport.validation.BaseValidator;
+import jwl.prp.retiree.costreport.validation.FileContext;
+import jwl.prp.retiree.costreport.validation.ValidationError;
 
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.validator.ValidationException;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
-
-public class CostReportFileProcessor implements StepExecutionListener,
-                                                ItemProcessor<CostReportRecord, CostReportRecord>
+/**
+ * Created by jwleader on 12/3/15.
+ */
+public class CostReportApplicationProcessor implements StepExecutionListener,
+                                                       ItemProcessor<CostReportRecord, List<CostReportRecord>>
 {
-    private static String CLASS_NAME  = CostReportFileProcessor.class.getName();
-    private static String SIMPLE_NAME = CostReportFileProcessor.class.getSimpleName();
+    private static String CLASS_NAME  = CostReportApplicationProcessor.class.getName();
+    private static String SIMPLE_NAME = CostReportApplicationProcessor.class.getSimpleName();
 
     private RDSFileDAO rdsFileDAO;
     private FileErrDAO fileErrDAO;
@@ -109,36 +114,36 @@ public class CostReportFileProcessor implements StepExecutionListener,
     *****                                     *****
     */
     @Override
-    public CostReportRecord process(CostReportRecord costReportRecord)
-                                    throws Exception
+    public List<CostReportRecord> process(CostReportRecord costReportRecord)
+                                          throws Exception
     {
         final String METHOD_NAME = "process";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FHDR.name()))
+        if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FHDR.name())  ||
+            costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FTRL.name()))
         {
-            validateCostReportRecord(costReportRecord,
-                                     fileHeaderValidators);
+            // DO NOTHING
         }
         else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.AHDR.name()))
-        {
             validateCostReportRecord(costReportRecord,
                                      applicationHeaderValidators);
-        }
         else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.DETL.name()))
         {
-            validateCostReportRecord(costReportRecord,
-                                     applicationDetailValidators);
+            if (fileContext.isApplicationValid())
+                validateCostReportRecord(costReportRecord,
+                                         applicationDetailValidators);
         }
         else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.ATRL.name()))
         {
-            validateCostReportRecord(costReportRecord,
-                                     applicationTrailerValidators);
-        }
-        else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FTRL.name()))
-        {
-            validateCostReportRecord(costReportRecord,
-                    fileTrailerValidators);
+            if (fileContext.isApplicationValid())
+            {
+                validateCostReportRecord(costReportRecord,
+                                         applicationTrailerValidators);
+
+                if (fileContext.isApplicationValid())
+                    return fileContext.getApplicationRecords();
+            }
         }
         else
             throw new ValidationException("INVALID COST REPORT RECORD: " + costReportRecord);
@@ -166,15 +171,12 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
                 if (null != validationError)
                 {
-                    if (errRefsNotErrors.contains(validationError.getErrRef()))
-                    {
-                        // *** NOT AN ERROR ***    (BUT . . .  We'll still track it)
-                        insertFileErr(validationError.getErrRef().getErrCd(),
-                                      validationError.getErrRef().getErrCtgryCd(),
-                                      validationError.getErrMessage());
-                    }
-                    else
-                        throw new CostReportException(validationError);
+                    insertFileErr(validationError.getErrRef().getErrCd(),
+                                  validationError.getErrRef().getErrCtgryCd(),
+                                  validationError.getErrMessage());
+
+                    if (!errRefsNotErrors.contains(validationError.getErrRef()))
+                        fileContext.setApplicationValid(false);
                 }
             }
         }
@@ -211,15 +213,16 @@ public class CostReportFileProcessor implements StepExecutionListener,
         fileErrSeqNum++;
 
         FileErr fileErr = new FileErr(this.rdsFileId,
-                                      errCd,
-                                      errCtgryCd,
-                                      fileErrSeqNum,
-                                      errInfo);
+                errCd,
+                errCtgryCd,
+                fileErrSeqNum,
+                errInfo);
 
         fileErrDAO.insertFileErr(fileErr);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
+
 
 
     /*
@@ -235,10 +238,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
         if (stepExecution.getFailureExceptions().size() > 0)
             handleFailureExceptions(stepExecution);
-        else if (fileContext.getFileHeaderCounter() != 1                                              ||
-                 fileContext.getApplicationHeaderCounter() != fileContext.getFileApplicationCount()   ||
-                 fileContext.getFileTrailerCounter() == 0)
-            handleEndOfFileError(stepExecution);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
@@ -255,43 +254,11 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
         for (Throwable throwable : stepExecution.getFailureExceptions())
         {
-            if (throwable instanceof FlatFileParseException)
-                handleFlatFileParseException((FlatFileParseException) throwable);
-            else if (throwable instanceof CostReportException)
+            if (throwable instanceof CostReportException)
                 handleCostReportException((CostReportException) throwable);
         }
 
         updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    private void handleFlatFileParseException(FlatFileParseException flatFileParseException)
-    {
-        final String METHOD_NAME = "handleFlatFileParseException";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        String processText = "Record No.: " + flatFileParseException.getLineNumber() +
-                             " Record Layout: " + flatFileParseException.getInput();
-
-        if (flatFileParseException.getInput().length() != COST_REPORT_RECORD_LENGTH)
-            insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
-                          ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                          processText);
-        else
-        {
-            String inputRecordType = flatFileParseException.getInput().substring(0, 4);
-            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - InputRecordType: " + inputRecordType);
-            if (!VALID_RECORD_TYPES.contains(inputRecordType))
-                insertFileErr(ErrRef.CRFILE_BAD_RECORD_TYPE.getErrCd(),
-                              ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                              processText);
-            else
-                insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
-                              ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                              processText);
-        }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
@@ -307,29 +274,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
         insertFileErr(validationError.getErrRef().getErrCd(),
                       validationError.getErrRef().getErrCtgryCd(),
                       validationError.getErrMessage());
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    private void handleEndOfFileError(StepExecution stepExecution)
-    {
-        final String METHOD_NAME = "handleEndOfFileError";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        stepExecution.setExitStatus(ExitStatus.FAILED);
-
-        if (fileContext.getFileHeaderCounter() != 1         ||
-            fileContext.getApplicationHeaderCounter() != fileContext.getFileApplicationCount())
-            insertFileErr(ErrRef.UNEXPECTED_EOF_FILE_SEQUENCE_ERROR.getErrCd(),
-                          ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                          "EOF Reached - " + ErrRef.UNEXPECTED_EOF_FILE_SEQUENCE_ERROR.getDescTxt());
-        else
-            insertFileErr(ErrRef.FILE_TRAILER_MISSING.getErrCd(),
-                          ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
-                          "EOF Reached - " + ErrRef.FILE_TRAILER_MISSING.getDescTxt());
-
-        updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
