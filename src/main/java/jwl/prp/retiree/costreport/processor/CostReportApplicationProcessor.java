@@ -78,7 +78,7 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         this.rdsFileId = getRdsFileId(stepExecution);
-        updateRDSFile(StusRef.FILE_PROCESSING);
+        updateRDSFile(StusRef.FILE_PROCESSING_2ND_PASS);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
@@ -170,10 +170,16 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
                                   validationError.getRecordNbrErrMessage());
 
                     if (!errRefsNotErrors.contains(validationError.getErrRef()))
+                    {
                         fileContext.setApplicationValid(false);
+                        break;
+                    }
                 }
             }
         }
+
+        if (fileContext.isApplicationValid())
+            fileContext.addApplicationRecord(costReportRecord);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 

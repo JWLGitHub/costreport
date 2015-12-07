@@ -61,7 +61,6 @@ public class FileContext
 
     public void setApplicationHeaderVariables(String applicationID)
     {
-        setApplicationHeaderCounter(getApplicationHeaderCounter() + 1);
         setApplicationID(applicationID);
         addFileApplicationID(applicationID);
         setApplicationValid(true);

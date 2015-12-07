@@ -73,7 +73,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         this.rdsFileId = getRdsFileId(stepExecution);
-        updateRDSFile(StusRef.FILE_PROCESSING);
+        updateRDSFile(StusRef.FILE_PROCESSING_1ST_PASS);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }

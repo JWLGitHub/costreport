@@ -21,7 +21,7 @@ import java.util.List;
 
 
 public class DatabaseItemWriter implements StepExecutionListener,
-                                           ItemWriter<CostReportRecord>
+                                           ItemWriter<List<CostReportRecord>>
 {
     private static String CLASS_NAME  = DatabaseItemWriter.class.getName();
     private static String SIMPLE_NAME = DatabaseItemWriter.class.getSimpleName();
@@ -77,14 +77,26 @@ public class DatabaseItemWriter implements StepExecutionListener,
     *****                                   *****
     */
     @Override
-    public void write(List<? extends CostReportRecord> costReportRecords)
+    public void write(List<? extends List<CostReportRecord>> costReportRecordsLists)
                       throws Exception
     {
         final String METHOD_NAME = "write";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
+        /*
         for (CostReportRecord costReportRecord : costReportRecords)
              insertCostReportImport(costReportRecord);
+        */
+
+        System.out.println("costReportRecordsLists = " + costReportRecordsLists.size());
+
+        for (List<CostReportRecord> costReportRecordList : costReportRecordsLists)
+        {
+            System.out.println("costReportRecordList = " + costReportRecordList.size());
+
+            for (CostReportRecord costReportRecord : costReportRecordList)
+                insertCostReportImport(costReportRecord);
+        }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
@@ -93,7 +105,7 @@ public class DatabaseItemWriter implements StepExecutionListener,
     private void insertCostReportImport(CostReportRecord costReportRecord)
     {
         final String METHOD_NAME = "insertCostReportImport";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + costReportRecord.toString());
 
         CostReportImport costReportImport = new CostReportImport(this.rdsFileId,
                                                                  new Date(),
