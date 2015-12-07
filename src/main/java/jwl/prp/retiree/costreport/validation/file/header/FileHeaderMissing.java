@@ -33,7 +33,8 @@ public class FileHeaderMissing extends BaseValidator
             throw new RuntimeException(SIMPLE_NAME + " " + METHOD_NAME + " - Validator passed INVALID CostReportRecord Type: " + costReportRecord);
 
         if (fileContext.getFileHeaderCounter() != 1)
-            return new ValidationError(ErrRef.FILE_HEADER_MISSING,
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.FILE_HEADER_MISSING,
                                        costReportRecord.toString());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);

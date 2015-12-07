@@ -120,6 +120,8 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
         final String METHOD_NAME = "process";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
+        fileContext.setFileRecordCounter(fileContext.getFileRecordCounter() + 1);
+
         if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FHDR.name())  ||
             costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FTRL.name()))
         {
@@ -173,7 +175,7 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
                 {
                     insertFileErr(validationError.getErrRef().getErrCd(),
                                   validationError.getErrRef().getErrCtgryCd(),
-                                  validationError.getErrMessage());
+                                  validationError.getRecordNbrErrMessage());
 
                     if (!errRefsNotErrors.contains(validationError.getErrRef()))
                         fileContext.setApplicationValid(false);
@@ -273,7 +275,7 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
 
         insertFileErr(validationError.getErrRef().getErrCd(),
                       validationError.getErrRef().getErrCtgryCd(),
-                      validationError.getErrMessage());
+                      validationError.getRecordNbrErrMessage());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }

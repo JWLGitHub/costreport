@@ -2,18 +2,17 @@ package jwl.prp.retiree.costreport.validation.application.header;
 
 import jwl.prp.retiree.costreport.entity.ApplicationHeader;
 import jwl.prp.retiree.costreport.entity.CostReportRecord;
-import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.validation.BaseValidator;
 import jwl.prp.retiree.costreport.validation.FileContext;
 import jwl.prp.retiree.costreport.validation.ValidationError;
 
 /**
- * Created by jwleader on 11/30/15.
+ * Created by jwleader on 12/7/15.
  */
-public class ApplicationHeaderOutOfSequence extends BaseValidator
+public class IncrementApplicationHeaderCounter extends BaseValidator
 {
-    private static String CLASS_NAME  = ApplicationHeaderOutOfSequence.class.getName();
-    private static String SIMPLE_NAME = ApplicationHeaderOutOfSequence.class.getSimpleName();
+    private static String CLASS_NAME  = IncrementApplicationHeaderCounter.class.getName();
+    private static String SIMPLE_NAME = IncrementApplicationHeaderCounter.class.getSimpleName();
 
 
     @Override
@@ -29,12 +28,7 @@ public class ApplicationHeaderOutOfSequence extends BaseValidator
 
         ApplicationHeader applicationHeader = (ApplicationHeader) costReportRecord;
 
-        if (fileContext.getFileHeaderCounter()         != 1                                       ||
-            fileContext.getApplicationHeaderCounter()  != fileContext.getFileApplicationCount()   ||
-            fileContext.getFileTrailerCounter()        != 0)
-            return new ValidationError(fileContext.getFileRecordCounter(),
-                                       ErrRef.APPLICATION_HEADER_OUT_OF_SEQUENCE,
-                                       costReportRecord.toString());
+        fileContext.setApplicationHeaderCounter(fileContext.getApplicationHeaderCounter() + 1);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

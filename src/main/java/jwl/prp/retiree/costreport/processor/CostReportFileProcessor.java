@@ -115,6 +115,8 @@ public class CostReportFileProcessor implements StepExecutionListener,
         final String METHOD_NAME = "process";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
+        fileContext.setFileRecordCounter(fileContext.getFileRecordCounter() + 1);
+
         if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FHDR.name()))
         {
             validateCostReportRecord(costReportRecord,
@@ -171,7 +173,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
                         // *** NOT AN ERROR ***    (BUT . . .  We'll still track it)
                         insertFileErr(validationError.getErrRef().getErrCd(),
                                       validationError.getErrRef().getErrCtgryCd(),
-                                      validationError.getErrMessage());
+                                      validationError.getRecordNbrErrMessage());
                     }
                     else
                         throw new CostReportException(validationError);
@@ -288,7 +290,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
                               ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
                               processText);
             else
-                insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
+                insertFileErr(ErrRef.CRFILE_RECFM_ERROR.getErrCd(),
                               ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
                               processText);
         }
@@ -306,7 +308,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
         insertFileErr(validationError.getErrRef().getErrCd(),
                       validationError.getErrRef().getErrCtgryCd(),
-                      validationError.getErrMessage());
+                      validationError.getRecordNbrErrMessage());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }

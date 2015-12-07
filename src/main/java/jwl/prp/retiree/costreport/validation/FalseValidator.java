@@ -23,7 +23,8 @@ public class FalseValidator extends BaseValidator
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        return new ValidationError(ErrRef.CRFILE_RECFM_ERROR,
+        return new ValidationError(fileContext.getFileRecordCounter(),
+                                   ErrRef.CRFILE_RECFM_ERROR,
                                    SIMPLE_NAME + " " + METHOD_NAME + " - FALSE");
     }
 }

@@ -33,11 +33,9 @@ public class FileHeaderDateFormatValid extends BaseValidator
         FileHeader fileHeader = (FileHeader) costReportRecord;
 
         if (!DateFormatValidator.isDateValid(fileHeader.getSubmitterDate(), MMddyyyy))
-            return new ValidationError(ErrRef.HEADER_DATE_IS_INVALID_DATE_FORMAT,
-                                       "EXPECTED FORMAT: '" +
-                                       MMddyyyy +
-                                       "'. " +
-                                       costReportRecord.toString());
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.HEADER_DATE_IS_INVALID_DATE_FORMAT,
+                                       "EXPECTED FORMAT: '" + MMddyyyy + "'. " + costReportRecord.toString());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

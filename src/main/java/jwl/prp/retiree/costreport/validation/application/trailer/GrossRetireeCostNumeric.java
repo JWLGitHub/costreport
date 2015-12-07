@@ -36,7 +36,8 @@ public class GrossRetireeCostNumeric extends BaseValidator
         }
         catch (NumberFormatException nfe)
         {
-            return new ValidationError(ErrRef.APPLICATION_TRAILER_RET_COST_NON_NUMERIC,
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.APPLICATION_TRAILER_RET_COST_NON_NUMERIC,
                                        applicationTrailer.toString());
         }
 

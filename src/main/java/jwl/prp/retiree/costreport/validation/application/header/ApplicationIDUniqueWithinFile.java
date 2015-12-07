@@ -29,9 +29,9 @@ public class ApplicationIDUniqueWithinFile extends BaseValidator
         ApplicationHeader applicationHeader = (ApplicationHeader) costReportRecord;
 
         if (fileContext.getFileApplicationIDs().contains(applicationHeader.getApplicationID()))
-            return new ValidationError(ErrRef.DUPLICATE_APPLICATION_WITHIN_A_FILE,
-                                       "AHDR Application ID: " +
-                                       applicationHeader.getApplicationID());
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.DUPLICATE_APPLICATION_WITHIN_A_FILE,
+                                       "AHDR Application ID: " + applicationHeader.getApplicationID());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

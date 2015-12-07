@@ -39,16 +39,15 @@ public class GrossRetireeCostCorrect extends BaseValidator
         }
         catch (NumberFormatException nfe)
         {
-            return new ValidationError(ErrRef.FILE_TRAILER_RET_COST_AMOUNT_NON_NUMERI,
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.FILE_TRAILER_RET_COST_AMOUNT_NON_NUMERI,
                                        fileTrailer.toString());
         }
 
         if (grandGrossRetireeCost.subtract(fileContext.getFileGrossRetireeCost()) != ZERO_DOLLARS)
-            return new ValidationError(ErrRef.FILE_TRAILER_RET_COST_AMOUNT_INCORRECT,
-                                       "FTRL Gross Retiree Cost: " +
-                                       grandGrossRetireeCost +
-                                       " Computed Gross Retiree Cost : " +
-                                       fileContext.getFileGrossRetireeCost());
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.FILE_TRAILER_RET_COST_AMOUNT_INCORRECT,
+                                       "FTRL Gross Retiree Cost: " + grandGrossRetireeCost + " Computed Gross Retiree Cost : " + fileContext.getFileGrossRetireeCost());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

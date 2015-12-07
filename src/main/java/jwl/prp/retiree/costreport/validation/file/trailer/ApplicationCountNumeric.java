@@ -36,7 +36,8 @@ public class ApplicationCountNumeric extends BaseValidator
         }
         catch (NumberFormatException nfe)
         {
-            return new ValidationError(ErrRef.FILE_TRAILER_APPLICATION_COUNT_NON_NUMERIC,
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.FILE_TRAILER_APPLICATION_COUNT_NON_NUMERIC,
                                        fileTrailer.toString());
         }
 

@@ -29,11 +29,9 @@ public class ApplicationIDMatchesApplicationHeader extends BaseValidator
         ApplicationTrailer applicationTrailer = (ApplicationTrailer) costReportRecord;
 
         if (!applicationTrailer.getApplicationID().equalsIgnoreCase(fileContext.getApplicationID()))
-            return new ValidationError(ErrRef.UNMATCHED_APPLICATION_ID_IN_ATRL,
-                                       "ATRL Application ID: " +
-                                       applicationTrailer.getApplicationID() +
-                                       " Expected Application ID: " +
-                                       fileContext.getApplicationID());
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.UNMATCHED_APPLICATION_ID_IN_ATRL,
+                                       "ATRL Application ID: " + applicationTrailer.getApplicationID() + " Expected Application ID: " + fileContext.getApplicationID());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

@@ -18,7 +18,7 @@ public class ApplicationsExist extends BaseValidator
 
     @Override
     public ValidationError execute(CostReportRecord costReportRecord,
-                                   FileContext fileContext)
+                                   FileContext      fileContext)
                                    throws Exception
     {
         final String METHOD_NAME = "execute";
@@ -28,9 +28,9 @@ public class ApplicationsExist extends BaseValidator
             throw new RuntimeException(SIMPLE_NAME + " " + METHOD_NAME + " - Validator passed INVALID CostReportRecord Type: " + costReportRecord);
         
         if (fileContext.getFileApplicationCount() == 0)
-            return new ValidationError(ErrRef.CRFILE_CONTAINS_NO_APPLICATIONS,
-                                       "Computed Application Count: " +
-                                       fileContext.getFileApplicationCount());
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.CRFILE_CONTAINS_NO_APPLICATIONS,
+                                       "Computed Application Count: " + fileContext.getFileApplicationCount());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

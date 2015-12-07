@@ -27,7 +27,8 @@ public class FileHeaderOutOfSequence extends BaseValidator
             throw new RuntimeException(SIMPLE_NAME + " " + METHOD_NAME + " - Validator passed INVALID CostReportRecord Type: " + costReportRecord);
 
         if (fileContext.getFileHeaderCounter() != 0)
-            return new ValidationError(ErrRef.FILE_HEADER_OUT_OF_SEQUENCE,
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.FILE_HEADER_OUT_OF_SEQUENCE,
                                        costReportRecord.toString());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);

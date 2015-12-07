@@ -36,7 +36,8 @@ public class ApplicationIDValid extends BaseValidator
         Application application = applicationDAO.findByApplicationId(applicationHeader.getApplicationID());
 
         if (null == application)
-            return new ValidationError(ErrRef.INVALID_APPLICATION_ID_ON_AHDR,
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.INVALID_APPLICATION_ID_ON_AHDR,
                                        applicationHeader.toString());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);

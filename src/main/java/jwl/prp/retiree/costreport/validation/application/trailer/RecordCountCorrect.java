@@ -38,18 +38,15 @@ public class RecordCountCorrect extends BaseValidator
         }
         catch (NumberFormatException nfe)
         {
-            return new ValidationError(ErrRef.APPLICATION_TRAILER_RECORD_COUNT_NON_NUMERIC,
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.APPLICATION_TRAILER_RECORD_COUNT_NON_NUMERIC,
                                        applicationTrailer.toString());
         }
 
         if (recordCount != fileContext.getApplicationRecordCount())
-            return new ValidationError(ErrRef.APPLICATION_TRAILER_RECORD_COUNT_ERROR,
-                                       "Application ID: " +
-                                       applicationTrailer.getApplicationID() +
-                                       " ATRL Record Count: " +
-                                       recordCount +
-                                       " Computed Record Count: " +
-                                       fileContext.getApplicationRecordCount());
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.APPLICATION_TRAILER_RECORD_COUNT_ERROR,
+                                       "Application ID: " + applicationTrailer.getApplicationID() + " ATRL Record Count: " + recordCount + " Computed Record Count: " + fileContext.getApplicationRecordCount());
 
         fileContext.setApplicationRecordCount(0);
 

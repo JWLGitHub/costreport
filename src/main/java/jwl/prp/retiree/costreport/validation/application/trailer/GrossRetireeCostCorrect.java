@@ -40,18 +40,15 @@ public class GrossRetireeCostCorrect extends BaseValidator
         }
         catch (NumberFormatException nfe)
         {
-            return new ValidationError(ErrRef.APPLICATION_TRAILER_RET_COST_NON_NUMERIC,
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.APPLICATION_TRAILER_RET_COST_NON_NUMERIC,
                                        applicationTrailer.toString());
         }
 
         if (totalGrossRetireeCost.subtract(fileContext.getApplicationGrossRetireeCost()) != ZERO_DOLLARS)
-            return new ValidationError(ErrRef.APPLICATION_TRAILER_RET_COST_INCORRECT,
-                                       "Application ID: " +
-                                       applicationTrailer.getApplicationID() +
-                                       " ATRL Gross Retiree Cost: " +
-                                       totalGrossRetireeCost +
-                                       " Computed Gross Retiree Cost : " +
-                                       fileContext.getApplicationGrossRetireeCost());
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.APPLICATION_TRAILER_RET_COST_INCORRECT,
+                                       "Application ID: " + applicationTrailer.getApplicationID() + " ATRL Gross Retiree Cost: " + totalGrossRetireeCost + " Computed Gross Retiree Cost : " + fileContext.getApplicationGrossRetireeCost());
 
         fileContext.setFileGrossRetireeCost(fileContext.getFileGrossRetireeCost().add(totalGrossRetireeCost));
         fileContext.setApplicationGrossRetireeCost(new BigDecimal("0"));

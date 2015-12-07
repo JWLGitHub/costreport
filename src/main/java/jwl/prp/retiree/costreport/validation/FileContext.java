@@ -14,6 +14,7 @@ public class FileContext
     /*
      *---   FILE VARIABLES
      */
+    private int               fileRecordCounter;
     private int               fileHeaderCounter;
     private int               fileApplicationCount;
     private ArrayList<String> fileApplicationIDs   = new ArrayList<String>();
@@ -62,6 +63,8 @@ public class FileContext
      */
 
     // --- FILE ---
+    public int getFileRecordCounter() { return fileRecordCounter; }
+
     public int getFileHeaderCounter() { return fileHeaderCounter; }
 
     public int getFileApplicationCount() { return fileApplicationCount; }
@@ -91,6 +94,8 @@ public class FileContext
      */
 
     // --- FILE ---
+    public void setFileRecordCounter(int fileRecordCounter) { this.fileRecordCounter = fileRecordCounter; }
+
     public void setFileHeaderCounter(int fileHeaderCounter) { this.fileHeaderCounter = fileHeaderCounter; }
 
     public void setFileApplicationCount(int fileApplicationCount) { this.fileApplicationCount = fileApplicationCount; }

@@ -34,11 +34,9 @@ public class RXCostYearMonthFormatValid extends BaseValidator
         ApplicationDetail applicationDetail = (ApplicationDetail) costReportRecord;
 
         if (!DateFormatValidator.isDateValid(applicationDetail.getRxCostYearMonth(), yyyyMM))
-            return new ValidationError(ErrRef.APPLICATION_DETAIL_DATE_IS_INVALID,
-                                       "EXPECTED FORMAT: '" +
-                                       yyyyMM +
-                                       "'. " +
-                                       costReportRecord.toString());
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.APPLICATION_DETAIL_DATE_IS_INVALID,
+                                       "EXPECTED FORMAT: '" + yyyyMM + "'. " + costReportRecord.toString());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

@@ -37,20 +37,16 @@ public class UniqueBenefitOptionIdentifierCorrect extends BaseValidator
                                                                                 applicationDetail.getUniqueBenefitOptionIdentifier());
 
         if (null == planOptions)
-            return new ValidationError(ErrRef.INVALID_UBOI_ON_DETL,
-                                       "Application ID: " +
-                                       fileContext.getApplicationID() +
-                                       " Unique Benefit Option ID: " +
-                                       applicationDetail.getUniqueBenefitOptionIdentifier());
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.INVALID_UBOI_ON_DETL,
+                                       "Application ID: " + fileContext.getApplicationID() + " Unique Benefit Option ID: " + applicationDetail.getUniqueBenefitOptionIdentifier());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         // *** NOT AN ERROR ***    (BUT . . .  We'll still track it)
-        return new ValidationError(ErrRef.RX_GROUP_NUMBER_NOT_AN_ERR,
-                                   "Application ID: " +
-                                   fileContext.getApplicationID() +
-                                   " Unique Benefit Option ID: " +
-                                   applicationDetail.getUniqueBenefitOptionIdentifier());
+        return new ValidationError(fileContext.getFileRecordCounter(),
+                                   ErrRef.RX_GROUP_NUMBER_NOT_AN_ERR,
+                                   "Application ID: " + fileContext.getApplicationID() + " Unique Benefit Option ID: " + applicationDetail.getUniqueBenefitOptionIdentifier());
     }
 
 

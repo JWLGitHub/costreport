@@ -93,8 +93,8 @@
     <!--        READER(s)        -->
     <!--                         -->
 
-    <!-- RDS file Item Reader -->
-    <bean id="costReportItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
+    <!-- Cost Report File Reader -->
+    <bean id="costReportFileReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
         <property name="resource"   value="file:#{jobParameters['inputFilePath']}" />
         <property name="lineMapper" ref="costReportLineMapper"/>
     </bean>
@@ -210,7 +210,7 @@
             <list>
                 <ref bean="fileHeaderMissing"/>
                 <ref bean="applicationHeaderOutOfSequence"/>
-                <ref bean="setApplicationHeaderVariables"/>
+                <ref bean="incrementApplicationHeaderCounter"/>
             </list>
         </property>
 
@@ -327,6 +327,8 @@
         <property name="applicationDAO"  ref="applicationDAO"/>
     </bean>
     <bean id="applicationIDUniqueWithinFile"         class="jwl.prp.retiree.costreport.validation.application.header.ApplicationIDUniqueWithinFile"/>
+
+    <bean id="incrementApplicationHeaderCounter"     class="jwl.prp.retiree.costreport.validation.application.header.IncrementApplicationHeaderCounter"/>
     <bean id="setApplicationHeaderVariables"         class="jwl.prp.retiree.costreport.validation.application.header.SetApplicationHeaderVariables"/>
 
     <!-- Application Detail Validator(s) -->

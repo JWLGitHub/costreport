@@ -38,16 +38,15 @@ public class ApplicationCountCorrect extends BaseValidator
         }
         catch (NumberFormatException nfe)
         {
-            return new ValidationError(ErrRef.FILE_TRAILER_APPLICATION_COUNT_NON_NUMERIC,
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.FILE_TRAILER_APPLICATION_COUNT_NON_NUMERIC,
                                        fileTrailer.toString());
         }
 
         if (applicationCount != fileContext.getFileApplicationCount())
-            return new ValidationError(ErrRef.FILE_TRAILER_APPLICATION_COUNT_INCORRECT,
-                                       "FTRL Application Count: " +
-                                       applicationCount +
-                                       " Computed Application Count: " +
-                                       fileContext.getFileApplicationCount());
+            return new ValidationError(fileContext.getFileRecordCounter(),
+                                       ErrRef.FILE_TRAILER_APPLICATION_COUNT_INCORRECT,
+                                       "FTRL Application Count: " + applicationCount + " Computed Application Count: " + fileContext.getFileApplicationCount());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

@@ -32,7 +32,7 @@
         <!--
         <step id="importFile">
             <tasklet>
-                <chunk reader="costReportItemReader"
+                <chunk reader="costReportFileReader"
                        processor="costReportItemProcessor"
                        writer="costReportItemWriter"
                        commit-interval="3"
@@ -52,7 +52,7 @@
 
         <step id="importFileFirstPass">
             <tasklet>
-                <chunk reader="costReportItemReader"
+                <chunk reader="costReportFileReader"
                        processor="costReportFileProcessor"
                        writer="dummyItemWriter"
                        commit-interval="1" >
@@ -69,7 +69,7 @@
 
         <step id="importFileSecondPass">
             <tasklet>
-                <chunk reader="costReportItemReader"
+                <chunk reader="costReportFileReader"
                        processor="costReportApplicationProcessor"
                        writer="databaseItemWriter"
                        commit-interval="1" >
