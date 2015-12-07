@@ -5,11 +5,21 @@ import jwl.prp.retiree.costreport.entity.CostReportRecord;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 public class FileContext
 {
+    private static String CLASS_NAME  = FileContext.class.getName();
+    private static String SIMPLE_NAME = FileContext.class.getSimpleName();
+
+    public static final String       RDS_FILE_ID = "rdsFileId";
+
+    public static final List<String> VALID_RECORD_TYPES = Arrays.asList("FHDR", "AHDR", "DETL", "ATRL", "FTRL");
+
+    public static final int          COST_REPORT_RECORD_LENGTH = 110;
+
 
     /*
      *---   FILE VARIABLES
@@ -20,6 +30,7 @@ public class FileContext
     private ArrayList<String> fileApplicationIDs   = new ArrayList<String>();
     private BigDecimal        fileGrossRetireeCost = new BigDecimal("0");
     private int               fileTrailerCounter;
+    private int               fileErrSeqNum;
 
 
     /*
@@ -75,6 +86,8 @@ public class FileContext
 
     public int getFileTrailerCounter() { return fileTrailerCounter; }
 
+    public int getFileErrSeqNum() { return fileErrSeqNum; }
+
     // --- APPLICATION ---
     public boolean isApplicationValid() { return applicationValid; }
 
@@ -105,6 +118,8 @@ public class FileContext
     public void setFileGrossRetireeCost(BigDecimal fileGrossRetireeCost) { this.fileGrossRetireeCost = fileGrossRetireeCost; }
 
     public void setFileTrailerCounter(int fileTrailerCounter) { this.fileTrailerCounter = fileTrailerCounter; }
+
+    public void setFileErrSeqNum(int fileErrSeqNum) { this.fileErrSeqNum = fileErrSeqNum; }
 
     // --- APPLICATION ---
     public void setApplicationValid(boolean applicationValid) { this.applicationValid = applicationValid; }

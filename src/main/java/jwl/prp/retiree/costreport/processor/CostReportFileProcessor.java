@@ -32,14 +32,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
     private RDSFileDAO rdsFileDAO;
     private FileErrDAO fileErrDAO;
 
-    private static final String RDS_FILE_ID = "rdsFileId";
-
-    private static final List<String> VALID_RECORD_TYPES = Arrays.asList("FHDR", "AHDR", "DETL", "ATRL", "FTRL");
-
-    private static final int COST_REPORT_RECORD_LENGTH = 110;
-
-    private int fileErrSeqNum;
-
     private FileContext fileContext = new FileContext();
 
 
@@ -92,10 +84,10 @@ public class CostReportFileProcessor implements StepExecutionListener,
         final String METHOD_NAME = "getRdsFileId";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        Object rdsFileId = stepExecution.getJobExecution().getExecutionContext().get(RDS_FILE_ID);
+        Object rdsFileId = stepExecution.getJobExecution().getExecutionContext().get(FileContext.RDS_FILE_ID);
         if (null == rdsFileId ||
             rdsFileId.toString().equalsIgnoreCase(""))
-            throw new RuntimeException("'" + RDS_FILE_ID + "' MISSING from jobExecutionContext");
+            throw new RuntimeException("'" + FileContext.RDS_FILE_ID + "' MISSING from jobExecutionContext");
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
@@ -210,12 +202,12 @@ public class CostReportFileProcessor implements StepExecutionListener,
         final String METHOD_NAME = "insertFileErr";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        fileErrSeqNum++;
+        fileContext.setFileErrSeqNum(fileContext.getFileErrSeqNum() + 1);
 
         FileErr fileErr = new FileErr(this.rdsFileId,
                                       errCd,
                                       errCtgryCd,
-                                      fileErrSeqNum,
+                                      fileContext.getFileErrSeqNum(),
                                       errInfo);
 
         fileErrDAO.insertFileErr(fileErr);
@@ -277,7 +269,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
         String processText = "Record No.: " + flatFileParseException.getLineNumber() +
                              " Record Layout: " + flatFileParseException.getInput();
 
-        if (flatFileParseException.getInput().length() != COST_REPORT_RECORD_LENGTH)
+        if (flatFileParseException.getInput().length() != FileContext.COST_REPORT_RECORD_LENGTH)
             insertFileErr(ErrRef.CRFILE_READ_ERROR.getErrCd(),
                           ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
                           processText);
@@ -285,7 +277,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
         {
             String inputRecordType = flatFileParseException.getInput().substring(0, 4);
             System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - InputRecordType: " + inputRecordType);
-            if (!VALID_RECORD_TYPES.contains(inputRecordType))
+            if (!FileContext.VALID_RECORD_TYPES.contains(inputRecordType))
                 insertFileErr(ErrRef.CRFILE_BAD_RECORD_TYPE.getErrCd(),
                               ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
                               processText);

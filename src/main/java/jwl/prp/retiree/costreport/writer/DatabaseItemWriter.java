@@ -9,6 +9,7 @@ import jwl.prp.retiree.costreport.entity.RDSFile;
 import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
 
+import jwl.prp.retiree.costreport.validation.FileContext;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
@@ -24,8 +25,6 @@ public class DatabaseItemWriter implements StepExecutionListener,
 {
     private static String CLASS_NAME  = DatabaseItemWriter.class.getName();
     private static String SIMPLE_NAME = DatabaseItemWriter.class.getSimpleName();
-
-    private static final String RDS_FILE_ID = "rdsFileId";
 
     private RDSFileDAO          rdsFileDAO;
     private CostReportImportDAO costReportImportDAO;
@@ -58,12 +57,12 @@ public class DatabaseItemWriter implements StepExecutionListener,
         final String METHOD_NAME = "getRdsFileId";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        Object rdsFileId = stepExecution.getJobExecution().getExecutionContext().get(RDS_FILE_ID);
+        Object rdsFileId = stepExecution.getJobExecution().getExecutionContext().get(FileContext.RDS_FILE_ID);
         if (null == rdsFileId  ||
             rdsFileId.toString().equalsIgnoreCase(""))
         {
-            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + RDS_FILE_ID + ": MISSING");
-            throw new RuntimeException("'" + RDS_FILE_ID + "' MISSING from jobExecutionContext");
+            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + FileContext.RDS_FILE_ID + ": MISSING");
+            throw new RuntimeException("'" + FileContext.RDS_FILE_ID + "' MISSING from jobExecutionContext");
         }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);

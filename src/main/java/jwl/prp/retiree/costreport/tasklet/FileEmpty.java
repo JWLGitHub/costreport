@@ -10,6 +10,7 @@ import jwl.prp.retiree.costreport.enums.ErrCtgRef;
 import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
+import jwl.prp.retiree.costreport.validation.FileContext;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
@@ -36,8 +37,6 @@ public class FileEmpty implements Tasklet
     private StepExecution     stepExecution;
 
     private String            inputFilePath;
-
-    private static final String RDS_FILE_ID = "rdsFileId";
 
     private RDSFileDAO        rdsFileDAO;
     private FileErrDAO        fileErrDAO;
@@ -77,12 +76,12 @@ public class FileEmpty implements Tasklet
         final String METHOD_NAME = "getRdsFileId";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        Object rdsFileId = jobExecutionContext.get(RDS_FILE_ID);
+        Object rdsFileId = jobExecutionContext.get(FileContext.RDS_FILE_ID);
         if (null == rdsFileId  ||
             rdsFileId.toString().equalsIgnoreCase(""))
         {
-            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + RDS_FILE_ID + ": MISSING");
-            throw new RuntimeException("'" + RDS_FILE_ID + "' MISSING from jobExecutionContext");
+            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + FileContext.RDS_FILE_ID + ": MISSING");
+            throw new RuntimeException("'" + FileContext.RDS_FILE_ID + "' MISSING from jobExecutionContext");
         }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);

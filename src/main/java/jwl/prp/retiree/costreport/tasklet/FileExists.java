@@ -12,6 +12,7 @@ import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
 
+import jwl.prp.retiree.costreport.validation.FileContext;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -32,8 +33,6 @@ public class FileExists implements Tasklet
     private ExecutionContext   stepExecutionContext;
 
     private String  inputFilePath;
-
-    private static final String RDS_FILE_ID = "rdsFileId";
 
     private RDSFileDAO rdsFileDAO;
     private FileErrDAO fileErrDAO;
@@ -144,7 +143,7 @@ public class FileExists implements Tasklet
         final String METHOD_NAME = "saveRdsFileIdToStepExecution";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        stepExecutionContext.put(RDS_FILE_ID, String.valueOf(rdsFileId));
+        stepExecutionContext.put(FileContext.RDS_FILE_ID, String.valueOf(rdsFileId));
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
