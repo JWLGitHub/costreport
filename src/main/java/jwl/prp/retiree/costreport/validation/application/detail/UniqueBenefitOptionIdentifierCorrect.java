@@ -33,20 +33,20 @@ public class UniqueBenefitOptionIdentifierCorrect extends BaseValidator
 
         ApplicationDetail applicationDetail = (ApplicationDetail) costReportRecord;
 
-        PlanOptions planOptions = planOptionsDAO.findByApplicationIdGroupNumber(fileContext.getApplicationID(),
+        PlanOptions planOptions = planOptionsDAO.findByApplicationIdGroupNumber(fileContext.getValidApplicationID(),
                                                                                 applicationDetail.getUniqueBenefitOptionIdentifier());
 
         if (null == planOptions)
             return new ValidationError(fileContext.getFileRecordCounter(),
                                        ErrRef.INVALID_UBOI_ON_DETL,
-                                       "Application ID: " + fileContext.getApplicationID() + " Unique Benefit Option ID: " + applicationDetail.getUniqueBenefitOptionIdentifier());
+                                       "Application ID: " + fileContext.getValidApplicationID() + " Unique Benefit Option ID: " + applicationDetail.getUniqueBenefitOptionIdentifier());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         // *** NOT AN ERROR ***    (BUT . . .  We'll still track it)
         return new ValidationError(fileContext.getFileRecordCounter(),
                                    ErrRef.RX_GROUP_NUMBER_NOT_AN_ERR,
-                                   "Application ID: " + fileContext.getApplicationID() + " Unique Benefit Option ID: " + applicationDetail.getUniqueBenefitOptionIdentifier());
+                                   "Application ID: " + fileContext.getValidApplicationID() + " Unique Benefit Option ID: " + applicationDetail.getUniqueBenefitOptionIdentifier());
     }
 
 

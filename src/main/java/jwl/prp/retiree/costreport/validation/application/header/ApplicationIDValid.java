@@ -33,12 +33,18 @@ public class ApplicationIDValid extends BaseValidator
             throw new RuntimeException(SIMPLE_NAME + " " + METHOD_NAME + " - Validator passed INVALID CostReportRecord Type: " + costReportRecord);
 
         ApplicationHeader applicationHeader = (ApplicationHeader) costReportRecord;
+        fileContext.setApplicationHeaderApplicationID(applicationHeader.getApplicationID());
         Application application = applicationDAO.findByApplicationId(applicationHeader.getApplicationID());
 
         if (null == application)
+        {
+            fileContext.setValidApplicationID(null);
             return new ValidationError(fileContext.getFileRecordCounter(),
                                        ErrRef.INVALID_APPLICATION_ID_ON_AHDR,
                                        applicationHeader.toString());
+        }
+        else
+            fileContext.setValidApplicationID(applicationHeader.getApplicationID());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

@@ -26,6 +26,7 @@ public class FileContext
      */
     private int               fileRecordCounter;
     private int               fileHeaderCounter;
+    private String            fileSubmitterID;
     private int               fileApplicationCount;
     private ArrayList<String> fileApplicationIDs   = new ArrayList<String>();
     private BigDecimal        fileGrossRetireeCost = new BigDecimal("0");
@@ -37,12 +38,14 @@ public class FileContext
      *---   APPLICATION VARIABLES
      */
 
-    private List<CostReportRecord> applicationRecords = new ArrayList<CostReportRecord>();
     private boolean    applicationValid;
+    private int        applSeqNum;
+    private List<CostReportRecord> applicationRecords = new ArrayList<CostReportRecord>();
 
     // --- HEADER ---
     private int        applicationHeaderCounter;
-    private String     applicationID;
+    private String     applicationHeaderApplicationID;
+    private String     validApplicationID;
 
     // --- TRAILER ---
     private int        applicationRecordCount;
@@ -61,7 +64,6 @@ public class FileContext
 
     public void setApplicationHeaderVariables(String applicationID)
     {
-        setApplicationID(applicationID);
         addFileApplicationID(applicationID);
         setApplicationValid(true);
         setApplicationRecords(new ArrayList<CostReportRecord>());
@@ -77,6 +79,8 @@ public class FileContext
 
     public int getFileHeaderCounter() { return fileHeaderCounter; }
 
+    public String getFileSubmitterID() { return fileSubmitterID; }
+
     public int getFileApplicationCount() { return fileApplicationCount; }
 
     public ArrayList<String> getFileApplicationIDs() { return fileApplicationIDs; }
@@ -90,11 +94,15 @@ public class FileContext
     // --- APPLICATION ---
     public boolean isApplicationValid() { return applicationValid; }
 
+    public int getApplSeqNum() { return applSeqNum; }
+
     public List<CostReportRecord> getApplicationRecords() { return applicationRecords; }
 
     public int getApplicationHeaderCounter() { return applicationHeaderCounter; }
 
-    public String getApplicationID() { return applicationID; }
+    public String getApplicationHeaderApplicationID() { return applicationHeaderApplicationID; }
+
+    public String getValidApplicationID() { return validApplicationID; }
 
     public int getApplicationRecordCount() { return applicationRecordCount; }
 
@@ -110,6 +118,8 @@ public class FileContext
 
     public void setFileHeaderCounter(int fileHeaderCounter) { this.fileHeaderCounter = fileHeaderCounter; }
 
+    public void setFileSubmitterID(String fileSubmitterID) { this.fileSubmitterID = fileSubmitterID; }
+
     public void setFileApplicationCount(int fileApplicationCount) { this.fileApplicationCount = fileApplicationCount; }
 
     public void setFileApplicationIDs(ArrayList<String> fileApplicationIDs) { this.fileApplicationIDs = fileApplicationIDs; }
@@ -123,11 +133,15 @@ public class FileContext
     // --- APPLICATION ---
     public void setApplicationValid(boolean applicationValid) { this.applicationValid = applicationValid; }
 
+    public void setApplSeqNum(int applSeqNum) { this.applSeqNum = applSeqNum; }
+
     public void setApplicationRecords(List<CostReportRecord> applicationRecords) { this.applicationRecords = applicationRecords; }
 
     public void setApplicationHeaderCounter(int applicationHeaderCounter) { this.applicationHeaderCounter = applicationHeaderCounter; }
 
-    public void setApplicationID(String applicationID) { this.applicationID = applicationID; }
+    public void setApplicationHeaderApplicationID(String applicationHeaderApplicationID) { this.applicationHeaderApplicationID = applicationHeaderApplicationID; }
+
+    public void setValidApplicationID(String validApplicationID) { this.validApplicationID = validApplicationID; }
 
     public void setApplicationRecordCount(int applicationRecordCount) { this.applicationRecordCount = applicationRecordCount; }
 

@@ -254,10 +254,12 @@
 
         <property name="rdsFileDAO"         ref="rdsFileDAO"/>
         <property name="fileErrDAO"         ref="fileErrDAO"/>
+        <property name="fileApplDAO"        ref="fileApplDAO"/>
 
         <!-- file header Validator(s) -->
         <property name="fileHeaderValidators">
             <list>
+                <ref bean="setFileSubmitterID"/>
             </list>
         </property>
 
@@ -317,6 +319,7 @@
     <!-- File Header Validator(s) -->
     <bean id="fileHeaderMissing"                     class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderMissing"/>
     <bean id="fileHeaderOutOfSequence"               class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderOutOfSequence"/>
+    <bean id="setFileSubmitterID"                    class="jwl.prp.retiree.costreport.validation.file.header.SetFileSubmitterID"/>
     <bean id="fileHeaderDateFormatValid"             class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderDateFormatValid"/>
     <bean id="fileHeaderTimeFormatValid"             class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderTimeFormatValid"/>
     <bean id="incrementFileHeaderCounter"            class="jwl.prp.retiree.costreport.validation.file.header.IncrementFileHeaderCounter"/>
@@ -411,6 +414,10 @@
     </bean>
 
     <bean id="planOptionsDAO" class="jwl.prp.retiree.costreport.dao.PlanOptionsDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="fileApplDAO" class="jwl.prp.retiree.costreport.dao.FileApplDAO">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
     </bean>
 
