@@ -24,6 +24,7 @@ public class FileContext
     /*
      *---   FILE VARIABLES
      */
+    private int               rdsFileId;
     private int               fileRecordCounter;
     private int               fileHeaderCounter;
     private String            fileSubmitterID;
@@ -75,6 +76,8 @@ public class FileContext
      */
 
     // --- FILE ---
+    public int getRdsFileId() { return rdsFileId; }
+
     public int getFileRecordCounter() { return fileRecordCounter; }
 
     public int getFileHeaderCounter() { return fileHeaderCounter; }
@@ -114,6 +117,8 @@ public class FileContext
      */
 
     // --- FILE ---
+    public void setRdsFileId(int rdsFileId) { this.rdsFileId = rdsFileId; }
+
     public void setFileRecordCounter(int fileRecordCounter) { this.fileRecordCounter = fileRecordCounter; }
 
     public void setFileHeaderCounter(int fileHeaderCounter) { this.fileHeaderCounter = fileHeaderCounter; }

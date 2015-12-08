@@ -9,6 +9,7 @@ public enum StusRef
     ACCEPTED                            (StusCtgry.APPLICATION_STATUS.getStusCtgryCd(),  "AA", "Accepted"),
     APPLICATION_DELETED                 (StusCtgry.APPLICATION_STATUS.getStusCtgryCd(),  "AD", "application deleted"),
     REJECTED_FILE                       (StusCtgry.APPLICATION_STATUS.getStusCtgryCd(),  "AF", "Rejected (file)"),
+    PROCESSING                          (StusCtgry.APPLICATION_STATUS.getStusCtgryCd(),  "AP", "Processing"),
     REJECTED                            (StusCtgry.APPLICATION_STATUS.getStusCtgryCd(),  "AR", "Rejected"),
     ACTIVE                              (StusCtgry.BENEFICIARY_STATUS.getStusCtgryCd(),  "AC", "Active"),
     DELETED                             (StusCtgry.BENEFICIARY_STATUS.getStusCtgryCd(),  "DL", "Deleted"),

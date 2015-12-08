@@ -252,9 +252,10 @@
     <!-- Cost Report Application Processor -->
     <bean id="costReportApplicationProcessor" class="jwl.prp.retiree.costreport.processor.CostReportApplicationProcessor" >
 
-        <property name="rdsFileDAO"         ref="rdsFileDAO"/>
-        <property name="fileErrDAO"         ref="fileErrDAO"/>
-        <property name="fileApplDAO"        ref="fileApplDAO"/>
+        <property name="rdsFileDAO"       ref="rdsFileDAO"/>
+        <property name="fileErrDAO"       ref="fileErrDAO"/>
+        <property name="fileApplDAO"      ref="fileApplDAO"/>
+        <property name="applErrDAO"       ref="applErrDAO"/>
 
         <!-- file header Validator(s) -->
         <property name="fileHeaderValidators">
@@ -418,6 +419,10 @@
     </bean>
 
     <bean id="fileApplDAO" class="jwl.prp.retiree.costreport.dao.FileApplDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="applErrDAO" class="jwl.prp.retiree.costreport.dao.ApplErrDAO">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
     </bean>
 
