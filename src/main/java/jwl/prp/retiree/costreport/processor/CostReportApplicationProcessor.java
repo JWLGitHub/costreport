@@ -134,13 +134,13 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
 
             if (fileContext.isApplicationValid())
             {
-                insertFileAppl(StusRef.ACCEPTED.getStusCtgryCd(),
+                insertFileAppl(StusRef.ACCEPTED,
                                fileContext.getValidApplicationID());
 
                 return fileContext.getApplicationRecords();
             }
             else
-                insertFileAppl(StusRef.REJECTED.getStusCtgryCd(),
+                insertFileAppl(StusRef.REJECTED,
                                null);
         }
         else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FTRL.name()))
@@ -232,8 +232,8 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
     }
 
 
-    private void insertFileAppl(String stusCd,
-                                String applId)
+    private void insertFileAppl(StusRef stusRef,
+                                String  applId)
     {
         final String METHOD_NAME = "insertFileAppl";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -248,8 +248,8 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
                                          null,
                                          new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()),
                                          SIMPLE_NAME,
-                                         StusCtgry.APPLICATION_STATUS.getStusCtgryCd(),
-                                         stusCd,
+                                         stusRef.getStusCtgryCd(),
+                                         stusRef.getStusCd(),
                                          applId);
 
         fileApplDAO.insertFileAppl(fileAppl);
