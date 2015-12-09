@@ -252,10 +252,9 @@
     <!-- Cost Report Application Processor -->
     <bean id="costReportApplicationProcessor" class="jwl.prp.retiree.costreport.processor.CostReportApplicationProcessor" >
 
-        <property name="rdsFileDAO"       ref="rdsFileDAO"/>
-        <property name="fileErrDAO"       ref="fileErrDAO"/>
-        <property name="fileApplDAO"      ref="fileApplDAO"/>
-        <property name="applErrDAO"       ref="applErrDAO"/>
+        <property name="rdsFileDAO"    ref="rdsFileDAO"/>
+        <property name="fileApplDAO"   ref="fileApplDAO"/>
+        <property name="applErrDAO"    ref="applErrDAO"/>
 
         <!-- file header Validator(s) -->
         <property name="fileHeaderValidators">
@@ -267,6 +266,7 @@
         <!-- application header Validator(s) -->
         <property name="applicationHeaderValidators">
             <list>
+                <ref bean="setApplicationErrorSeqNum"/>
                 <ref bean="applicationIDValid"/>
                 <ref bean="applicationIDUniqueWithinFile"/>
                 <ref bean="setApplicationHeaderVariables"/>
@@ -327,6 +327,7 @@
 
     <!-- Application Header Validator(s) -->
     <bean id="applicationHeaderOutOfSequence"        class="jwl.prp.retiree.costreport.validation.application.header.ApplicationHeaderOutOfSequence"/>
+    <bean id="setApplicationErrorSeqNum"             class="jwl.prp.retiree.costreport.validation.application.header.SetApplicationErrorSeqNum"/>
     <bean id="applicationIDValid"                    class="jwl.prp.retiree.costreport.validation.application.header.ApplicationIDValid">
         <property name="applicationDAO"  ref="applicationDAO"/>
     </bean>

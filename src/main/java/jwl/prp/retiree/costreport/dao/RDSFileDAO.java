@@ -73,6 +73,28 @@ public class RDSFileDAO
                 "WHERE " + RDS_FILE_ID + " ";
     }
 
+    protected String getUpdateString()
+    {
+        return "UPDATE " + RDS_FILE_TABLE_NAME + " SET " +
+                "FILE_DIR_CD = ?, " +
+                "FILE_TYPE_CD = ?, " +
+                "FILE_DT_TM = ?, " +
+                "FILE_NAME = ?, " +
+                "FILE_DESC_TXT = ?, " +
+                "SUBM_ORG_ID = ?, " +
+                "ORG_TYP_CD = ?, " +
+                "ORG_ID = ?, " +
+                "STUS_CTGRY_CD = ?, " +
+                "STUS_CD = ?, " +
+                "STUS_TS = ?, " +
+                "STUS_PGM = ?, " +
+                "UPTD_PGM = ?, " +
+                "UPDT_TS = ?, " +
+                "PROCESS_DT = ?, " +
+                "RECEIPT_DT = ? " +
+                "WHERE " + RDS_FILE_ID + " = ?";
+    }
+
     protected String getDeleteString()
     {
         return "DELETE FROM " + RDS_FILE_TABLE_NAME + " WHERE " + RDS_FILE_ID + " ";
@@ -129,27 +151,7 @@ public class RDSFileDAO
         final String METHOD_NAME = "updateRDSFile";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        String updateSQL =
-                "UPDATE " + RDS_FILE_TABLE_NAME + " SET " +
-                "FILE_DIR_CD = ?, " +
-                "FILE_TYPE_CD = ?, " +
-                "FILE_DT_TM = ?, " +
-                "FILE_NAME = ?, " +
-                "FILE_DESC_TXT = ?, " +
-                "SUBM_ORG_ID = ?, " +
-                "ORG_TYP_CD = ?, " +
-                "ORG_ID = ?, " +
-                "STUS_CTGRY_CD = ?, " +
-                "STUS_CD = ?, " +
-                "STUS_TS = ?, " +
-                "STUS_PGM = ?, " +
-                "UPTD_PGM = ?, " +
-                "UPDT_TS = ?, " +
-                "PROCESS_DT = ?, " +
-                "RECEIPT_DT = ? " +
-                "WHERE " + RDS_FILE_ID + " = ?";
-
-        jdbcTemplate.update(updateSQL,
+        jdbcTemplate.update(getUpdateString(),
                             rdsFile.getFileDirCd(),
                             rdsFile.getFileTypeCd(),
                             rdsFile.getFileDtTm(),

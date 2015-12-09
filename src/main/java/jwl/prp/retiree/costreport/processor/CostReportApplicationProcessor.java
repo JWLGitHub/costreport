@@ -1,7 +1,6 @@
 package jwl.prp.retiree.costreport.processor;
 
 
-import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing;
 import jwl.prp.retiree.costreport.dao.ApplErrDAO;
 import jwl.prp.retiree.costreport.dao.FileApplDAO;
 import jwl.prp.retiree.costreport.dao.FileErrDAO;
@@ -10,7 +9,6 @@ import jwl.prp.retiree.costreport.entity.*;
 import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
-import jwl.prp.retiree.costreport.exception.CostReportException;
 import jwl.prp.retiree.costreport.validation.BaseValidator;
 import jwl.prp.retiree.costreport.validation.FileContext;
 import jwl.prp.retiree.costreport.validation.ValidationError;
@@ -32,7 +30,6 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
     private static String SIMPLE_NAME = CostReportApplicationProcessor.class.getSimpleName();
 
     private RDSFileDAO  rdsFileDAO;
-    private FileErrDAO  fileErrDAO;
     private FileApplDAO fileApplDAO;
     private ApplErrDAO  applErrDAO;
 
@@ -117,11 +114,11 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
                                      fileHeaderValidators);
         else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.AHDR.name()))
         {
+            insertFileAppl(StusRef.PROCESSING,
+                           (ApplicationHeader) costReportRecord);
+
             validateCostReportRecord(costReportRecord,
                                      applicationHeaderValidators);
-
-            insertFileAppl(StusRef.PROCESSING,
-                           fileContext.getValidApplicationID());
         }
         else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.DETL.name()))
         {
@@ -173,7 +170,8 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
 
                 if (null != validationError)
                 {
-                    insertFileErr(validationError);
+                    insertApplErr(validationError,
+                                  costReportRecord);
 
                     if (!errRefsNotErrors.contains(validationError.getErrRef()))
                     {
@@ -209,27 +207,8 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
     }
 
 
-    private void insertFileErr(ValidationError validationError)
-    {
-        final String METHOD_NAME = "insertFileErr";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        fileContext.setFileErrSeqNum(fileContext.getFileErrSeqNum() +1);
-
-        FileErr fileErr = new FileErr(fileContext.getRdsFileId(),
-                                      validationError.getErrRef().getErrCd(),
-                                      validationError.getErrRef().getErrCtgryCd(),
-                                      fileContext.getFileErrSeqNum(),
-                                      validationError.getRecordNbrErrMessage());
-
-        fileErrDAO.insertFileErr(fileErr);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    private void insertFileAppl(StusRef stusRef,
-                                String  applId)
+    private void insertFileAppl(StusRef           stusRef,
+                                ApplicationHeader applicationHeader)
     {
         final String METHOD_NAME = "insertFileAppl";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -238,7 +217,7 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
 
         FileAppl fileAppl = new FileAppl(fileContext.getRdsFileId(),
                                          fileContext.getApplSeqNum(),
-                                         fileContext.getApplicationHeaderApplicationID(),
+                                         applicationHeader.getApplicationID(),
                                          fileContext.getFileSubmitterID(),
                                          null,
                                          null,
@@ -246,7 +225,7 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
                                          SIMPLE_NAME,
                                          stusRef.getStusCtgryCd(),
                                          stusRef.getStusCd(),
-                                         applId);
+                                         null);
 
         fileApplDAO.insertFileAppl(fileAppl);
 
@@ -254,24 +233,61 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
     }
 
 
-    private void insertApplErr(ValidationError validationError)
+    private void updateFileAppl(StusRef fileStatus)
+    {
+        final String METHOD_NAME = "updateFileAppl";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        FileAppl fileAppl = fileApplDAO.findByFileIdApplSeqNum(fileContext.getRdsFileId(),
+                                                               fileContext.getApplSeqNum());
+
+        fileAppl.setStusCd(fileStatus.getStusCd());
+        fileAppl.setStusTs(new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
+        fileAppl.setStusPgm(SIMPLE_NAME);
+        fileAppl.setApplId(fileContext.getValidApplicationID());
+        fileApplDAO.updateFileAppl(fileAppl);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+    }
+
+
+    private void insertApplErr(ValidationError  validationError,
+                               CostReportRecord costReportRecord)
     {
         final String METHOD_NAME = "insertApplErr";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        fileContext.setApplSeqNum(fileContext.getApplSeqNum() + 1);
+        fileContext.setApplErrSeqNum(fileContext.getApplErrSeqNum() + 1);
 
-        ApplErr applErr = new ApplErr(fileContext.getRdsFileId(),
-                                      fileContext.getApplSeqNum(),
-                                      validationError.getErrRef().getErrCtgryCd(),
-                                      validationError.getErrRef().getErrCd(),
-                                      int     errSeqNum,
-                                      int     costYearNum,
-                                      int     costMnthNum,
-                                      String  rxGrpNum,
-                                      validationError.getRecordNbrErrMessage());
+        ApplErr applErr;
 
-        fileApplDAO.insertFileAppl(applErr);
+        if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.DETL.name()))
+        {
+            ApplicationDetail applicationDetail = (ApplicationDetail) costReportRecord;
+            applErr = new ApplErr(fileContext.getRdsFileId(),
+                                  fileContext.getApplSeqNum(),
+                                  validationError.getErrRef().getErrCtgryCd(),
+                                  validationError.getErrRef().getErrCd(),
+                                  fileContext.getApplErrSeqNum(),
+                                  applicationDetail.getRxCostYearMonth().substring(0,4),
+                                  applicationDetail.getRxCostYearMonth().substring(4,6),
+                                  applicationDetail.getUniqueBenefitOptionIdentifier(),
+                                  validationError.getRecordNbrErrMessage());
+        }
+        else
+        {
+            applErr = new ApplErr(fileContext.getRdsFileId(),
+                                  fileContext.getApplSeqNum(),
+                                  validationError.getErrRef().getErrCtgryCd(),
+                                  validationError.getErrRef().getErrCd(),
+                                  fileContext.getApplErrSeqNum(),
+                                  null,
+                                  null,
+                                  null,
+                                  validationError.getRecordNbrErrMessage());
+        }
+
+        applErrDAO.insertApplErr(applErr);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
@@ -290,43 +306,14 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         if (stepExecution.getFailureExceptions().size() > 0)
-            handleFailureExceptions(stepExecution);
+        {
+            stepExecution.setExitStatus(ExitStatus.FAILED);
+            updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
+        }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         return null;
-    }
-
-
-    private void handleFailureExceptions(StepExecution stepExecution)
-    {
-        final String METHOD_NAME = "handleFailureExceptions";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        stepExecution.setExitStatus(ExitStatus.FAILED);
-
-        for (Throwable throwable : stepExecution.getFailureExceptions())
-        {
-            if (throwable instanceof CostReportException)
-                handleCostReportException((CostReportException) throwable);
-        }
-
-        updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    private void handleCostReportException(CostReportException costReportException)
-    {
-        final String METHOD_NAME = "handleCostReportException";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        ValidationError validationError = costReportException.getValidationError();
-
-        insertFileErr(validationError);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
 
@@ -336,8 +323,6 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
      *****                                       *****
      */
     public void setRdsFileDAO(RDSFileDAO rdsFileDAO) { this.rdsFileDAO = rdsFileDAO; }
-
-    public void setFileErrDAO(FileErrDAO fileErrDAO) { this.fileErrDAO = fileErrDAO; }
 
     public void setFileApplDAO(FileApplDAO fileApplDAO) { this.fileApplDAO = fileApplDAO; }
 

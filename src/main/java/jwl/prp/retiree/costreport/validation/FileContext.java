@@ -39,8 +39,9 @@ public class FileContext
      *---   APPLICATION VARIABLES
      */
 
-    private boolean    applicationValid;
     private int        applSeqNum;
+    private int        applErrSeqNum;
+    private boolean    applicationValid;
     private List<CostReportRecord> applicationRecords = new ArrayList<CostReportRecord>();
 
     // --- HEADER ---
@@ -95,9 +96,11 @@ public class FileContext
     public int getFileErrSeqNum() { return fileErrSeqNum; }
 
     // --- APPLICATION ---
-    public boolean isApplicationValid() { return applicationValid; }
-
     public int getApplSeqNum() { return applSeqNum; }
+
+    public int getApplErrSeqNum() { return applErrSeqNum; }
+
+    public boolean isApplicationValid() { return applicationValid; }
 
     public List<CostReportRecord> getApplicationRecords() { return applicationRecords; }
 
@@ -136,9 +139,11 @@ public class FileContext
     public void setFileErrSeqNum(int fileErrSeqNum) { this.fileErrSeqNum = fileErrSeqNum; }
 
     // --- APPLICATION ---
-    public void setApplicationValid(boolean applicationValid) { this.applicationValid = applicationValid; }
-
     public void setApplSeqNum(int applSeqNum) { this.applSeqNum = applSeqNum; }
+
+    public void setApplErrSeqNum(int applErrSeqNum) { this.applErrSeqNum = applErrSeqNum; }
+
+    public void setApplicationValid(boolean applicationValid) { this.applicationValid = applicationValid; }
 
     public void setApplicationRecords(List<CostReportRecord> applicationRecords) { this.applicationRecords = applicationRecords; }
 

@@ -1,7 +1,11 @@
 package jwl.prp.retiree.costreport.dao;
 
 
+import jwl.prp.retiree.costreport.dao.mapper.FileApplMapper;
 import jwl.prp.retiree.costreport.entity.FileAppl;
+
+import jwl.prp.retiree.costreport.entity.RDSFile;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
@@ -29,6 +33,30 @@ public class FileApplDAO
                                                    " STUS_CD," +
                                                    " APPL_ID)" +
                                                    " values (?,?,?,?,?,?,?,?,?,?,?)";
+
+    protected String getSelectSQL()
+    {
+        return "SELECT * " +
+               "FROM " + FILE_APPL_TABLE_NAME + " " +
+               "WHERE FILE_ID = ? " +
+               "AND   APPL_SEQ_NUM = ?";
+    }
+
+    protected String getUpdateSQL()
+    {
+        return "UPDATE " + FILE_APPL_TABLE_NAME + " SET " +
+                "SUBM_APPL_ID = ?, " +
+                "PS_ID = ?, " +
+                "PSTG_PGM = ?, " +
+                "PSTG_TS = ?, " +
+                "STUS_TS = ?, " +
+                "STUS_PGM = ?, " +
+                "STUS_CTGRY_CD = ?, " +
+                "STUS_CD = ?, " +
+                "APPL_ID = ? " +
+                "WHERE FILE_ID = ? " +
+                "AND   APPL_SEQ_NUM = ?";
+    }
 
     private JdbcTemplate jdbcTemplate;
 
@@ -59,6 +87,51 @@ public class FileApplDAO
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }
 
+
+    public FileAppl findByFileIdApplSeqNum(int fileId,
+                                           int applSeqNum)
+    {
+        final String METHOD_NAME = "findByFileIdApplSeqNum";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        FileAppl fileAppl = null;
+
+        try
+        {
+            fileAppl = jdbcTemplate.queryForObject(getSelectSQL(),
+                                                   new Object[]{fileId, applSeqNum},
+                                                   new FileApplMapper());
+        }
+        catch (EmptyResultDataAccessException erdaException)
+        {
+            // returns null
+        }
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+        return fileAppl;
+    }
+
+    public FileAppl updateFileAppl(FileAppl fileAppl)
+    {
+        final String METHOD_NAME = "updateFileAppl";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        jdbcTemplate.update(getUpdateSQL(),
+                            fileAppl.getSubmApplId(),
+                            fileAppl.getPsId(),
+                            fileAppl.getPstgPgm(),
+                            fileAppl.getPstgTs(),
+                            fileAppl.getStusTs(),
+                            fileAppl.getStusPgm(),
+                            fileAppl.getStusCtgryCd(),
+                            fileAppl.getStusCd(),
+                            fileAppl.getApplId(),
+                            fileAppl.getFileId(),
+                            fileAppl.getApplSeqNum());
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+        return fileAppl;
+    }
 
     /*
     *****                                       *****

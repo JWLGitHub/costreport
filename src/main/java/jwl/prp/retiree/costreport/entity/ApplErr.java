@@ -10,8 +10,8 @@ public class ApplErr
     private String    errCtgryCd;
     private String    errCd;
     private int       errSeqNum;
-    private int       costYearNum;
-    private int       costMnthNum;
+    private String    costYearNum;
+    private String    costMnthNum;
     private String    rxGrpNum;
     private String    errInfo;
 
@@ -26,8 +26,8 @@ public class ApplErr
                    String  errCtgryCd,
                    String  errCd,
                    int     errSeqNum,
-                   int     costYearNum,
-                   int     costMnthNum,
+                   String  costYearNum,
+                   String  costMnthNum,
                    String  rxGrpNum,
                    String  errInfo)
     {
@@ -64,9 +64,9 @@ public class ApplErr
         return errSeqNum;
     }
 
-    public int getCostYearNum() { return costYearNum; }
+    public String getCostYearNum() { return costYearNum; }
 
-    public int getCostMnthNum() { return costMnthNum; }
+    public String getCostMnthNum() { return costMnthNum; }
 
     public String getRxGrpNum() { return rxGrpNum; }
 
@@ -96,9 +96,9 @@ public class ApplErr
         this.errSeqNum = errSeqNum;
     }
 
-    public void setCostYearNum(int costYearNum) { this.costYearNum = costYearNum; }
+    public void setCostYearNum(String costYearNum) { this.costYearNum = costYearNum; }
 
-    public void setCostMnthNum(int costMnthNum) { this.costMnthNum = costMnthNum; }
+    public void setCostMnthNum(String costMnthNum) { this.costMnthNum = costMnthNum; }
 
     public void setRxGrpNum(String rxGrpNum) { this.rxGrpNum = rxGrpNum; }
 

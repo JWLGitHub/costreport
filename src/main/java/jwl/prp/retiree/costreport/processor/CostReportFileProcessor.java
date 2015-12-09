@@ -18,7 +18,6 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.validator.ValidationException;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -33,12 +32,6 @@ public class CostReportFileProcessor implements StepExecutionListener,
     private FileErrDAO fileErrDAO;
 
     private FileContext fileContext = new FileContext();
-
-
-    /*
-    *---   JOB EXECUTION CONTEXT
-    */
-    private int rdsFileId;
 
 
     /*
@@ -72,7 +65,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
         final String METHOD_NAME = "beforeStep";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        this.rdsFileId = getRdsFileId(stepExecution);
+        fileContext.setRdsFileId(getRdsFileId(stepExecution));
         updateRDSFile(StusRef.FILE_PROCESSING_1ST_PASS);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -184,7 +177,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
         final String METHOD_NAME = "updateRDSFile";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        RDSFile rdsFile = rdsFileDAO.findByFileId(this.rdsFileId);
+        RDSFile rdsFile = rdsFileDAO.findByFileId(fileContext.getRdsFileId());
         rdsFile.setStusCtgryCd(StusCtgry.FILE_STATUS.getStusCtgryCd());
         rdsFile.setStusCd(fileStatus.getStusCd());
         rdsFile.setUptdPgm(SIMPLE_NAME);
@@ -204,7 +197,7 @@ public class CostReportFileProcessor implements StepExecutionListener,
 
         fileContext.setFileErrSeqNum(fileContext.getFileErrSeqNum() + 1);
 
-        FileErr fileErr = new FileErr(this.rdsFileId,
+        FileErr fileErr = new FileErr(fileContext.getRdsFileId(),
                                       errCd,
                                       errCtgryCd,
                                       fileContext.getFileErrSeqNum(),

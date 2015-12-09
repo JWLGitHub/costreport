@@ -1,14 +1,13 @@
 package jwl.prp.retiree.costreport.dao.mapper;
 
+
 import jwl.prp.retiree.costreport.entity.RDSFile;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * Created by jwleader on 11/7/15.
- */
+
 public class RDSFileMapper implements RowMapper<RDSFile>
 {
     public RDSFile mapRow(ResultSet resultSet,
