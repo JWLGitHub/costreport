@@ -1,6 +1,11 @@
 package jwl.prp.retiree.costreport.tasklet;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -9,7 +14,6 @@ import jwl.prp.retiree.costreport.dao.RDSFileDAO;
 import jwl.prp.retiree.costreport.entity.*;
 import jwl.prp.retiree.costreport.enums.ErrCtgRef;
 import jwl.prp.retiree.costreport.enums.ErrRef;
-import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
 
 import jwl.prp.retiree.costreport.validation.FileContext;
@@ -57,10 +61,11 @@ public class FileExists implements Tasklet
         StusRef fileStatus;
         if (inputFile.exists())
             fileStatus = StusRef.FILE_EXISTS;
-        else
+         else
             fileStatus= StusRef.FILE_MISSING;
 
-        RDSFile rdsFile = createRDSFileInfo(fileStatus);
+        RDSFile rdsFile = createRDSFileInfo(inputFile,
+                                            fileStatus);
 
         if (fileStatus == StusRef.FILE_EXISTS)
             saveRdsFileIdToStepExecution(rdsFile.getFileId());
@@ -72,12 +77,14 @@ public class FileExists implements Tasklet
     }
 
 
-    private RDSFile createRDSFileInfo(StusRef fileStatus)
+    private RDSFile createRDSFileInfo(File    inputFile,
+                                      StusRef fileStatus)
     {
         final String METHOD_NAME = "createRDSFileInfo";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        RDSFile rdsFile = insertRDSFile(fileStatus);
+        RDSFile rdsFile = insertRDSFile(inputFile,
+                                        fileStatus);
 
         if (fileStatus ==  StusRef.FILE_MISSING)
             insertFileErr(rdsFile.getFileId());
@@ -88,28 +95,33 @@ public class FileExists implements Tasklet
     }
 
 
-    private RDSFile insertRDSFile(StusRef fileStatus)
+    private RDSFile insertRDSFile(File    inputFile,
+                                  StusRef fileStatus)
     {
         final String METHOD_NAME = "insertRDSFile";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
+        Timestamp fileDtTm = null;
+        if (fileStatus == StusRef.FILE_EXISTS)
+            fileDtTm = new Timestamp(new Date(inputFile.lastModified()).getTime());
+
         RDSFile rdsFile = new RDSFile(0,
-                                      "D",
-                                      "12",
-                                      new Date(),
-                                      inputFilePath,
-                                      null,
-                                      null,
-                                      "O",
-                                      "1234567890",
-                                      StusCtgry.FILE_STATUS.getStusCtgryCd(),
-                                      fileStatus.getStusCd(),
-                                      new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()),
-                                      SIMPLE_NAME,
-                                      null,
-                                      null,
-                                      new Date(),
-                                      new Date());
+                                  "D",
+                                  "12",
+                                  fileDtTm,
+                                  inputFilePath,
+                                  null,
+                                  null,
+                                  "O",
+                                  "1234567890",
+                                  fileStatus.getStusCtgryCd(),
+                                  fileStatus.getStusCd(),
+                                  new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()),
+                                  SIMPLE_NAME,
+                                  null,
+                                  null,
+                                  new Date(),
+                                  new Date());
 
         rdsFileDAO.insertRDSFile(rdsFile);
 

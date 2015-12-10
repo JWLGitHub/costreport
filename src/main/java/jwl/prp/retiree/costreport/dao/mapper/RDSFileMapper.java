@@ -18,7 +18,7 @@ public class RDSFileMapper implements RowMapper<RDSFile>
         rdsFile.setFileId(resultSet.getInt("FILE_ID"));
         rdsFile.setFileDirCd(resultSet.getString("FILE_DIR_CD"));
         rdsFile.setFileTypeCd(resultSet.getString("FILE_TYPE_CD"));
-        rdsFile.setFileDtTm(resultSet.getDate("FILE_DT_TM"));
+        rdsFile.setFileDtTm(resultSet.getTimestamp("FILE_DT_TM"));
         rdsFile.setFileName(resultSet.getString("FILE_NAME"));
         rdsFile.setFileDescTxt(resultSet.getString("FILE_DESC_TXT"));
         rdsFile.setSubmOrgId(resultSet.getString("SUBM_ORG_ID"));

@@ -3,14 +3,9 @@ package jwl.prp.retiree.costreport.processor;
 
 import jwl.prp.retiree.costreport.dao.ApplErrDAO;
 import jwl.prp.retiree.costreport.dao.FileApplDAO;
-import jwl.prp.retiree.costreport.dao.FileErrDAO;
-import jwl.prp.retiree.costreport.dao.RDSFileDAO;
 import jwl.prp.retiree.costreport.entity.*;
-import jwl.prp.retiree.costreport.enums.ErrRef;
-import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
 import jwl.prp.retiree.costreport.validation.BaseValidator;
-import jwl.prp.retiree.costreport.validation.FileContext;
 import jwl.prp.retiree.costreport.validation.ValidationError;
 
 import org.springframework.batch.core.ExitStatus;
@@ -23,42 +18,15 @@ import java.util.Calendar;
 import java.util.List;
 
 
-public class CostReportApplicationProcessor implements StepExecutionListener,
+public class CostReportApplicationProcessor extends    CostReportBaseProcessor
+                                            implements StepExecutionListener,
                                                        ItemProcessor<CostReportRecord, List<CostReportRecord>>
 {
     private static String CLASS_NAME  = CostReportApplicationProcessor.class.getName();
     private static String SIMPLE_NAME = CostReportApplicationProcessor.class.getSimpleName();
 
-    private RDSFileDAO  rdsFileDAO;
     private FileApplDAO fileApplDAO;
     private ApplErrDAO  applErrDAO;
-
-    private FileContext fileContext = new FileContext();
-
-
-    /*
-    *---   JOB EXECUTION CONTEXT
-    */
-
-
-    /*
-     *---   Validators
-     */
-    private List<BaseValidator> fileHeaderValidators;
-
-    private List<BaseValidator> applicationHeaderValidators;
-
-    private List<BaseValidator> applicationDetailValidators;
-
-    private List<BaseValidator> applicationTrailerValidators;
-
-    private List<BaseValidator> fileTrailerValidators;
-
-
-    /*
-    *---   Err Ref(s) NOT Error(s)
-    */
-    private List<ErrRef> errRefsNotErrors;
 
 
     /*
@@ -73,25 +41,10 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         fileContext.setRdsFileId(getRdsFileId(stepExecution));
-        updateRDSFile(StusRef.FILE_PROCESSING_2ND_PASS);
+        updateRDSFile(StusRef.FILE_PROCESSING_2ND_PASS,
+                      SIMPLE_NAME);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
-    private int getRdsFileId(StepExecution stepExecution)
-    {
-        final String METHOD_NAME = "getRdsFileId";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        Object rdsFileId = stepExecution.getJobExecution().getExecutionContext().get(FileContext.RDS_FILE_ID);
-        if (null == rdsFileId ||
-            rdsFileId.toString().equalsIgnoreCase(""))
-            throw new RuntimeException("'" + FileContext.RDS_FILE_ID + "' MISSING from jobExecutionContext");
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        return Integer.parseInt(rdsFileId.toString());
     }
 
 
@@ -191,22 +144,11 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
     }
 
 
-    private void updateRDSFile(StusRef fileStatus)
-    {
-        final String METHOD_NAME = "updateRDSFile";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        RDSFile rdsFile = rdsFileDAO.findByFileId(fileContext.getRdsFileId());
-        rdsFile.setStusCtgryCd(StusCtgry.FILE_STATUS.getStusCtgryCd());
-        rdsFile.setStusCd(fileStatus.getStusCd());
-        rdsFile.setUptdPgm(SIMPLE_NAME);
-        rdsFile.setUpdtTs(new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
-        rdsFileDAO.updateRDSFile(rdsFile);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
+    /*
+    *****                                       *****
+    *****     -----     FILE APPL     -----     *****
+    *****                                       *****
+    */
     private void insertFileAppl(StusRef           stusRef,
                                 ApplicationHeader applicationHeader)
     {
@@ -251,6 +193,11 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
     }
 
 
+    /*
+    *****                                      *****
+    *****     -----     APPL ERR     -----     *****
+    *****                                      *****
+    */
     private void insertApplErr(ValidationError  validationError,
                                CostReportRecord costReportRecord)
     {
@@ -293,7 +240,6 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
     }
 
 
-
     /*
     *****                                         *****
     *****     -----     AFTER STEP     -----      *****
@@ -308,8 +254,12 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
         if (stepExecution.getFailureExceptions().size() > 0)
         {
             stepExecution.setExitStatus(ExitStatus.FAILED);
-            updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE);
+            updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE,
+                          SIMPLE_NAME);
         }
+        else
+            updateRDSFile(StusRef.FILE_PROCESSING_COMPLETED,
+                          SIMPLE_NAME);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
@@ -322,62 +272,7 @@ public class CostReportApplicationProcessor implements StepExecutionListener,
      *****     -----     SETTER(s)     -----     *****
      *****                                       *****
      */
-    public void setRdsFileDAO(RDSFileDAO rdsFileDAO) { this.rdsFileDAO = rdsFileDAO; }
-
     public void setFileApplDAO(FileApplDAO fileApplDAO) { this.fileApplDAO = fileApplDAO; }
 
     public void setApplErrDAO(ApplErrDAO applErrDAO) { this.applErrDAO = applErrDAO; }
-
-    public void setFileHeaderValidators(List<BaseValidator> fileHeaderValidators)
-    {
-        final String METHOD_NAME = "setFileHeaderValidators";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        this.fileHeaderValidators = fileHeaderValidators;
-    }
-
-
-    public void setApplicationHeaderValidators(List<BaseValidator> applicationHeaderValidators)
-    {
-        final String METHOD_NAME = "setApplicationHeaderValidators";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        this.applicationHeaderValidators = applicationHeaderValidators;
-    }
-
-
-    public void setApplicationDetailValidators(List<BaseValidator> applicationDetailValidators)
-    {
-        final String METHOD_NAME = "setApplicationDetailValidators";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        this.applicationDetailValidators = applicationDetailValidators;
-    }
-
-
-    public void setApplicationTrailerValidators(List<BaseValidator> applicationTrailerValidators)
-    {
-        final String METHOD_NAME = "setApplicationTrailerValidators";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        this.applicationTrailerValidators = applicationTrailerValidators;
-    }
-
-
-    public void setFileTrailerValidators(List<BaseValidator> fileTrailerValidators)
-    {
-        final String METHOD_NAME = "setFileTrailerValidators";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        this.fileTrailerValidators = fileTrailerValidators;
-    }
-
-
-    public void setErrRefsNotErrors(List<ErrRef> errRefsNotErrors)
-    {
-        final String METHOD_NAME = "setErrRefsNotErrors";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        this.errRefsNotErrors = errRefsNotErrors;
-    }
 }

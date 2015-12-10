@@ -189,7 +189,7 @@
     <!--        PROCESSER(s)        -->
     <!--                            -->
 
-    <!-- Cost Report file Processor -->
+    <!-- Cost Report File Processor -->
     <bean id="costReportFileProcessor" class="jwl.prp.retiree.costreport.processor.CostReportFileProcessor" >
 
         <property name="rdsFileDAO"         ref="rdsFileDAO"/>
@@ -372,7 +372,6 @@
 
     <!-- Database Item Writer -->
     <bean id="databaseItemWriter" class="jwl.prp.retiree.costreport.writer.DatabaseItemWriter">
-        <property name="rdsFileDAO"                  ref="rdsFileDAO"/>
         <property name="costReportImportDAO"         ref="costReportImportDAO"/>
     </bean>
 

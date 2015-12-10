@@ -12,7 +12,7 @@ public class RDSFile
     private int       fileId;
     private String    fileDirCd;
     private String    fileTypeCd;
-    private Date      fileDtTm;
+    private Timestamp fileDtTm;
     private String    fileName;
     private String    fileDescTxt;
     private String    submOrgId;
@@ -37,7 +37,7 @@ public class RDSFile
     public RDSFile(int       fileId,
                    String    fileDirCd,
                    String    fileTypeCd,
-                   Date      fileDtTm,
+                   Timestamp fileDtTm,
                    String    fileName,
                    String    fileDescTxt,
                    String    submOrgId,
@@ -87,7 +87,7 @@ public class RDSFile
         return fileTypeCd;
     }
 
-    public Date getFileDtTm() {
+    public Timestamp getFileDtTm() {
         return fileDtTm;
     }
 
@@ -159,7 +159,7 @@ public class RDSFile
         this.fileTypeCd = fileTypeCd;
     }
 
-    public void setFileDtTm(Date fileDtTm) {
+    public void setFileDtTm(Timestamp fileDtTm) {
         this.fileDtTm = fileDtTm;
     }
 
