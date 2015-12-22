@@ -29,6 +29,8 @@ public class FileContext
     private int               fileHeaderCounter;
     private String            fileSubmitterID;
     private int               fileApplicationCount;
+    private int               fileApplicationAcceptedCount;
+    private int               fileApplicationRejectedCount;
     private ArrayList<String> fileApplicationIDs   = new ArrayList<String>();
     private BigDecimal        fileGrossRetireeCost = new BigDecimal("0");
     private int               fileTrailerCounter;
@@ -87,6 +89,10 @@ public class FileContext
 
     public int getFileApplicationCount() { return fileApplicationCount; }
 
+    public int getFileApplicationAcceptedCount() { return fileApplicationAcceptedCount; }
+
+    public int getFileApplicationRejectedCount() { return fileApplicationRejectedCount; }
+
     public ArrayList<String> getFileApplicationIDs() { return fileApplicationIDs; }
 
     public BigDecimal getFileGrossRetireeCost() { return fileGrossRetireeCost; }
@@ -129,6 +135,10 @@ public class FileContext
     public void setFileSubmitterID(String fileSubmitterID) { this.fileSubmitterID = fileSubmitterID; }
 
     public void setFileApplicationCount(int fileApplicationCount) { this.fileApplicationCount = fileApplicationCount; }
+
+    public void setFileApplicationAcceptedCount(int fileApplicationAcceptedCount) { this.fileApplicationAcceptedCount = fileApplicationAcceptedCount; }
+
+    public void setFileApplicationRejectedCount(int fileApplicationRejectedCount) { this.fileApplicationRejectedCount = fileApplicationRejectedCount; }
 
     public void setFileApplicationIDs(ArrayList<String> fileApplicationIDs) { this.fileApplicationIDs = fileApplicationIDs; }
 

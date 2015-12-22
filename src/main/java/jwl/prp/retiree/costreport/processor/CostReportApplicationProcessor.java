@@ -4,6 +4,7 @@ package jwl.prp.retiree.costreport.processor;
 import jwl.prp.retiree.costreport.dao.ApplErrDAO;
 import jwl.prp.retiree.costreport.dao.FileApplDAO;
 import jwl.prp.retiree.costreport.entity.*;
+import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.enums.StusRef;
 import jwl.prp.retiree.costreport.validation.BaseValidator;
 import jwl.prp.retiree.costreport.validation.ValidationError;
@@ -88,10 +89,14 @@ public class CostReportApplicationProcessor extends    CostReportBaseProcessor
             if (fileContext.isApplicationValid())
             {
                 updateFileAppl(StusRef.ACCEPTED);
+                fileContext.setFileApplicationAcceptedCount(fileContext.getFileApplicationAcceptedCount() + 1);
                 return fileContext.getApplicationRecords();
             }
             else
+            {
                 updateFileAppl(StusRef.REJECTED);
+                fileContext.setFileApplicationRejectedCount(fileContext.getFileApplicationRejectedCount() + 1);
+            }
         }
         else if (costReportRecord.getRecordType().equalsIgnoreCase(CostReportRecord.RecordType.FTRL.name()))
         {
@@ -255,6 +260,16 @@ public class CostReportApplicationProcessor extends    CostReportBaseProcessor
         {
             stepExecution.setExitStatus(ExitStatus.FAILED);
             updateRDSFile(StusRef.FILE_REJECTED_BAD_STRUCTURE,
+                          SIMPLE_NAME);
+        }
+        else if (fileContext.getFileApplicationAcceptedCount() == 0)
+        {
+            stepExecution.setExitStatus(ExitStatus.FAILED);
+
+            insertFileErr(ErrRef.ALL_APPLICATIONS_REJECTED,
+                          "Application Accepted Count: " + fileContext.getFileApplicationAcceptedCount() + " Applications Rejected Count: " + fileContext.getFileApplicationRejectedCount());
+
+            updateRDSFile(StusRef.ALL_APPLICATIONS_REJECTED,
                           SIMPLE_NAME);
         }
         else

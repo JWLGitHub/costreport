@@ -1,7 +1,9 @@
 package jwl.prp.retiree.costreport.processor;
 
 
+import jwl.prp.retiree.costreport.dao.FileErrDAO;
 import jwl.prp.retiree.costreport.dao.RDSFileDAO;
+import jwl.prp.retiree.costreport.entity.FileErr;
 import jwl.prp.retiree.costreport.entity.RDSFile;
 import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.enums.StusCtgry;
@@ -20,6 +22,7 @@ public abstract class CostReportBaseProcessor
     private static String SIMPLE_NAME = CostReportBaseProcessor.class.getSimpleName();
 
     protected RDSFileDAO  rdsFileDAO;
+    protected FileErrDAO  fileErrDAO;
 
     protected FileContext fileContext = new FileContext();
 
@@ -75,12 +78,35 @@ public abstract class CostReportBaseProcessor
     }
 
 
+
+    protected void insertFileErr(ErrRef errRef,
+                               String errInfo)
+    {
+        final String METHOD_NAME = "insertFileErr";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        fileContext.setFileErrSeqNum(fileContext.getFileErrSeqNum() + 1);
+
+        FileErr fileErr = new FileErr(fileContext.getRdsFileId(),
+                errRef.getErrCd(),
+                errRef.getErrCtgryCd(),
+                fileContext.getFileErrSeqNum(),
+                errInfo);
+
+        fileErrDAO.insertFileErr(fileErr);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+    }
+
+
     /*
      *****                                       *****
      *****     -----     SETTER(s)     -----     *****
      *****                                       *****
      */
     public void setRdsFileDAO(RDSFileDAO rdsFileDAO) { this.rdsFileDAO = rdsFileDAO; }
+
+    public void setFileErrDAO(FileErrDAO fileErrDAO) { this.fileErrDAO = fileErrDAO; }
 
     public void setFileHeaderValidators(List<BaseValidator> fileHeaderValidators)
     {

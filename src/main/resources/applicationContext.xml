@@ -32,11 +32,14 @@
         <property name="dataSource" ref="dataSource" />
     </bean>
 
-    <!-- create job-meta tables automatically -->
+
+    <!-- Drop / Create Spring Batch job-meta tables automatically -->
+    <!--
     <jdbc:initialize-database data-source="dataSource">
         <jdbc:script location="org/springframework/batch/core/schema-drop-mysql.sql" />
         <jdbc:script location="org/springframework/batch/core/schema-mysql.sql" />
     </jdbc:initialize-database>
+    -->
 
 
     <!-- Job Repository: used to persist the state of the batch job -->
@@ -253,6 +256,7 @@
     <bean id="costReportApplicationProcessor" class="jwl.prp.retiree.costreport.processor.CostReportApplicationProcessor" >
 
         <property name="rdsFileDAO"    ref="rdsFileDAO"/>
+        <property name="fileErrDAO"    ref="fileErrDAO"/>
         <property name="fileApplDAO"   ref="fileApplDAO"/>
         <property name="applErrDAO"    ref="applErrDAO"/>
 

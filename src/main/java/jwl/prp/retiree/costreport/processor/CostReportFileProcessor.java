@@ -25,8 +25,6 @@ public class CostReportFileProcessor extends    CostReportBaseProcessor
     private static String CLASS_NAME  = CostReportFileProcessor.class.getName();
     private static String SIMPLE_NAME = CostReportFileProcessor.class.getSimpleName();
 
-    private FileErrDAO fileErrDAO;
-
 
     /*
      *****                                         *****
@@ -129,30 +127,6 @@ public class CostReportFileProcessor extends    CostReportBaseProcessor
         return costReportRecord;
     }
 
-
-    /*
-    *****                                      *****
-    *****     -----     FILE ERR     -----     *****
-    *****                                      *****
-    */
-    private void insertFileErr(ErrRef errRef,
-                               String errInfo)
-    {
-        final String METHOD_NAME = "insertFileErr";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        fileContext.setFileErrSeqNum(fileContext.getFileErrSeqNum() + 1);
-
-        FileErr fileErr = new FileErr(fileContext.getRdsFileId(),
-                                      errRef.getErrCd(),
-                                      errRef.getErrCtgryCd(),
-                                      fileContext.getFileErrSeqNum(),
-                                      errInfo);
-
-        fileErrDAO.insertFileErr(fileErr);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
 
 
     /*
@@ -269,5 +243,4 @@ public class CostReportFileProcessor extends    CostReportBaseProcessor
      *****     -----     SETTER(s)     -----     *****
      *****                                       *****
      */
-    public void setFileErrDAO(FileErrDAO fileErrDAO) { this.fileErrDAO = fileErrDAO; }
 }
