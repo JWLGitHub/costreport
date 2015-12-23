@@ -202,6 +202,8 @@
         <property name="fileHeaderValidators">
             <list>
                 <ref bean="fileHeaderOutOfSequence"/>
+                <ref bean="fileHeaderSubmitterTypeValid"/>
+                <ref bean="fileHeaderSubmitterIDValid"/>
                 <ref bean="fileHeaderDateFormatValid"/>
                 <ref bean="fileHeaderTimeFormatValid"/>
                 <ref bean="incrementFileHeaderCounter"/>
@@ -324,6 +326,12 @@
     <!-- File Header Validator(s) -->
     <bean id="fileHeaderMissing"                     class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderMissing"/>
     <bean id="fileHeaderOutOfSequence"               class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderOutOfSequence"/>
+    <bean id="fileHeaderSubmitterTypeValid"          class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderSubmitterTypeValid"/>
+    <bean id="fileHeaderSubmitterIDValid"            class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderSubmitterIDValid">
+        <property name="rdsOrgDAO"  ref="rdsOrgDAO"/>
+        <property name="rdsFileDAO" ref="rdsFileDAO"/>
+    </bean>
+
     <bean id="setFileSubmitterID"                    class="jwl.prp.retiree.costreport.validation.file.header.SetFileSubmitterID"/>
     <bean id="fileHeaderDateFormatValid"             class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderDateFormatValid"/>
     <bean id="fileHeaderTimeFormatValid"             class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderTimeFormatValid"/>
@@ -411,6 +419,10 @@
     </bean>
 
     <bean id="fileErrDAO" class="jwl.prp.retiree.costreport.dao.FileErrDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="rdsOrgDAO" class="jwl.prp.retiree.costreport.dao.RdsOrgDAO">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
     </bean>
 

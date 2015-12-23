@@ -159,9 +159,7 @@ public class RDSFile
         this.fileTypeCd = fileTypeCd;
     }
 
-    public void setFileDtTm(Timestamp fileDtTm) {
-        this.fileDtTm = fileDtTm;
-    }
+    public void setFileDtTm(Timestamp fileDtTm) { this.fileDtTm = fileDtTm; }
 
     public void setFileName(String fileName) {
         this.fileName = fileName;

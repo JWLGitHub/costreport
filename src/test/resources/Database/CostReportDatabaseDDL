@@ -168,6 +168,60 @@ INSERT INTO PLANOPTIONS VALUES ('0123456789', '11111111112222222222');
 
 
 
+CREATE TABLE ORG_TYP_REF
+(
+     ORG_TYP_CD       CHAR(1)          NOT NULL PRIMARY KEY,
+     DESC_TXT         VARCHAR(255)     NOT NULL
+);
+
+INSERT INTO ORG_TYP_REF VALUES ('P', "Plan Sponsor");
+INSERT INTO ORG_TYP_REF VALUES ('R', "RDS");
+INSERT INTO ORG_TYP_REF VALUES ('V', "Vendor");
+INSERT INTO ORG_TYP_REF VALUES ('X', "Reserved");
+
+
+
+CREATE TABLE RDS_ORG
+(
+     ORG_ID           CHAR(10)         NOT NULL,
+     ORG_TYP_CD       CHAR(1)          NOT NULL,
+     ORG_NAME         VARCHAR(40)      NOT NULL,
+     TRANS_METHOD     CHAR(1)          NULL,
+     STUS_CTGRY_CD    CHAR(2)          NOT NULL,
+     STUS_CD          CHAR(2)          NOT NULL,
+     STUS_PGM         VARCHAR(30)      NOT NULL,
+     STUS_TS          TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+     UPTD_PGM         VARCHAR(30)      NULL,
+     UPDT_TS          TIMESTAMP        NULL,
+     PRIMARY KEY (ORG_ID, ORG_TYP_CD),
+     FOREIGN KEY (ORG_TYP_CD) REFERENCES ORG_TYP_REF(ORG_TYP_CD),
+     FOREIGN KEY (STUS_CTGRY_CD, STUS_CD) REFERENCES STUS_REF(STUS_CTGRY_CD, STUS_CD)
+);
+
+INSERT INTO RDS_ORG VALUES ('1122334455',
+                            'P',
+                            "TEST Plan Sponsor",
+                            'X',
+                            'OS',
+                            'NW',
+                            "PROGRAM NAME GOES HERE",
+                            NULL,
+                            NULL,
+                            NULL);
+
+INSERT INTO RDS_ORG VALUES ('1234567890',
+                            'V',
+                            "Vendor TEST",
+                            'X',
+                            'OS',
+                            'NW',
+                            "PUT PROGRAM NAME HERE",
+                            NULL,
+                            NULL,
+                            NULL);
+
+
+
 CREATE TABLE RDS_FILE
 (
      FILE_ID          INTEGER UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -177,8 +231,8 @@ CREATE TABLE RDS_FILE
      FILE_NAME        VARCHAR(54)      NOT NULL,
      FILE_DESC_TXT    VARCHAR(255)     NULL,
      SUBM_ORG_ID      CHAR(10)         NULL,
-     ORG_TYP_CD       CHAR(1)          NOT NULL,
-     ORG_ID           CHAR(10)         NOT NULL,
+     ORG_TYP_CD       CHAR(1)          NULL,
+     ORG_ID           CHAR(10)         NULL,
      STUS_CTGRY_CD    CHAR(2)          NOT NULL,
      STUS_CD          CHAR(2)          NOT NULL,
      STUS_TS          TIMESTAMP        NOT NULL,
@@ -187,6 +241,7 @@ CREATE TABLE RDS_FILE
      UPDT_TS          TIMESTAMP        NULL,
      PROCESS_DT       DATE             NOT NULL,
      RECEIPT_DT       DATE             NOT NULL,
+     FOREIGN KEY (ORG_ID, ORG_TYP_CD) REFERENCES RDS_ORG(ORG_ID, ORG_TYP_CD),
      FOREIGN KEY (STUS_CTGRY_CD, STUS_CD) REFERENCES STUS_REF(STUS_CTGRY_CD, STUS_CD)
 );
 
