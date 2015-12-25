@@ -140,7 +140,7 @@ public class FileExists implements Tasklet
                                       ErrRef.CRFILE_IS_MISSING.getErrCd(),
                                       ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
                                       1,
-                                      ErrRef.CRFILE_IS_MISSING.getDescTxt() + ": " + inputFilePath);
+                                      ErrRef.CRFILE_IS_MISSING.getDescTxt() + " - " + inputFilePath);
 
         fileErrDAO.insertFileErr(fileErr);
 

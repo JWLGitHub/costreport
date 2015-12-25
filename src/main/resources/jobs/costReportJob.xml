@@ -26,6 +26,13 @@
             <tasklet ref="fileEmptyTasklet" />
 
             <next on="FAILED" to="moveBadFile" />
+            <next on="*"      to="fileNameValid" />
+        </step>
+
+        <step id="fileNameValid" >
+            <tasklet ref="fileNameValidTasklet" />
+
+            <next on="FAILED" to="moveBadFile" />
             <next on="*"      to="importFileFirstPass" />
         </step>
 

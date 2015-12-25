@@ -2,7 +2,6 @@ package jwl.prp.retiree.costreport.validation;
 
 
 import jwl.prp.retiree.costreport.entity.CostReportRecord;
-
 import java.math.BigDecimal;
 
 

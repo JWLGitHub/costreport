@@ -1,15 +1,14 @@
 package jwl.prp.retiree.costreport.tasklet;
 
-
 import jwl.prp.retiree.costreport.dao.FileErrDAO;
 import jwl.prp.retiree.costreport.dao.RDSFileDAO;
-import jwl.prp.retiree.costreport.entity.RDSFile;
 import jwl.prp.retiree.costreport.entity.FileErr;
-
-import jwl.prp.retiree.costreport.enums.ErrCtgRef;
-import jwl.prp.retiree.costreport.enums.ErrRef;
+import jwl.prp.retiree.costreport.entity.FileName;
+import jwl.prp.retiree.costreport.entity.RDSFile;
 import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
+import jwl.prp.retiree.costreport.validation.ValidationError;
+import jwl.prp.retiree.costreport.validation.file.name.FileNameValidator;
 import jwl.prp.retiree.costreport.validation.FileContext;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
@@ -22,24 +21,29 @@ import org.springframework.batch.repeat.RepeatStatus;
 
 import java.io.File;
 import java.util.Calendar;
-
+import java.util.List;
 
 /**
- * Created by jwleader on 11/3/15.
+ * Created by jwleader on 12/25/15.
  */
-public class FileEmpty implements Tasklet
+public class FileNameValid implements Tasklet
 {
-    private static String CLASS_NAME  = FileEmpty.class.getName();
-    private static String SIMPLE_NAME = FileEmpty.class.getSimpleName();
+    private static String CLASS_NAME  = FileNameValid.class.getName();
+    private static String SIMPLE_NAME = FileNameValid.class.getSimpleName();
 
-    private JobExecution      jobExecution;
-    private ExecutionContext  jobExecutionContext;
-    private StepExecution     stepExecution;
+    private JobExecution     jobExecution;
+    private ExecutionContext jobExecutionContext;
+    private StepExecution    stepExecution;
 
-    private String            inputFilePath;
+    private String           inputFilePath;
 
-    private RDSFileDAO        rdsFileDAO;
-    private FileErrDAO        fileErrDAO;
+    private RDSFileDAO rdsFileDAO;
+    private FileErrDAO fileErrDAO;
+
+    /*
+     *---   Validators
+     */
+    protected List<FileNameValidator> fileNameValidators;
 
 
     @Override
@@ -57,17 +61,48 @@ public class FileEmpty implements Tasklet
         // System.out.println(System.getProperty("user.dir"));
 
         File inputFile = new File( inputFilePath );
+        FileName inputFileName = new FileName(inputFile.getName());
 
-        if (inputFile.length() == 0)
+        ValidationError validationError = validateFileName(inputFileName);
+
+        if (null != validationError)
         {
             int rdsFileId = getRdsFileId();
             updateRDSFile(rdsFileId);
-            insertFileErr(rdsFileId);
+            insertFileErr(rdsFileId,
+                          validationError);
+
             stepExecution.setExitStatus(ExitStatus.FAILED);
         }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME +  " - END");
         return RepeatStatus.FINISHED;
+    }
+
+
+    private ValidationError validateFileName(FileName fileName)
+    {
+        final String METHOD_NAME = "validateFileName";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - FileName: " + fileName);
+
+        ValidationError validationError = null;
+
+        if (null != fileNameValidators &&
+            !fileNameValidators.isEmpty())
+        {
+            for (FileNameValidator fileNameValidator : fileNameValidators)
+            {
+                validationError = fileNameValidator.execute(fileName);
+
+                if (null != validationError)
+                    break;
+
+            }
+        }
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        return validationError;
     }
 
 
@@ -97,7 +132,7 @@ public class FileEmpty implements Tasklet
 
         RDSFile rdsFile = rdsFileDAO.findByFileId(rdsFileId);
         rdsFile.setStusCtgryCd(StusCtgry.FILE_STATUS.getStusCtgryCd());
-        rdsFile.setStusCd(StusRef.FILE_EMPTY.getStusCd());
+        rdsFile.setStusCd(StusRef.FILE_REJECTED_BAD_STRUCTURE.getStusCd());
         rdsFile.setUptdPgm(SIMPLE_NAME);
         rdsFile.setUpdtTs(new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
         rdsFileDAO.updateRDSFile(rdsFile);
@@ -106,16 +141,17 @@ public class FileEmpty implements Tasklet
     }
 
 
-    private void insertFileErr(int rdsFileId)
+    private void insertFileErr(int             rdsFileId,
+                               ValidationError validationError)
     {
         final String METHOD_NAME = "insertFileErr";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         FileErr fileErr = new FileErr(rdsFileId,
-                                      ErrRef.CRFILE_IS_EMPTY.getErrCd(),
-                                      ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
+                                      validationError.getErrRef().getErrCd(),
+                                      validationError.getErrRef().getErrCtgryCd(),
                                       1,
-                                      ErrRef.CRFILE_IS_EMPTY.getDescTxt() + " - " + inputFilePath);
+                                      validationError.getErrMessage());
 
         fileErrDAO.insertFileErr(fileErr);
 
@@ -141,4 +177,13 @@ public class FileEmpty implements Tasklet
 
 
     public void setFileErrDAO(FileErrDAO fileErrDAO) { this.fileErrDAO = fileErrDAO; }
+
+
+    public void setFileNameValidators(List<FileNameValidator> fileNameValidators)
+    {
+        final String METHOD_NAME = "setFileNameValidators";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        this.fileNameValidators = fileNameValidators;
+    }
 }

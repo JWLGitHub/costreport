@@ -79,6 +79,20 @@
         <property name="fileErrDAO"        ref="fileErrDAO"/>
     </bean>
 
+    <!-- File Name Valid Tasklet -->
+    <bean id="fileNameValidTasklet" class="jwl.prp.retiree.costreport.tasklet.FileNameValid" scope="step">
+        <property name="inputFilePath"     value="#{jobParameters['inputFilePath']}" />
+        <property name="rdsFileDAO"        ref="rdsFileDAO"/>
+        <property name="fileErrDAO"        ref="fileErrDAO"/>
+
+        <!-- File Name Validator(s) -->
+        <property name="fileNameValidators">
+            <list>
+                <ref bean="fileNameIsValid"/>
+            </list>
+        </property>
+    </bean>
+
     <!-- Move Good File Tasklet -->
     <bean id="moveGoodFileTasklet" class="jwl.prp.retiree.costreport.tasklet.MoveFile" scope="step">
         <property name="inputFilePath"        value="#{jobParameters['inputFilePath']}" />
@@ -322,6 +336,9 @@
     <!--                         -->
     <bean id="firstValidator"                        class="jwl.prp.retiree.costreport.validation.TrueValidator"/>      <!--  NOT USED     -->
     <bean id="secondValidator"                       class="jwl.prp.retiree.costreport.validation.FalseValidator"/>     <!--  NOT USED     -->
+
+    <!-- File Name Validator(s) -->
+    <bean id="fileNameIsValid"                       class="jwl.prp.retiree.costreport.validation.file.name.FileNameValid"/>
 
     <!-- File Header Validator(s) -->
     <bean id="fileHeaderMissing"                     class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderMissing"/>
