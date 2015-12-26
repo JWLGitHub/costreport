@@ -11,6 +11,7 @@ import jwl.prp.retiree.costreport.enums.StusRef;
 import jwl.prp.retiree.costreport.validation.BaseValidator;
 import jwl.prp.retiree.costreport.validation.FileContext;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.item.ExecutionContext;
 
 import java.util.Calendar;
 import java.util.List;
@@ -45,19 +46,37 @@ public abstract class CostReportBaseProcessor
     protected List<ErrRef> errRefsNotErrors;
 
 
-    protected int getRdsFileId(StepExecution stepExecution)
+    protected Integer getIntegerFromExecutionContext(ExecutionContext executionContext,
+                                                     String           fieldName)
     {
-        final String METHOD_NAME = "getRdsFileId";
+        final String METHOD_NAME = "getIntegerFromExecutionContext";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        Object rdsFileId = stepExecution.getJobExecution().getExecutionContext().get(FileContext.RDS_FILE_ID);
-        if (null == rdsFileId ||
-            rdsFileId.toString().equalsIgnoreCase(""))
-            throw new RuntimeException("'" + FileContext.RDS_FILE_ID + "' MISSING from jobExecutionContext");
+        Object fieldValue = executionContext.get(fieldName);
+        if (null == fieldValue ||
+            fieldValue.toString().equalsIgnoreCase(""))
+            throw new RuntimeException("'" + fieldName + "' MISSING from ExecutionContext");
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        return Integer.parseInt(rdsFileId.toString());
+        return Integer.parseInt(fieldValue.toString());
+    }
+
+
+    protected String getStringFromExecutionContext(ExecutionContext executionContext,
+                                                   String           fieldName)
+    {
+        final String METHOD_NAME = "getStringFromExecutionContext";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        Object fieldValue = executionContext.get(fieldName);
+        if (null == fieldValue ||
+            fieldValue.toString().equalsIgnoreCase(""))
+            throw new RuntimeException("'" + fieldName + "' MISSING from ExecutionContext");
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        return fieldValue.toString();
     }
 
 
@@ -80,7 +99,7 @@ public abstract class CostReportBaseProcessor
 
 
     protected void insertFileErr(ErrRef errRef,
-                               String errInfo)
+                                 String errInfo)
     {
         final String METHOD_NAME = "insertFileErr";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);

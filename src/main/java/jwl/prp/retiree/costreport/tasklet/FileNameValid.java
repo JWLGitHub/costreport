@@ -5,7 +5,6 @@ import jwl.prp.retiree.costreport.dao.RDSFileDAO;
 import jwl.prp.retiree.costreport.entity.FileErr;
 import jwl.prp.retiree.costreport.entity.FileName;
 import jwl.prp.retiree.costreport.entity.RDSFile;
-import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
 import jwl.prp.retiree.costreport.validation.ValidationError;
 import jwl.prp.retiree.costreport.validation.file.name.FileNameValidator;
@@ -23,9 +22,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
-/**
- * Created by jwleader on 12/25/15.
- */
+
 public class FileNameValid implements Tasklet
 {
     private static String CLASS_NAME  = FileNameValid.class.getName();
@@ -70,8 +67,12 @@ public class FileNameValid implements Tasklet
                       inputFileName,
                       validationError);
 
-        if (null != validationError)
+        if (null == validationError)
+            saveSubmitterInfoToStepExecution(inputFileName.getSubmitterType(),
+                                             inputFileName.getSubmitterID());
+        else
         {
+            // *** FILE NAME ERROR EXISTS ***
             insertFileErr(rdsFileId,
                           validationError);
 
@@ -143,7 +144,10 @@ public class FileNameValid implements Tasklet
             rdsFile.setOrgId(fileName.getSubmitterID());
         }
         else
+        {
+            // *** FILE NAME ERROR EXISTS ***
             rdsFile.setStusCd(StusRef.FILE_REJECTED_BAD_STRUCTURE.getStusCd());
+        }
 
         rdsFile.setSubmOrgId(fileName.getSubmitterID());
         rdsFile.setUptdPgm(SIMPLE_NAME);
@@ -167,6 +171,19 @@ public class FileNameValid implements Tasklet
                                       validationError.getErrMessage());
 
         fileErrDAO.insertFileErr(fileErr);
+
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+    }
+
+
+    private void saveSubmitterInfoToStepExecution(String submitterType,
+                                                  String submitterID)
+    {
+        final String METHOD_NAME = "saveSubmitterInfoToStepExecution";
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
+
+        stepExecution.getExecutionContext().put(FileContext.FILE_NAME_SUBMITTER_TYPE, submitterType);
+        stepExecution.getExecutionContext().put(FileContext.FILE_NAME_SUBMITTER_ID,   submitterID);
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
     }

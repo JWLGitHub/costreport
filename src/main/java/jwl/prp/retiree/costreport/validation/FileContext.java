@@ -14,7 +14,9 @@ public class FileContext
     private static String CLASS_NAME  = FileContext.class.getName();
     private static String SIMPLE_NAME = FileContext.class.getSimpleName();
 
-    public static final String       RDS_FILE_ID = "rdsFileId";
+    public static final String       RDS_FILE_ID              = "rdsFileId";
+    public static final String       FILE_NAME_SUBMITTER_TYPE = "fileNameSubmitterType";
+    public static final String       FILE_NAME_SUBMITTER_ID   = "fileNameSubmitterID";
 
     public static final List<String> VALID_RECORD_TYPES = Arrays.asList("FHDR", "AHDR", "DETL", "ATRL", "FTRL");
 
@@ -25,6 +27,8 @@ public class FileContext
      *---   FILE VARIABLES
      */
     private int               rdsFileId;
+    private String            fileNameSubmitterType;
+    private String            fileNameSubmitterID;
     private int               fileRecordCounter;
     private int               fileHeaderCounter;
     private String            fileSubmitterID;
@@ -81,6 +85,10 @@ public class FileContext
     // --- FILE ---
     public int getRdsFileId() { return rdsFileId; }
 
+    public String getFileNameSubmitterType() { return fileNameSubmitterType; }
+
+    public String getFileNameSubmitterID() { return fileNameSubmitterID; }
+
     public int getFileRecordCounter() { return fileRecordCounter; }
 
     public int getFileHeaderCounter() { return fileHeaderCounter; }
@@ -127,6 +135,10 @@ public class FileContext
 
     // --- FILE ---
     public void setRdsFileId(int rdsFileId) { this.rdsFileId = rdsFileId; }
+
+    public void setFileNameSubmitterType(String fileNameSubmitterType) { this.fileNameSubmitterType = fileNameSubmitterType; }
+
+    public void setFileNameSubmitterID(String fileNameSubmitterID) { this.fileNameSubmitterID = fileNameSubmitterID; }
 
     public void setFileRecordCounter(int fileRecordCounter) { this.fileRecordCounter = fileRecordCounter; }
 

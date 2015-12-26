@@ -28,7 +28,7 @@ public class FileNameSubmitterExists extends FileNameValidator
         if (null == rdsOrg)
             return new ValidationError(0,
                                        ErrRef.LIST_RECORD_PLAN_SPONSOR_DOES_NOT_EXIST,
-                                       ErrRef.LIST_RECORD_PLAN_SPONSOR_DOES_NOT_EXIST.getDescTxt() + " - FileName Submitter Type: " + fileName.getSubmitterType() + " FileName Submitter ID: " + fileName.getSubmitterID());
+                                       ErrRef.LIST_RECORD_PLAN_SPONSOR_DOES_NOT_EXIST.getDescTxt() + " - File Name Submitter Type/ID: " + fileName.getSubmitterType() + fileName.getSubmitterID());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

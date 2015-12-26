@@ -30,7 +30,11 @@
         </step>
 
         <step id="fileNameValid" >
-            <tasklet ref="fileNameValidTasklet" />
+            <tasklet ref="fileNameValidTasklet" >
+                <listeners>
+                    <listener ref="fileNameValidPromotionListener" />
+                </listeners>
+            </tasklet>
 
             <next on="FAILED" to="moveBadFile" />
             <next on="*"      to="importFileFirstPass" />

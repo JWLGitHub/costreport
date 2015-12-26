@@ -7,11 +7,13 @@ import jwl.prp.retiree.costreport.entity.*;
 import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.enums.StusRef;
 import jwl.prp.retiree.costreport.validation.BaseValidator;
+import jwl.prp.retiree.costreport.validation.FileContext;
 import jwl.prp.retiree.costreport.validation.ValidationError;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.validator.ValidationException;
 
@@ -41,7 +43,11 @@ public class CostReportApplicationProcessor extends    CostReportBaseProcessor
         final String METHOD_NAME = "beforeStep";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        fileContext.setRdsFileId(getRdsFileId(stepExecution));
+        ExecutionContext jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
+
+        fileContext.setRdsFileId(getIntegerFromExecutionContext(jobExecutionContext,
+                                                                FileContext.RDS_FILE_ID));
+
         updateRDSFile(StusRef.FILE_PROCESSING_2ND_PASS,
                       SIMPLE_NAME);
 

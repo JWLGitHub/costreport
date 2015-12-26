@@ -5,12 +5,12 @@ import jwl.prp.retiree.costreport.exception.CostReportException;
 import jwl.prp.retiree.costreport.validation.BaseValidator;
 import jwl.prp.retiree.costreport.validation.FileContext;
 import jwl.prp.retiree.costreport.validation.ValidationError;
-import jwl.prp.retiree.costreport.dao.FileErrDAO;
 import jwl.prp.retiree.costreport.entity.*;
 import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.enums.StusRef;
 
 import org.springframework.batch.core.*;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.validator.ValidationException;
@@ -37,7 +37,17 @@ public class CostReportFileProcessor extends    CostReportBaseProcessor
         final String METHOD_NAME = "beforeStep";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
-        fileContext.setRdsFileId(getRdsFileId(stepExecution));
+        ExecutionContext jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
+
+        fileContext.setRdsFileId(getIntegerFromExecutionContext(jobExecutionContext,
+                                                                FileContext.RDS_FILE_ID));
+
+        fileContext.setFileNameSubmitterType(getStringFromExecutionContext(jobExecutionContext,
+                                                                           FileContext.FILE_NAME_SUBMITTER_TYPE));
+
+        fileContext.setFileNameSubmitterID(getStringFromExecutionContext(jobExecutionContext,
+                                                                         FileContext.FILE_NAME_SUBMITTER_ID));
+
         updateRDSFile(StusRef.FILE_PROCESSING_1ST_PASS,
                       SIMPLE_NAME);
 

@@ -348,11 +348,7 @@
     <bean id="fileHeaderMissing"                     class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderMissing"/>
     <bean id="fileHeaderOutOfSequence"               class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderOutOfSequence"/>
     <bean id="fileHeaderSubmitterTypeValid"          class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderSubmitterTypeValid"/>
-    <bean id="fileHeaderSubmitterIDValid"            class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderSubmitterIDValid">
-        <property name="rdsOrgDAO"  ref="rdsOrgDAO"/>
-        <property name="rdsFileDAO" ref="rdsFileDAO"/>
-    </bean>
-
+    <bean id="fileHeaderSubmitterIDValid"            class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderSubmitterIDValid"/>
     <bean id="setFileSubmitterID"                    class="jwl.prp.retiree.costreport.validation.file.header.SetFileSubmitterID"/>
     <bean id="fileHeaderDateFormatValid"             class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderDateFormatValid"/>
     <bean id="fileHeaderTimeFormatValid"             class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderTimeFormatValid"/>
@@ -413,9 +409,14 @@
     <!--        LISTENER(s)      -->
     <!--                         -->
 
-    <!-- file Exists PromotionListener -->
+    <!-- File Exists PromotionListener -->
     <bean id="fileExistsPromotionListener" class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
         <property name="keys" value="rdsFileId" />
+    </bean>
+
+    <!-- File Name Valid PromotionListener -->
+    <bean id="fileNameValidPromotionListener" class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
+        <property name="keys" value="fileNameSubmitterType, fileNameSubmitterID" />
     </bean>
 
     <!-- Import file Listener -->
