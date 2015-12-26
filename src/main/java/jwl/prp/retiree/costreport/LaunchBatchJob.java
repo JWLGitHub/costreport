@@ -33,7 +33,7 @@ public class LaunchBatchJob
         // Create Job Parameter(s)
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
         jobParametersBuilder.addDate("runDate", new Date());
-        jobParametersBuilder.addString("inputFilePath",     "input/baddP0000000000.xxx");
+        jobParametersBuilder.addString("inputFilePath",     "input/goodP1122334455.txt");
         jobParametersBuilder.addString("goodFileDirectory", "goodFiles/");
         jobParametersBuilder.addString("badFileDirectory",  "badFiles/");
 

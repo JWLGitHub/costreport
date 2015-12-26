@@ -89,6 +89,7 @@
         <property name="fileNameValidators">
             <list>
                 <ref bean="fileNameIsValid"/>
+                <ref bean="fileNameSubmitterExists"/>
             </list>
         </property>
     </bean>
@@ -338,7 +339,10 @@
     <bean id="secondValidator"                       class="jwl.prp.retiree.costreport.validation.FalseValidator"/>     <!--  NOT USED     -->
 
     <!-- File Name Validator(s) -->
-    <bean id="fileNameIsValid"                       class="jwl.prp.retiree.costreport.validation.file.name.FileNameValid"/>
+    <bean id="fileNameIsValid"                       class="jwl.prp.retiree.costreport.validation.file.name.FileNameIsValid"/>
+    <bean id="fileNameSubmitterExists"               class="jwl.prp.retiree.costreport.validation.file.name.FileNameSubmitterExists">
+        <property name="rdsOrgDAO"  ref="rdsOrgDAO"/>
+    </bean>
 
     <!-- File Header Validator(s) -->
     <bean id="fileHeaderMissing"                     class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderMissing"/>

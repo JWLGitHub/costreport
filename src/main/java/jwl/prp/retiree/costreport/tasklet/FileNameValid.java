@@ -65,10 +65,13 @@ public class FileNameValid implements Tasklet
 
         ValidationError validationError = validateFileName(inputFileName);
 
+        int rdsFileId = getRdsFileId();
+        updateRDSFile(rdsFileId,
+                      inputFileName,
+                      validationError);
+
         if (null != validationError)
         {
-            int rdsFileId = getRdsFileId();
-            updateRDSFile(rdsFileId);
             insertFileErr(rdsFileId,
                           validationError);
 
@@ -83,7 +86,7 @@ public class FileNameValid implements Tasklet
     private ValidationError validateFileName(FileName fileName)
     {
         final String METHOD_NAME = "validateFileName";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - FileName: " + fileName);
+        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         ValidationError validationError = null;
 
@@ -125,14 +128,24 @@ public class FileNameValid implements Tasklet
     }
 
 
-    private void updateRDSFile(int rdsFileId)
+    private void updateRDSFile(int             rdsFileId,
+                               FileName        fileName,
+                               ValidationError validationError)
     {
         final String METHOD_NAME = "updateRDSFile";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         RDSFile rdsFile = rdsFileDAO.findByFileId(rdsFileId);
-        rdsFile.setStusCtgryCd(StusCtgry.FILE_STATUS.getStusCtgryCd());
-        rdsFile.setStusCd(StusRef.FILE_REJECTED_BAD_STRUCTURE.getStusCd());
+
+        if (null == validationError)
+        {
+            rdsFile.setOrgTypCd(fileName.getSubmitterType());
+            rdsFile.setOrgId(fileName.getSubmitterID());
+        }
+        else
+            rdsFile.setStusCd(StusRef.FILE_REJECTED_BAD_STRUCTURE.getStusCd());
+
+        rdsFile.setSubmOrgId(fileName.getSubmitterID());
         rdsFile.setUptdPgm(SIMPLE_NAME);
         rdsFile.setUpdtTs(new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
         rdsFileDAO.updateRDSFile(rdsFile);
