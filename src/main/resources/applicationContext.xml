@@ -257,6 +257,7 @@
             <list>
                 <ref bean="fileHeaderMissing"/>
                 <ref bean="fileTrailerOutOfSequence"/>
+                <ref bean="fileTrailerSubmitterIDValid"/>
                 <ref bean="applicationsExist"/>
                 <ref bean="incrementFileTrailerCounter"/>
             </list>
@@ -387,6 +388,7 @@
 
     <!-- File Trailer Validator(s) -->
     <bean id="fileTrailerOutOfSequence"              class="jwl.prp.retiree.costreport.validation.file.trailer.FileTrailerOutOfSequence"/>
+    <bean id="fileTrailerSubmitterIDValid"           class="jwl.prp.retiree.costreport.validation.file.trailer.FileTrailerSubmitterIDValid"/>
     <bean id="applicationsExist"                     class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationsExist"/>
     <bean id="fileTrailerApplicationCountCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationCountCorrect"/>
     <bean id="fileTrailerEstimatedPremiumCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.EstimatedPremiumCorrect"/>
