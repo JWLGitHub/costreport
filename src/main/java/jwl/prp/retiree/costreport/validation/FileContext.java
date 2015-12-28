@@ -36,6 +36,7 @@ public class FileContext
     private int               fileApplicationAcceptedCount;
     private int               fileApplicationRejectedCount;
     private ArrayList<String> fileApplicationIDs   = new ArrayList<String>();
+    private BigDecimal        fileEstimatedPremium = new BigDecimal("0");
     private BigDecimal        fileGrossRetireeCost = new BigDecimal("0");
     private int               fileTrailerCounter;
     private int               fileErrSeqNum;
@@ -57,8 +58,8 @@ public class FileContext
 
     // --- TRAILER ---
     private int        applicationRecordCount;
+    private BigDecimal applicationEstimatedPremium = new BigDecimal("0");
     private BigDecimal applicationGrossRetireeCost = new BigDecimal("0");
-
 
 
 
@@ -103,6 +104,8 @@ public class FileContext
 
     public ArrayList<String> getFileApplicationIDs() { return fileApplicationIDs; }
 
+    public BigDecimal getFileEstimatedPremium() { return fileEstimatedPremium; }
+
     public BigDecimal getFileGrossRetireeCost() { return fileGrossRetireeCost; }
 
     public int getFileTrailerCounter() { return fileTrailerCounter; }
@@ -125,6 +128,8 @@ public class FileContext
     public String getValidApplicationID() { return validApplicationID; }
 
     public int getApplicationRecordCount() { return applicationRecordCount; }
+
+    public BigDecimal getApplicationEstimatedPremium() { return applicationEstimatedPremium; }
 
     public BigDecimal getApplicationGrossRetireeCost() { return applicationGrossRetireeCost; }
 
@@ -154,6 +159,8 @@ public class FileContext
 
     public void setFileApplicationIDs(ArrayList<String> fileApplicationIDs) { this.fileApplicationIDs = fileApplicationIDs; }
 
+    public void setFileEstimatedPremium(BigDecimal fileEstimatedPremium) { this.fileEstimatedPremium = fileEstimatedPremium; }
+
     public void setFileGrossRetireeCost(BigDecimal fileGrossRetireeCost) { this.fileGrossRetireeCost = fileGrossRetireeCost; }
 
     public void setFileTrailerCounter(int fileTrailerCounter) { this.fileTrailerCounter = fileTrailerCounter; }
@@ -176,6 +183,8 @@ public class FileContext
     public void setValidApplicationID(String validApplicationID) { this.validApplicationID = validApplicationID; }
 
     public void setApplicationRecordCount(int applicationRecordCount) { this.applicationRecordCount = applicationRecordCount; }
+
+    public void setApplicationEstimatedPremium(BigDecimal applicationEstimatedPremium) { this.applicationEstimatedPremium = applicationEstimatedPremium; }
 
     public void setApplicationGrossRetireeCost(BigDecimal applicationGrossRetireeCost) { this.applicationGrossRetireeCost = applicationGrossRetireeCost; }
 }

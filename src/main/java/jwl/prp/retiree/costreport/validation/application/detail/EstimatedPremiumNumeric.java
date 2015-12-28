@@ -1,21 +1,22 @@
 package jwl.prp.retiree.costreport.validation.application.detail;
 
-
-import jwl.prp.retiree.costreport.validation.BaseValidator;
-import jwl.prp.retiree.costreport.validation.FileContext;
-import jwl.prp.retiree.costreport.validation.ValidationError;
 import jwl.prp.retiree.costreport.entity.ApplicationDetail;
 import jwl.prp.retiree.costreport.entity.CostReportRecord;
 import jwl.prp.retiree.costreport.enums.ErrRef;
+import jwl.prp.retiree.costreport.validation.BaseValidator;
+import jwl.prp.retiree.costreport.validation.FileContext;
+import jwl.prp.retiree.costreport.validation.ValidationError;
 
 import java.math.BigDecimal;
 
-
-public class GrossRetireeCostNumeric extends BaseValidator
+/**
+ * Created by jwleader on 12/28/15.
+ */
+public class EstimatedPremiumNumeric extends BaseValidator
 {
 
-    private static String CLASS_NAME  = GrossRetireeCostNumeric.class.getName();
-    private static String SIMPLE_NAME = GrossRetireeCostNumeric.class.getSimpleName();
+    private static String CLASS_NAME  = EstimatedPremiumNumeric.class.getName();
+    private static String SIMPLE_NAME = EstimatedPremiumNumeric.class.getSimpleName();
 
 
     @Override
@@ -31,20 +32,20 @@ public class GrossRetireeCostNumeric extends BaseValidator
 
         ApplicationDetail applicationDetail = (ApplicationDetail) costReportRecord;
 
-        BigDecimal grossRetireeCost;
+        BigDecimal estimatedPremium;
 
         try
         {
-            grossRetireeCost = stringv99ToBigDecimal(applicationDetail.getGrossRetireeCost());
+            estimatedPremium = stringv99ToBigDecimal(applicationDetail.getEstimatedPremium());
         }
         catch (NumberFormatException nfe)
         {
             return new ValidationError(fileContext.getFileRecordCounter(),
-                                       ErrRef.APPLICATION_DETAIL_RET_COST_IS_NON_NUMERIC,
+                                       ErrRef.APPLICATION_DETAIL_PREMIUM_IS_NON_NUMERIC,
                                        applicationDetail.toString());
         }
 
-        fileContext.setApplicationGrossRetireeCost(fileContext.getApplicationGrossRetireeCost().add(grossRetireeCost));
+        fileContext.setApplicationEstimatedPremium(fileContext.getApplicationEstimatedPremium().add(estimatedPremium));
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;

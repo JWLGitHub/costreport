@@ -299,6 +299,7 @@
             <list>
                 <ref bean="uniqueBenefitOptionIdentifierCorrect"/>
                 <ref bean="aplctnDetailDateFormatValid"/>
+                <ref bean="aplctnDetailEstimatedPremiumNumeric"/>
                 <ref bean="aplctnDetailGrossRetireeCountNumeric"/>
                 <ref bean="incrementApplicationRecordCount"/>
             </list>
@@ -309,6 +310,7 @@
             <list>
                 <ref bean="aplctnTrailerApplicationIDMatches"/>
                 <ref bean="aplctnTrailerRecordCountCorrect"/>
+                <ref bean="aplctnTrailerEstimatedPremiumCorrect"/>
                 <ref bean="aplctnTrailerGrossRetireeCostCorrect"/>
                 <ref bean="incrementApplicationCount"/>
             </list>
@@ -318,8 +320,8 @@
         <property name="fileTrailerValidators">
             <list>
                 <ref bean="fileTrailerApplicationCountCorrect"/>
+                <ref bean="fileTrailerEstimatedPremiumCorrect"/>
                 <ref bean="fileTrailerGrossRetireeCostCorrect"/>
-                <ref bean="incrementFileTrailerCounter"/>
             </list>
         </property>
 
@@ -371,6 +373,7 @@
         <property name="planOptionsDAO"  ref="planOptionsDAO"/>
     </bean>
     <bean id="aplctnDetailDateFormatValid"           class="jwl.prp.retiree.costreport.validation.application.detail.RXCostYearMonthFormatValid"/>
+    <bean id="aplctnDetailEstimatedPremiumNumeric"   class="jwl.prp.retiree.costreport.validation.application.detail.EstimatedPremiumNumeric"/>
     <bean id="aplctnDetailGrossRetireeCountNumeric"  class="jwl.prp.retiree.costreport.validation.application.detail.GrossRetireeCostNumeric"/>
     <bean id="incrementApplicationRecordCount"       class="jwl.prp.retiree.costreport.validation.application.detail.IncrementApplicationRecordCount"/>
 
@@ -378,6 +381,7 @@
     <bean id="applicationTrailerOutOfSequence"       class="jwl.prp.retiree.costreport.validation.application.trailer.ApplicationTrailerOutOfSequence"/>
     <bean id="aplctnTrailerApplicationIDMatches"     class="jwl.prp.retiree.costreport.validation.application.trailer.ApplicationIDMatchesApplicationHeader"/>
     <bean id="aplctnTrailerRecordCountCorrect"       class="jwl.prp.retiree.costreport.validation.application.trailer.RecordCountCorrect"/>
+    <bean id="aplctnTrailerEstimatedPremiumCorrect"  class="jwl.prp.retiree.costreport.validation.application.trailer.EstimatedPremiumCorrect"/>
     <bean id="aplctnTrailerGrossRetireeCostCorrect"  class="jwl.prp.retiree.costreport.validation.application.trailer.GrossRetireeCostCorrect"/>
     <bean id="incrementApplicationCount"             class="jwl.prp.retiree.costreport.validation.application.trailer.IncrementApplicationCount"/>
 
@@ -385,6 +389,7 @@
     <bean id="fileTrailerOutOfSequence"              class="jwl.prp.retiree.costreport.validation.file.trailer.FileTrailerOutOfSequence"/>
     <bean id="applicationsExist"                     class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationsExist"/>
     <bean id="fileTrailerApplicationCountCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.ApplicationCountCorrect"/>
+    <bean id="fileTrailerEstimatedPremiumCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.EstimatedPremiumCorrect"/>
     <bean id="fileTrailerGrossRetireeCostCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.GrossRetireeCostCorrect"/>
     <bean id="incrementFileTrailerCounter"           class="jwl.prp.retiree.costreport.validation.file.trailer.IncrementFileTrailerCounter"/>
 

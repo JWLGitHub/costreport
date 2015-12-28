@@ -1,19 +1,19 @@
 package jwl.prp.retiree.costreport.validation.file.trailer;
 
-import jwl.prp.retiree.costreport.validation.BaseValidator;
-import jwl.prp.retiree.costreport.validation.FileContext;
-import jwl.prp.retiree.costreport.validation.ValidationError;
 import jwl.prp.retiree.costreport.entity.CostReportRecord;
 import jwl.prp.retiree.costreport.entity.FileTrailer;
 import jwl.prp.retiree.costreport.enums.ErrRef;
+import jwl.prp.retiree.costreport.validation.BaseValidator;
+import jwl.prp.retiree.costreport.validation.FileContext;
+import jwl.prp.retiree.costreport.validation.ValidationError;
 
-import java.math.BigDecimal;
-
-
-public class GrossRetireeCostCorrect extends BaseValidator
+/**
+ * Created by jwleader on 12/28/15.
+ */
+public class EstimatedPremiumNumeric extends BaseValidator
 {
-    private static String CLASS_NAME       = GrossRetireeCostCorrect.class.getName();
-    private static String SIMPLE_NAME      = GrossRetireeCostCorrect.class.getSimpleName();
+    private static String CLASS_NAME  = EstimatedPremiumNumeric.class.getName();
+    private static String SIMPLE_NAME = EstimatedPremiumNumeric.class.getSimpleName();
 
 
     @Override
@@ -29,23 +29,16 @@ public class GrossRetireeCostCorrect extends BaseValidator
 
         FileTrailer fileTrailer = (FileTrailer) costReportRecord;
 
-        BigDecimal grandGrossRetireeCost;
-
         try
         {
-            grandGrossRetireeCost = stringv99ToBigDecimal(fileTrailer.getGrandGrossRetireeCost());
+            stringv99ToBigDecimal(fileTrailer.getGrandEstimatedPremium());
         }
         catch (NumberFormatException nfe)
         {
             return new ValidationError(fileContext.getFileRecordCounter(),
-                                       ErrRef.FILE_TRAILER_RET_COST_AMOUNT_NON_NUMERI,
+                                       ErrRef.FILE_TRAILER_PREMIUM_AMOUNT_NON_NUMERIC,
                                        fileTrailer.toString());
         }
-
-        if (grandGrossRetireeCost.subtract(fileContext.getFileGrossRetireeCost()) != ZERO_DOLLARS)
-            return new ValidationError(fileContext.getFileRecordCounter(),
-                                       ErrRef.FILE_TRAILER_RET_COST_AMOUNT_INCORRECT,
-                                       "FTRL Gross Retiree Cost: " + grandGrossRetireeCost + " Computed Gross Retiree Cost : " + fileContext.getFileGrossRetireeCost());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;
