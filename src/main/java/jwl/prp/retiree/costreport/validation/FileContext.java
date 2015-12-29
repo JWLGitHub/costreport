@@ -39,6 +39,7 @@ public class FileContext
     private BigDecimal        fileEstimatedPremium   = new BigDecimal("0");
     private BigDecimal        fileGrossRetireeCost   = new BigDecimal("0");
     private BigDecimal        fileThresholdReduction = new BigDecimal("0");
+    private BigDecimal        fileLimitReduction     = new BigDecimal("0");
     private int               fileTrailerCounter;
     private int               fileErrSeqNum;
 
@@ -62,6 +63,7 @@ public class FileContext
     private BigDecimal applicationEstimatedPremium   = new BigDecimal("0");
     private BigDecimal applicationGrossRetireeCost   = new BigDecimal("0");
     private BigDecimal applicationThresholdReduction = new BigDecimal("0");
+    private BigDecimal applicationLimitReduction     = new BigDecimal("0");
 
 
 
@@ -112,6 +114,8 @@ public class FileContext
 
     public BigDecimal getFileThresholdReduction() { return fileThresholdReduction; }
 
+    public BigDecimal getFileLimitReduction() { return fileLimitReduction; }
+
     public int getFileTrailerCounter() { return fileTrailerCounter; }
 
     public int getFileErrSeqNum() { return fileErrSeqNum; }
@@ -138,6 +142,8 @@ public class FileContext
     public BigDecimal getApplicationGrossRetireeCost() { return applicationGrossRetireeCost; }
 
     public BigDecimal getApplicationThresholdReduction() { return applicationThresholdReduction; }
+
+    public BigDecimal getApplicationLimitReduction() { return applicationLimitReduction; }
 
 
     /*
@@ -171,6 +177,8 @@ public class FileContext
 
     public void setFileThresholdReduction(BigDecimal fileThresholdReduction) { this.fileThresholdReduction = fileThresholdReduction; }
 
+    public void setFileLimitReduction(BigDecimal fileLimitReduction) { this.fileLimitReduction = fileLimitReduction; }
+
     public void setFileTrailerCounter(int fileTrailerCounter) { this.fileTrailerCounter = fileTrailerCounter; }
 
     public void setFileErrSeqNum(int fileErrSeqNum) { this.fileErrSeqNum = fileErrSeqNum; }
@@ -197,4 +205,6 @@ public class FileContext
     public void setApplicationGrossRetireeCost(BigDecimal applicationGrossRetireeCost) { this.applicationGrossRetireeCost = applicationGrossRetireeCost; }
 
     public void setApplicationThresholdReduction(BigDecimal applicationThresholdReduction) { this.applicationThresholdReduction = applicationThresholdReduction; }
+
+    public void setApplicationLimitReduction(BigDecimal applicationLimitReduction) { this.applicationLimitReduction = applicationLimitReduction; }
 }

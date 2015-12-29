@@ -303,6 +303,7 @@
                 <ref bean="aplctnDetailEstimatedPremiumNumeric"/>
                 <ref bean="aplctnDetailGrossRetireeCountNumeric"/>
                 <ref bean="aplctnDetailThresholdReductionNumeric"/>
+                <ref bean="aplctnDetailLimitReductionNumeric"/>
                 <ref bean="incrementApplicationRecordCount"/>
             </list>
         </property>
@@ -315,6 +316,7 @@
                 <ref bean="aplctnTrailerEstimatedPremiumCorrect"/>
                 <ref bean="aplctnTrailerGrossRetireeCostCorrect"/>
                 <ref bean="aplctnTrailerThresholdReductionCorrect"/>
+                <ref bean="aplctnTrailerLimitReductionCorrect"/>
                 <ref bean="incrementApplicationCount"/>
             </list>
         </property>
@@ -326,6 +328,7 @@
                 <ref bean="fileTrailerEstimatedPremiumCorrect"/>
                 <ref bean="fileTrailerGrossRetireeCostCorrect"/>
                 <ref bean="fileTrailerThresholdReductionCorrect"/>
+                <ref bean="fileTrailerLimitReductionCorrect"/>
             </list>
         </property>
 
@@ -380,6 +383,7 @@
     <bean id="aplctnDetailEstimatedPremiumNumeric"   class="jwl.prp.retiree.costreport.validation.application.detail.EstimatedPremiumNumeric"/>
     <bean id="aplctnDetailGrossRetireeCountNumeric"  class="jwl.prp.retiree.costreport.validation.application.detail.GrossRetireeCostNumeric"/>
     <bean id="aplctnDetailThresholdReductionNumeric" class="jwl.prp.retiree.costreport.validation.application.detail.ThresholdReductionNumeric"/>
+    <bean id="aplctnDetailLimitReductionNumeric"     class="jwl.prp.retiree.costreport.validation.application.detail.LimitReductionNumeric"/>
     <bean id="incrementApplicationRecordCount"       class="jwl.prp.retiree.costreport.validation.application.detail.IncrementApplicationRecordCount"/>
 
     <!-- Application Trailer Validator(s) -->
@@ -389,6 +393,7 @@
     <bean id="aplctnTrailerEstimatedPremiumCorrect"   class="jwl.prp.retiree.costreport.validation.application.trailer.EstimatedPremiumCorrect"/>
     <bean id="aplctnTrailerGrossRetireeCostCorrect"   class="jwl.prp.retiree.costreport.validation.application.trailer.GrossRetireeCostCorrect"/>
     <bean id="aplctnTrailerThresholdReductionCorrect" class="jwl.prp.retiree.costreport.validation.application.trailer.ThresholdReductionCorrect" />
+    <bean id="aplctnTrailerLimitReductionCorrect"     class="jwl.prp.retiree.costreport.validation.application.trailer.LimitReductionCorrect"/>
     <bean id="incrementApplicationCount"              class="jwl.prp.retiree.costreport.validation.application.trailer.IncrementApplicationCount"/>
 
     <!-- File Trailer Validator(s) -->
@@ -399,6 +404,7 @@
     <bean id="fileTrailerEstimatedPremiumCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.EstimatedPremiumCorrect"/>
     <bean id="fileTrailerGrossRetireeCostCorrect"    class="jwl.prp.retiree.costreport.validation.file.trailer.GrossRetireeCostCorrect"/>
     <bean id="fileTrailerThresholdReductionCorrect"  class="jwl.prp.retiree.costreport.validation.file.trailer.ThresholdReductionCorrect"/>
+    <bean id="fileTrailerLimitReductionCorrect"      class="jwl.prp.retiree.costreport.validation.file.trailer.LimitReductionCorrect"/>
     <bean id="incrementFileTrailerCounter"           class="jwl.prp.retiree.costreport.validation.file.trailer.IncrementFileTrailerCounter"/>
 
 
