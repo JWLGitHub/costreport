@@ -35,9 +35,10 @@ public class FileContext
     private int               fileApplicationCount;
     private int               fileApplicationAcceptedCount;
     private int               fileApplicationRejectedCount;
-    private ArrayList<String> fileApplicationIDs   = new ArrayList<String>();
-    private BigDecimal        fileEstimatedPremium = new BigDecimal("0");
-    private BigDecimal        fileGrossRetireeCost = new BigDecimal("0");
+    private ArrayList<String> fileApplicationIDs     = new ArrayList<String>();
+    private BigDecimal        fileEstimatedPremium   = new BigDecimal("0");
+    private BigDecimal        fileGrossRetireeCost   = new BigDecimal("0");
+    private BigDecimal        fileThresholdReduction = new BigDecimal("0");
     private int               fileTrailerCounter;
     private int               fileErrSeqNum;
 
@@ -58,8 +59,9 @@ public class FileContext
 
     // --- TRAILER ---
     private int        applicationRecordCount;
-    private BigDecimal applicationEstimatedPremium = new BigDecimal("0");
-    private BigDecimal applicationGrossRetireeCost = new BigDecimal("0");
+    private BigDecimal applicationEstimatedPremium   = new BigDecimal("0");
+    private BigDecimal applicationGrossRetireeCost   = new BigDecimal("0");
+    private BigDecimal applicationThresholdReduction = new BigDecimal("0");
 
 
 
@@ -108,6 +110,8 @@ public class FileContext
 
     public BigDecimal getFileGrossRetireeCost() { return fileGrossRetireeCost; }
 
+    public BigDecimal getFileThresholdReduction() { return fileThresholdReduction; }
+
     public int getFileTrailerCounter() { return fileTrailerCounter; }
 
     public int getFileErrSeqNum() { return fileErrSeqNum; }
@@ -132,6 +136,8 @@ public class FileContext
     public BigDecimal getApplicationEstimatedPremium() { return applicationEstimatedPremium; }
 
     public BigDecimal getApplicationGrossRetireeCost() { return applicationGrossRetireeCost; }
+
+    public BigDecimal getApplicationThresholdReduction() { return applicationThresholdReduction; }
 
 
     /*
@@ -163,6 +169,8 @@ public class FileContext
 
     public void setFileGrossRetireeCost(BigDecimal fileGrossRetireeCost) { this.fileGrossRetireeCost = fileGrossRetireeCost; }
 
+    public void setFileThresholdReduction(BigDecimal fileThresholdReduction) { this.fileThresholdReduction = fileThresholdReduction; }
+
     public void setFileTrailerCounter(int fileTrailerCounter) { this.fileTrailerCounter = fileTrailerCounter; }
 
     public void setFileErrSeqNum(int fileErrSeqNum) { this.fileErrSeqNum = fileErrSeqNum; }
@@ -187,4 +195,6 @@ public class FileContext
     public void setApplicationEstimatedPremium(BigDecimal applicationEstimatedPremium) { this.applicationEstimatedPremium = applicationEstimatedPremium; }
 
     public void setApplicationGrossRetireeCost(BigDecimal applicationGrossRetireeCost) { this.applicationGrossRetireeCost = applicationGrossRetireeCost; }
+
+    public void setApplicationThresholdReduction(BigDecimal applicationThresholdReduction) { this.applicationThresholdReduction = applicationThresholdReduction; }
 }

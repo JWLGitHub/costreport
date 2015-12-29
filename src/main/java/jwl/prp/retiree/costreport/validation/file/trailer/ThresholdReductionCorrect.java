@@ -1,19 +1,21 @@
 package jwl.prp.retiree.costreport.validation.file.trailer;
 
-import jwl.prp.retiree.costreport.validation.BaseValidator;
-import jwl.prp.retiree.costreport.validation.FileContext;
-import jwl.prp.retiree.costreport.validation.ValidationError;
 import jwl.prp.retiree.costreport.entity.CostReportRecord;
 import jwl.prp.retiree.costreport.entity.FileTrailer;
 import jwl.prp.retiree.costreport.enums.ErrRef;
+import jwl.prp.retiree.costreport.validation.BaseValidator;
+import jwl.prp.retiree.costreport.validation.FileContext;
+import jwl.prp.retiree.costreport.validation.ValidationError;
 
 import java.math.BigDecimal;
 
-
-public class GrossRetireeCostCorrect extends BaseValidator
+/**
+ * Created by jwleader on 12/29/15.
+ */
+public class ThresholdReductionCorrect extends BaseValidator
 {
-    private static String CLASS_NAME       = GrossRetireeCostCorrect.class.getName();
-    private static String SIMPLE_NAME      = GrossRetireeCostCorrect.class.getSimpleName();
+    private static String CLASS_NAME       = ThresholdReductionCorrect.class.getName();
+    private static String SIMPLE_NAME      = ThresholdReductionCorrect.class.getSimpleName();
 
 
     @Override
@@ -29,23 +31,23 @@ public class GrossRetireeCostCorrect extends BaseValidator
 
         FileTrailer fileTrailer = (FileTrailer) costReportRecord;
 
-        BigDecimal grandGrossRetireeCost;
+        BigDecimal grandThresholdReduction;
 
         try
         {
-            grandGrossRetireeCost = stringv99ToBigDecimal(fileTrailer.getGrandGrossRetireeCost());
+            grandThresholdReduction = stringv99ToBigDecimal(fileTrailer.getGrandThresholdReduction());
         }
         catch (NumberFormatException nfe)
         {
             return new ValidationError(fileContext.getFileRecordCounter(),
-                                       ErrRef.FILE_TRAILER_RET_COST_AMOUNT_NON_NUMERI,
+                                       ErrRef.FILE_TRAILER_THRESHOLD_AMOUNT_NON_NUMER,
                                        fileTrailer.toString());
         }
 
-        if (grandGrossRetireeCost.subtract(fileContext.getFileGrossRetireeCost()) != ZERO_DOLLARS)
+        if (grandThresholdReduction.subtract(fileContext.getFileThresholdReduction()) != ZERO_DOLLARS)
             return new ValidationError(fileContext.getFileRecordCounter(),
-                                       ErrRef.FILE_TRAILER_RET_COST_AMOUNT_INCORRECT,
-                                       "FTRL Gross Retiree Cost: " + grandGrossRetireeCost + " Computed Gross Retiree Cost: " + fileContext.getFileGrossRetireeCost());
+                                       ErrRef.FILE_TRAILER_THRESHOLD_AMOUNT_INCORRECT,
+                                       "FTRL Threshold Reduction: " + grandThresholdReduction + " Computed Threshold Reduction: " + fileContext.getFileThresholdReduction());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;
