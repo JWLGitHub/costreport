@@ -44,7 +44,7 @@ public class EstimatedPremiumCorrect extends BaseValidator
                                        applicationTrailer.toString());
         }
 
-        if (totalEstimatedPremium.subtract(fileContext.getApplicationEstimatedPremium()) != ZERO_DOLLARS)
+        if (totalEstimatedPremium.subtract(fileContext.getApplicationEstimatedPremium()).compareTo(ZERO_DOLLARS) != 0)
             return new ValidationError(fileContext.getFileRecordCounter(),
                                        ErrRef.APPLICATION_TRAILER_PREMIUM_AMOUNT_INCORRECT,
                                        "Application ID: " + applicationTrailer.getApplicationID() + " ATRL Estimated Premium: " + totalEstimatedPremium + " Computed Estimated Premium: " + fileContext.getApplicationEstimatedPremium());

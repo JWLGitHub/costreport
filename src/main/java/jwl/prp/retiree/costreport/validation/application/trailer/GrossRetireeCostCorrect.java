@@ -45,7 +45,7 @@ public class GrossRetireeCostCorrect extends BaseValidator
                                        applicationTrailer.toString());
         }
 
-        if (totalGrossRetireeCost.subtract(fileContext.getApplicationGrossRetireeCost()) != ZERO_DOLLARS)
+        if (totalGrossRetireeCost.subtract(fileContext.getApplicationGrossRetireeCost()).compareTo(ZERO_DOLLARS) != 0)
             return new ValidationError(fileContext.getFileRecordCounter(),
                                        ErrRef.APPLICATION_TRAILER_RET_COST_INCORRECT,
                                        "Application ID: " + applicationTrailer.getApplicationID() + " ATRL Gross Retiree Cost: " + totalGrossRetireeCost + " Computed Gross Retiree Cost: " + fileContext.getApplicationGrossRetireeCost());

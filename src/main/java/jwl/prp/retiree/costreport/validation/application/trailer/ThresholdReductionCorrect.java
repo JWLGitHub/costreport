@@ -43,7 +43,7 @@ public class ThresholdReductionCorrect extends BaseValidator
                                        applicationTrailer.toString());
         }
 
-        if (totalThresholdReduction.subtract(fileContext.getApplicationThresholdReduction()) != ZERO_DOLLARS)
+        if (totalThresholdReduction.subtract(fileContext.getApplicationThresholdReduction()).compareTo(ZERO_DOLLARS) != 0)
             return new ValidationError(fileContext.getFileRecordCounter(),
                                        ErrRef.APPLICATION_TRAILER_THRESHOLD_INCORRECT,
                                        "Application ID: " + applicationTrailer.getApplicationID() + " ATRL Threshold Reduction: " + totalThresholdReduction + " Computed Threshold Reduction: " + fileContext.getApplicationThresholdReduction());

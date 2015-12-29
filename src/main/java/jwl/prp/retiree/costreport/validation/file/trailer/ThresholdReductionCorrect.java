@@ -44,7 +44,7 @@ public class ThresholdReductionCorrect extends BaseValidator
                                        fileTrailer.toString());
         }
 
-        if (grandThresholdReduction.subtract(fileContext.getFileThresholdReduction()) != ZERO_DOLLARS)
+        if (grandThresholdReduction.subtract(fileContext.getFileThresholdReduction()).compareTo(ZERO_DOLLARS) != 0)
             return new ValidationError(fileContext.getFileRecordCounter(),
                                        ErrRef.FILE_TRAILER_THRESHOLD_AMOUNT_INCORRECT,
                                        "FTRL Threshold Reduction: " + grandThresholdReduction + " Computed Threshold Reduction: " + fileContext.getFileThresholdReduction());

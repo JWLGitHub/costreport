@@ -42,7 +42,7 @@ public class EstimatedPremiumCorrect extends BaseValidator
                                        fileTrailer.toString());
         }
 
-        if (grandEstimatedPremium.subtract(fileContext.getFileEstimatedPremium()) != ZERO_DOLLARS)
+        if (grandEstimatedPremium.subtract(fileContext.getFileEstimatedPremium()).compareTo(ZERO_DOLLARS) != 0)
             return new ValidationError(fileContext.getFileRecordCounter(),
                                        ErrRef.FILE_TRAILER_PREMIUM_AMOUNT_INCORRECT,
                                        "FTRL Estimated Premium: " + grandEstimatedPremium + " Computed Estimated Premium: " + fileContext.getFileEstimatedPremium());

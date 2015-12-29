@@ -43,7 +43,7 @@ public class LimitReductionCorrect extends BaseValidator
                                        fileTrailer.toString());
         }
 
-        if (grandLimitReduction.subtract(fileContext.getFileLimitReduction()) != ZERO_DOLLARS)
+        if (grandLimitReduction.subtract(fileContext.getFileLimitReduction()).compareTo(ZERO_DOLLARS) != 0)
             return new ValidationError(fileContext.getFileRecordCounter(),
                                        ErrRef.FILE_TRAILER_LIMIT_AMOUNT_INCORRECT,
                                        "FTRL Limit Reduction: " + grandLimitReduction + " Computed Limit Reduction: " + fileContext.getFileLimitReduction());

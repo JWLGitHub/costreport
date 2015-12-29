@@ -42,7 +42,7 @@ public class GrossRetireeCostCorrect extends BaseValidator
                                        fileTrailer.toString());
         }
 
-        if (grandGrossRetireeCost.subtract(fileContext.getFileGrossRetireeCost()) != ZERO_DOLLARS)
+        if (grandGrossRetireeCost.subtract(fileContext.getFileGrossRetireeCost()).compareTo(ZERO_DOLLARS) != 0)
             return new ValidationError(fileContext.getFileRecordCounter(),
                                        ErrRef.FILE_TRAILER_RET_COST_AMOUNT_INCORRECT,
                                        "FTRL Gross Retiree Cost: " + grandGrossRetireeCost + " Computed Gross Retiree Cost: " + fileContext.getFileGrossRetireeCost());

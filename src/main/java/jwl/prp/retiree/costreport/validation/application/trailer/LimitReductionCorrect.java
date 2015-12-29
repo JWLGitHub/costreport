@@ -43,7 +43,7 @@ public class LimitReductionCorrect extends BaseValidator
                                        applicationTrailer.toString());
         }
 
-        if (totalLimitReduction.subtract(fileContext.getApplicationLimitReduction()) != ZERO_DOLLARS)
+        if (totalLimitReduction.subtract(fileContext.getApplicationLimitReduction()).compareTo(ZERO_DOLLARS) != 0)
             return new ValidationError(fileContext.getFileRecordCounter(),
                                        ErrRef.APPLICATION_TRAILER_LIMIT_INCORRECT,
                                        "Application ID: " + applicationTrailer.getApplicationID() + " ATRL Limit Reduction: " + totalLimitReduction + " Computed Limit Reduction: " + fileContext.getApplicationLimitReduction());
