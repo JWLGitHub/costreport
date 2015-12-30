@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 
 public class GrossRetireeCostCorrect extends BaseValidator
 {
-    private static String CLASS_NAME       = GrossRetireeCostCorrect.class.getName();
-    private static String SIMPLE_NAME      = GrossRetireeCostCorrect.class.getSimpleName();
+    private static String CLASS_NAME  = GrossRetireeCostCorrect.class.getName();
+    private static String SIMPLE_NAME = GrossRetireeCostCorrect.class.getSimpleName();
 
 
     @Override

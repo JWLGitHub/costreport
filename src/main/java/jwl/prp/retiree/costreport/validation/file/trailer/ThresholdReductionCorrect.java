@@ -14,8 +14,8 @@ import java.math.BigDecimal;
  */
 public class ThresholdReductionCorrect extends BaseValidator
 {
-    private static String CLASS_NAME       = ThresholdReductionCorrect.class.getName();
-    private static String SIMPLE_NAME      = ThresholdReductionCorrect.class.getSimpleName();
+    private static String CLASS_NAME  = ThresholdReductionCorrect.class.getName();
+    private static String SIMPLE_NAME = ThresholdReductionCorrect.class.getSimpleName();
 
 
     @Override

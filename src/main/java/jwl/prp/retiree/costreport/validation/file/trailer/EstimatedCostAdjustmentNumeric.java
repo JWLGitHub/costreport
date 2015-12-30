@@ -7,13 +7,11 @@ import jwl.prp.retiree.costreport.validation.BaseValidator;
 import jwl.prp.retiree.costreport.validation.FileContext;
 import jwl.prp.retiree.costreport.validation.ValidationError;
 
-import java.math.BigDecimal;
 
-
-public class EstimatedPremiumCorrect extends BaseValidator
+public class EstimatedCostAdjustmentNumeric extends BaseValidator
 {
-    private static String CLASS_NAME  = EstimatedPremiumCorrect.class.getName();
-    private static String SIMPLE_NAME = EstimatedPremiumCorrect.class.getSimpleName();
+    private static String CLASS_NAME  = EstimatedCostAdjustmentNumeric.class.getName();
+    private static String SIMPLE_NAME = EstimatedCostAdjustmentNumeric.class.getSimpleName();
 
 
     @Override
@@ -29,23 +27,16 @@ public class EstimatedPremiumCorrect extends BaseValidator
 
         FileTrailer fileTrailer = (FileTrailer) costReportRecord;
 
-        BigDecimal grandEstimatedPremium;
-
         try
         {
-            grandEstimatedPremium = stringv99ToBigDecimal(fileTrailer.getGrandEstimatedPremium());
+            stringv99ToBigDecimal(fileTrailer.getGrandEstimatedCostAdjustment());
         }
         catch (NumberFormatException nfe)
         {
             return new ValidationError(fileContext.getFileRecordCounter(),
-                                       ErrRef.FILE_TRAILER_PREMIUM_AMOUNT_NON_NUMERIC,
+                                       ErrRef.FILE_TRAILER_COST_ADJUST_NON_NUMERIC,
                                        fileTrailer.toString());
         }
-
-        if (grandEstimatedPremium.subtract(fileContext.getFileEstimatedPremium()).compareTo(ZERO_DOLLARS) != 0)
-            return new ValidationError(fileContext.getFileRecordCounter(),
-                                       ErrRef.FILE_TRAILER_PREMIUM_AMOUNT_INCORRECT,
-                                       "FTRL Estimated Premium: " + grandEstimatedPremium + " Computed Estimated Premium: " + fileContext.getFileEstimatedPremium());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
         return null;
