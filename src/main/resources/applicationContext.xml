@@ -220,6 +220,7 @@
                 <ref bean="fileHeaderSubmitterTypeValid"/>
                 <ref bean="fileHeaderSubmitterIDValid"/>
                 <ref bean="fileHeaderDateFormatValid"/>
+                <ref bean="fileHeaderDateNotFuture" />
                 <ref bean="fileHeaderTimeFormatValid"/>
                 <ref bean="incrementFileHeaderCounter"/>
             </list>
@@ -365,6 +366,7 @@
     <bean id="fileHeaderSubmitterIDValid"                  class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderSubmitterIDValid"/>
     <bean id="setFileSubmitterID"                          class="jwl.prp.retiree.costreport.validation.file.header.SetFileSubmitterID"/>
     <bean id="fileHeaderDateFormatValid"                   class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderDateFormatValid"/>
+    <bean id="fileHeaderDateNotFuture"                     class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderDateNotFuture"/>
     <bean id="fileHeaderTimeFormatValid"                   class="jwl.prp.retiree.costreport.validation.file.header.FileHeaderTimeFormatValid"/>
     <bean id="incrementFileHeaderCounter"                  class="jwl.prp.retiree.costreport.validation.file.header.IncrementFileHeaderCounter"/>
 
