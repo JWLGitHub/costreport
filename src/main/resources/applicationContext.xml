@@ -15,13 +15,15 @@
     <!-- Component scan to find all Spring components -->
     <context:component-scan base-package="jwl.prp.retiree.costreport" />
 
+    <!-- Link to Application Properties location -->
+    <context:property-placeholder location="classpath:application.properties" />
 
     <!-- Data source - connect to a MySQL instance running on the local machine -->
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url"             value="jdbc:mysql://localhost/cost_report"/>
-        <property name="username"        value="jwl"/>
-        <property name="password"        value="jwl"/>
+        <property name="driverClassName" value="${database.driver.class.name}"/>
+        <property name="url"             value="${database.url}"/>
+        <property name="username"        value="${database.user.name}"/>
+        <property name="password"        value="${database.password}"/>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -62,26 +64,33 @@
 
 
     <!--                              -->
+    <!--          Decider(s)          -->
+    <!--                              -->
+
+    <!-- Import File(s) Decider -->
+    <bean id="importFilesDecider" class="jwl.prp.retiree.costreport.decider.ImportFiles">
+        <property name="importDirectory"     value="${cost.report.import.directory}" />
+    </bean>
+
+
+    <!--                              -->
     <!--          Tasklet(s)          -->
     <!--                              -->
 
     <!-- File Exists Tasklet -->
-    <bean id="fileExistsTasklet" class="jwl.prp.retiree.costreport.tasklet.FileExists" scope="step">
-        <property name="inputFilePath"     value="#{jobParameters['inputFilePath']}" />
+    <bean id="fileExistsTasklet" class="jwl.prp.retiree.costreport.tasklet.FileExists">
         <property name="rdsFileDAO"        ref="rdsFileDAO"/>
         <property name="fileErrDAO"        ref="fileErrDAO"/>
     </bean>
 
     <!-- File Empty Tasklet -->
-    <bean id="fileEmptyTasklet" class="jwl.prp.retiree.costreport.tasklet.FileEmpty" scope="step">
-        <property name="inputFilePath"     value="#{jobParameters['inputFilePath']}" />
+    <bean id="fileEmptyTasklet" class="jwl.prp.retiree.costreport.tasklet.FileEmpty">
         <property name="rdsFileDAO"        ref="rdsFileDAO"/>
         <property name="fileErrDAO"        ref="fileErrDAO"/>
     </bean>
 
     <!-- File Name Valid Tasklet -->
-    <bean id="fileNameValidTasklet" class="jwl.prp.retiree.costreport.tasklet.FileNameValid" scope="step">
-        <property name="inputFilePath"     value="#{jobParameters['inputFilePath']}" />
+    <bean id="fileNameValidTasklet" class="jwl.prp.retiree.costreport.tasklet.FileNameValid">
         <property name="rdsFileDAO"        ref="rdsFileDAO"/>
         <property name="fileErrDAO"        ref="fileErrDAO"/>
 
@@ -95,15 +104,13 @@
     </bean>
 
     <!-- Move Good File Tasklet -->
-    <bean id="moveGoodFileTasklet" class="jwl.prp.retiree.costreport.tasklet.MoveFile" scope="step">
-        <property name="inputFilePath"        value="#{jobParameters['inputFilePath']}" />
-        <property name="outputFileDirectory"  value="#{jobParameters['goodFileDirectory']}" />
+    <bean id="moveGoodFileTasklet" class="jwl.prp.retiree.costreport.tasklet.MoveFile">
+        <property name="outputFileDirectory"  value="${cost.report.good.file.directory}" />
     </bean>
 
     <!-- Move Bad File Tasklet -->
-    <bean id="moveBadFileTasklet" class="jwl.prp.retiree.costreport.tasklet.MoveFile" scope="step">
-        <property name="inputFilePath"        value="#{jobParameters['inputFilePath']}" />
-        <property name="outputFileDirectory"  value="#{jobParameters['badFileDirectory']}" />
+    <bean id="moveBadFileTasklet" class="jwl.prp.retiree.costreport.tasklet.MoveFile">
+        <property name="outputFileDirectory"  value="${cost.report.bad.file.directory}" />
     </bean>
 
 
@@ -113,7 +120,7 @@
 
     <!-- Cost Report File Reader -->
     <bean id="costReportFileReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
-        <property name="resource"   value="file:#{jobParameters['inputFilePath']}" />
+        <property name="resource"   value="file:#{jobExecutionContext['importFile']}" />
         <property name="lineMapper" ref="costReportLineMapper"/>
     </bean>
 

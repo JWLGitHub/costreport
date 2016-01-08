@@ -14,6 +14,7 @@ public class FileContext
     private static String CLASS_NAME  = FileContext.class.getName();
     private static String SIMPLE_NAME = FileContext.class.getSimpleName();
 
+    public static final String       IMPORT_FILE_PATH         = "importFilePath";
     public static final String       RDS_FILE_ID              = "rdsFileId";
     public static final String       FILE_NAME_SUBMITTER_TYPE = "fileNameSubmitterType";
     public static final String       FILE_NAME_SUBMITTER_ID   = "fileNameSubmitterID";

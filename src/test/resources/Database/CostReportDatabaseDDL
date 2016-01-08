@@ -1,4 +1,6 @@
+CREATE DATABASE cost_report;
 
+USE cost_report;
 
 CREATE TABLE ERR_CTG_REF
 (

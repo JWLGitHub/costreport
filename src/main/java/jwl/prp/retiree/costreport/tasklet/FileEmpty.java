@@ -5,44 +5,35 @@ import jwl.prp.retiree.costreport.dao.FileErrDAO;
 import jwl.prp.retiree.costreport.dao.RDSFileDAO;
 import jwl.prp.retiree.costreport.entity.RDSFile;
 import jwl.prp.retiree.costreport.entity.FileErr;
-
 import jwl.prp.retiree.costreport.enums.ErrCtgRef;
 import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.enums.StusCtgry;
 import jwl.prp.retiree.costreport.enums.StusRef;
+import jwl.prp.retiree.costreport.utils.ExecutionContextHandler;
 import jwl.prp.retiree.costreport.validation.FileContext;
+
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.io.File;
+
 import java.util.Calendar;
 
 
-/**
- * Created by jwleader on 11/3/15.
- */
 public class FileEmpty implements Tasklet
 {
     private static String CLASS_NAME  = FileEmpty.class.getName();
     private static String SIMPLE_NAME = FileEmpty.class.getSimpleName();
 
-    private JobExecution      jobExecution;
-    private ExecutionContext  jobExecutionContext;
-    private StepExecution     stepExecution;
-
-    private String            inputFilePath;
 
     private RDSFileDAO        rdsFileDAO;
     private FileErrDAO        fileErrDAO;
 
 
-    @Override
     public RepeatStatus execute(StepContribution stepContribution,
                                 ChunkContext     chunkContext)
                                 throws Exception
@@ -50,43 +41,26 @@ public class FileEmpty implements Tasklet
         final String METHOD_NAME = "execute";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - BEGIN");
 
-        stepExecution       = chunkContext.getStepContext().getStepExecution();
-        jobExecution        = stepExecution.getJobExecution();
-        jobExecutionContext = jobExecution.getExecutionContext();
+        StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
+        String importFilePath = ExecutionContextHandler.getStringFromExecutionContext(stepExecution.getJobExecution().getExecutionContext(),
+                                                                                      FileContext.IMPORT_FILE_PATH);
 
-        // System.out.println(System.getProperty("user.dir"));
+        File importFile = new File( importFilePath );
 
-        File inputFile = new File( inputFilePath );
-
-        if (inputFile.length() == 0)
+        if (importFile.length() == 0)
         {
-            int rdsFileId = getRdsFileId();
+            int rdsFileId = ExecutionContextHandler.getIntegerFromExecutionContext(stepExecution.getJobExecution().getExecutionContext(),
+                                                                                   FileContext.RDS_FILE_ID);
+
             updateRDSFile(rdsFileId);
-            insertFileErr(rdsFileId);
+            insertFileErr(rdsFileId,
+                          importFilePath);
+
             stepExecution.setExitStatus(ExitStatus.FAILED);
         }
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME +  " - END");
         return RepeatStatus.FINISHED;
-    }
-
-
-    private int getRdsFileId()
-    {
-        final String METHOD_NAME = "getRdsFileId";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        Object rdsFileId = jobExecutionContext.get(FileContext.RDS_FILE_ID);
-        if (null == rdsFileId  ||
-            rdsFileId.toString().equalsIgnoreCase(""))
-        {
-            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + FileContext.RDS_FILE_ID + ": MISSING");
-            throw new RuntimeException("'" + FileContext.RDS_FILE_ID + "' MISSING from jobExecutionContext");
-        }
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        return Integer.parseInt(rdsFileId.toString());
     }
 
 
@@ -106,7 +80,8 @@ public class FileEmpty implements Tasklet
     }
 
 
-    private void insertFileErr(int rdsFileId)
+    private void insertFileErr(int    rdsFileId,
+                               String importFilePath)
     {
         final String METHOD_NAME = "insertFileErr";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
@@ -115,7 +90,7 @@ public class FileEmpty implements Tasklet
                                       ErrRef.CRFILE_IS_EMPTY.getErrCd(),
                                       ErrCtgRef.FILE_ERROR.getErrCtgryCd(),
                                       1,
-                                      ErrRef.CRFILE_IS_EMPTY.getDescTxt() + " - " + inputFilePath);
+                                      ErrRef.CRFILE_IS_EMPTY.getDescTxt() + " - " + importFilePath);
 
         fileErrDAO.insertFileErr(fileErr);
 
@@ -128,17 +103,10 @@ public class FileEmpty implements Tasklet
      *****     -----     SETTER(s)     -----     *****
      *****                                       *****
      */
-    public void setInputFilePath(String inputFilePath)
-    {
-        this.inputFilePath = inputFilePath;
-    }
-
-
     public void setRdsFileDAO(RDSFileDAO rdsFileDAO)
     {
         this.rdsFileDAO = rdsFileDAO;
     }
-
 
     public void setFileErrDAO(FileErrDAO fileErrDAO) { this.fileErrDAO = fileErrDAO; }
 }

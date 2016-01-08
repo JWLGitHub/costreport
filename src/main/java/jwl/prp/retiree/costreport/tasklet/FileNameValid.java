@@ -6,19 +6,20 @@ import jwl.prp.retiree.costreport.entity.FileErr;
 import jwl.prp.retiree.costreport.entity.FileName;
 import jwl.prp.retiree.costreport.entity.RDSFile;
 import jwl.prp.retiree.costreport.enums.StusRef;
+import jwl.prp.retiree.costreport.utils.ExecutionContextHandler;
 import jwl.prp.retiree.costreport.validation.ValidationError;
 import jwl.prp.retiree.costreport.validation.file.name.FileNameValidator;
 import jwl.prp.retiree.costreport.validation.FileContext;
+
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.io.File;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -28,11 +29,6 @@ public class FileNameValid implements Tasklet
     private static String CLASS_NAME  = FileNameValid.class.getName();
     private static String SIMPLE_NAME = FileNameValid.class.getSimpleName();
 
-    private JobExecution     jobExecution;
-    private ExecutionContext jobExecutionContext;
-    private StepExecution    stepExecution;
-
-    private String           inputFilePath;
 
     private RDSFileDAO rdsFileDAO;
     private FileErrDAO fileErrDAO;
@@ -51,25 +47,27 @@ public class FileNameValid implements Tasklet
         final String METHOD_NAME = "execute";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - BEGIN");
 
-        stepExecution       = chunkContext.getStepContext().getStepExecution();
-        jobExecution        = stepExecution.getJobExecution();
-        jobExecutionContext = jobExecution.getExecutionContext();
+        StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
+        String importFilePath = ExecutionContextHandler.getStringFromExecutionContext(stepExecution.getJobExecution().getExecutionContext(),
+                                                                                      FileContext.IMPORT_FILE_PATH);
 
-        // System.out.println(System.getProperty("user.dir"));
+        File importFile = new File( importFilePath );
+        FileName importFileName = new FileName(importFile.getName());
 
-        File inputFile = new File( inputFilePath );
-        FileName inputFileName = new FileName(inputFile.getName());
+        ValidationError validationError = validateFileName(importFileName);
 
-        ValidationError validationError = validateFileName(inputFileName);
+        int rdsFileId = ExecutionContextHandler.getIntegerFromExecutionContext(stepExecution.getJobExecution().getExecutionContext(),
+                                                                               FileContext.RDS_FILE_ID);
 
-        int rdsFileId = getRdsFileId();
         updateRDSFile(rdsFileId,
-                      inputFileName,
+                      importFileName,
                       validationError);
 
         if (null == validationError)
-            saveSubmitterInfoToStepExecution(inputFileName.getSubmitterType(),
-                                             inputFileName.getSubmitterID());
+        {
+            stepExecution.getExecutionContext().put(FileContext.FILE_NAME_SUBMITTER_TYPE, importFileName.getSubmitterType());
+            stepExecution.getExecutionContext().put(FileContext.FILE_NAME_SUBMITTER_ID,   importFileName.getSubmitterID());
+        }
         else
         {
             // *** FILE NAME ERROR EXISTS ***
@@ -107,25 +105,6 @@ public class FileNameValid implements Tasklet
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
         return validationError;
-    }
-
-
-    private int getRdsFileId()
-    {
-        final String METHOD_NAME = "getRdsFileId";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        Object rdsFileId = jobExecutionContext.get(FileContext.RDS_FILE_ID);
-        if (null == rdsFileId  ||
-            rdsFileId.toString().equalsIgnoreCase(""))
-        {
-            System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + FileContext.RDS_FILE_ID + ": MISSING");
-            throw new RuntimeException("'" + FileContext.RDS_FILE_ID + "' MISSING from jobExecutionContext");
-        }
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        return Integer.parseInt(rdsFileId.toString());
     }
 
 
@@ -176,38 +155,17 @@ public class FileNameValid implements Tasklet
     }
 
 
-    private void saveSubmitterInfoToStepExecution(String submitterType,
-                                                  String submitterID)
-    {
-        final String METHOD_NAME = "saveSubmitterInfoToStepExecution";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        stepExecution.getExecutionContext().put(FileContext.FILE_NAME_SUBMITTER_TYPE, submitterType);
-        stepExecution.getExecutionContext().put(FileContext.FILE_NAME_SUBMITTER_ID,   submitterID);
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-    }
-
-
     /*
      *****                                       *****
      *****     -----     SETTER(s)     -----     *****
      *****                                       *****
      */
-    public void setInputFilePath(String inputFilePath)
-    {
-        this.inputFilePath = inputFilePath;
-    }
-
-
     public void setRdsFileDAO(RDSFileDAO rdsFileDAO)
     {
         this.rdsFileDAO = rdsFileDAO;
     }
 
-
     public void setFileErrDAO(FileErrDAO fileErrDAO) { this.fileErrDAO = fileErrDAO; }
-
 
     public void setFileNameValidators(List<FileNameValidator> fileNameValidators)
     {

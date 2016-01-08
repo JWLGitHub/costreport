@@ -6,6 +6,7 @@ import jwl.prp.retiree.costreport.dao.FileApplDAO;
 import jwl.prp.retiree.costreport.entity.*;
 import jwl.prp.retiree.costreport.enums.ErrRef;
 import jwl.prp.retiree.costreport.enums.StusRef;
+import jwl.prp.retiree.costreport.utils.ExecutionContextHandler;
 import jwl.prp.retiree.costreport.validation.BaseValidator;
 import jwl.prp.retiree.costreport.validation.FileContext;
 import jwl.prp.retiree.costreport.validation.ValidationError;
@@ -45,8 +46,8 @@ public class CostReportApplicationProcessor extends    CostReportBaseProcessor
 
         ExecutionContext jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
 
-        fileContext.setRdsFileId(getIntegerFromExecutionContext(jobExecutionContext,
-                                                                FileContext.RDS_FILE_ID));
+        fileContext.setRdsFileId(ExecutionContextHandler.getIntegerFromExecutionContext(jobExecutionContext,
+                                                                                        FileContext.RDS_FILE_ID));
 
         updateRDSFile(StusRef.FILE_PROCESSING_2ND_PASS,
                       SIMPLE_NAME);

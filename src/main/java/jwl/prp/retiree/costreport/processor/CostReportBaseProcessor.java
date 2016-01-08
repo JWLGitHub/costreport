@@ -41,43 +41,9 @@ public abstract class CostReportBaseProcessor
     protected List<BaseValidator> fileTrailerValidators;
 
     /*
-    *---   Err Ref(s) NOT Error(s)
-    */
+     *---   Err Ref(s) NOT Error(s)
+     */
     protected List<ErrRef> errRefsNotErrors;
-
-
-    protected Integer getIntegerFromExecutionContext(ExecutionContext executionContext,
-                                                     String           fieldName)
-    {
-        final String METHOD_NAME = "getIntegerFromExecutionContext";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        Object fieldValue = executionContext.get(fieldName);
-        if (null == fieldValue ||
-            fieldValue.toString().equalsIgnoreCase(""))
-            throw new RuntimeException("'" + fieldName + "' MISSING from ExecutionContext");
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        return Integer.parseInt(fieldValue.toString());
-    }
-
-
-    protected String getStringFromExecutionContext(ExecutionContext executionContext,
-                                                   String           fieldName)
-    {
-        final String METHOD_NAME = "getStringFromExecutionContext";
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        Object fieldValue = executionContext.get(fieldName);
-        if (null == fieldValue ||
-            fieldValue.toString().equalsIgnoreCase(""))
-            throw new RuntimeException("'" + fieldName + "' MISSING from ExecutionContext");
-
-        System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-
-        return fieldValue.toString();
-    }
 
 
     protected void updateRDSFile(StusRef fileStatus,

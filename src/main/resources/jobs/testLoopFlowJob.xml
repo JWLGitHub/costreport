@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+    <!-- Import Application Context beans -->
+    <import resource="classpath:/testApplicationContext.xml" />
+
+    <job id="testLoopFlowJob" xmlns="http://www.springframework.org/schema/batch">
+        <decision id="importFiles" decider="importFilesDecider" >
+            <next on="IMPORT"    to="dummyStep" />
+            <end  on="COMPLETED" />
+            <fail on="*"         exit-code="IMPORT FILES ERROR"/>
+        </decision>
+
+        <step id="dummyStep" next="importFiles">
+            <tasklet ref="dummyPlaceHolderTasklet" />
+        </step>
+    </job>
+</beans>

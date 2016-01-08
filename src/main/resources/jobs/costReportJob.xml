@@ -11,6 +11,12 @@
     <import resource="classpath:/applicationContext.xml" />
 
     <job id="costReportJob" xmlns="http://www.springframework.org/schema/batch">
+        <decision id="importFiles" decider="importFilesDecider" >
+            <next on="IMPORT FILE" to="fileExists" />
+            <end  on="COMPLETED" />
+            <fail on="*"            exit-code="IMPORT FILES ERROR"/>
+        </decision>
+
         <step id="fileExists" >
             <tasklet ref="fileExistsTasklet" >
                 <listeners>
@@ -98,14 +104,15 @@
         <step id="moveGoodFile" >
             <tasklet ref="moveGoodFileTasklet" />
 
-            <end  on="COMPLETED" exit-code="GOOD FILE"/>
+            <next on="COMPLETED" to="importFiles"/>
             <fail on="*"         exit-code="BAD FILE"/>
         </step>
 
         <step id="moveBadFile" >
             <tasklet ref="moveBadFileTasklet" />
 
-            <fail on="*" exit-code="BAD FILE"/>
+            <next on="COMPLETED" to="importFiles"/>
+            <fail on="*"         exit-code="BAD FILE"/>
         </step>
     </job>
 </beans>
