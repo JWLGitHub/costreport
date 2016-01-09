@@ -43,7 +43,6 @@
     </jdbc:initialize-database>
     -->
 
-
     <!-- Job Repository: used to persist the state of the batch job -->
     <!--
     <bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">

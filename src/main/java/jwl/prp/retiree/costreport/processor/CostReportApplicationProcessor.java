@@ -44,6 +44,8 @@ public class CostReportApplicationProcessor extends    CostReportBaseProcessor
         final String METHOD_NAME = "beforeStep";
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
 
+        fileContext = new FileContext();
+
         ExecutionContext jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
 
         fileContext.setRdsFileId(ExecutionContextHandler.getIntegerFromExecutionContext(jobExecutionContext,

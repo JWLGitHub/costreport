@@ -25,7 +25,7 @@ public abstract class CostReportBaseProcessor
     protected RDSFileDAO  rdsFileDAO;
     protected FileErrDAO  fileErrDAO;
 
-    protected FileContext fileContext = new FileContext();
+    protected FileContext fileContext;
 
     /*
      *---   Validators
