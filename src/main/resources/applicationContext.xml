@@ -120,7 +120,7 @@
 
     <!-- Cost Report File Reader -->
     <bean id="costReportFileReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
-        <property name="resource"   value="file:#{jobExecutionContext['importFile']}" />
+        <property name="resource"   value="file:#{jobExecutionContext['importFilePath']}" />
         <property name="lineMapper" ref="costReportLineMapper"/>
     </bean>
 
