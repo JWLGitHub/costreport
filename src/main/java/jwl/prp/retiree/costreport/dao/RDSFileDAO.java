@@ -2,15 +2,14 @@ package jwl.prp.retiree.costreport.dao;
 
 import jwl.prp.retiree.costreport.dao.mapper.RDSFileMapper;
 import jwl.prp.retiree.costreport.entity.RDSFile;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by jwleader on 11/7/15.
- */
+
 public class RDSFileDAO
 {
     private static String CLASS_NAME = RDSFileDAO.class.getName();

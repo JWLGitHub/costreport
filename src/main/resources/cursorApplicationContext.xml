@@ -96,8 +96,9 @@
     <!--                         -->
     <!--        WRITER(s)        -->
     <!--                         -->
-    <bean id="cursorItemWriter" class="jwl.prp.retiree.costreport.writer.CursorItemWriter"/>
-
+    <bean id="cursorItemWriter" class="jwl.prp.retiree.costreport.writer.CursorItemWriter">
+        <property name="retFileHistDAO"  ref="retFileHistDAO"/>
+    </bean>
 
     <!--                              -->
     <!--        ROW MAPPER(s)         -->
@@ -109,6 +110,10 @@
     <!--          DAO(s)          -->
     <!--                          -->
     <bean id="applicationDAO" class="jwl.prp.retiree.costreport.dao.ApplicationDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="retFileHistDAO" class="jwl.prp.retiree.costreport.dao.RetFileHistDAO">
         <property name="jdbcTemplate" ref="jdbcTemplate" />
     </bean>
 </beans>
