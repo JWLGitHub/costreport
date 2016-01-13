@@ -16,7 +16,7 @@
                 <chunk reader="cursorItemReader"
                        processor="cursorItemProcessor"
                        writer="cursorItemWriter"
-                       commit-interval="1" >
+                       commit-interval="3" >
                 </chunk>
             </tasklet>
         </step>

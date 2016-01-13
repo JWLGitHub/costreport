@@ -20,7 +20,7 @@ public class CursorItemProcessor implements ItemProcessor<RetFileHist, RetFileHi
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME + " - " + retFileHist.toString());
 
         System.out.println(SIMPLE_NAME + " " + METHOD_NAME);
-        return null;
+        return retFileHist;
     }
 
 

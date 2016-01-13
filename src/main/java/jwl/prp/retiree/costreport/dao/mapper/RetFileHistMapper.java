@@ -15,7 +15,7 @@ public class RetFileHistMapper implements RowMapper<RetFileHist>
                               throws SQLException
     {
         RetFileHist retFileHist = new RetFileHist();
-        retFileHist.setFileId(resultSet.getString("FILE_ID"));
+        retFileHist.setFileId(resultSet.getInt("FILE_ID"));
         retFileHist.setPsId(resultSet.getString("PS_ID"));
         retFileHist.setApplId(resultSet.getString("APPL_ID"));
         retFileHist.setReceiptDt(resultSet.getInt("RECEIPT_DT"));

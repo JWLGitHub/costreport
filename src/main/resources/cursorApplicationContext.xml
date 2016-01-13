@@ -65,31 +65,29 @@
 
 
     <!--                              -->
-    <!--          Decider(s)          -->
+    <!--          DECIDER(s)          -->
     <!--                              -->
 
 
     <!--                              -->
-    <!--          Tasklet(s)          -->
+    <!--          TASKLET(s)          -->
     <!--                              -->
 
 
     <!--                              -->
-    <!--          Reader(s)           -->
+    <!--          READER(s)           -->
     <!--                              -->
-
-    <!-- Cursor Item Reader -->
-    <bean id="cursorItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" >
-        <property name="resource"   value="file:#{jobExecutionContext['importFilePath']}" />
-        <property name="lineMapper" ref="costReportLineMapper"/>
+    <bean id="cursorItemReader" class="org.springframework.batch.item.database.JdbcCursorItemReader" >
+        <property name="dataSource" ref="dataSource" />
+        <property name="sql"        value="select * from retfilehist"/>
+        <property name="rowMapper"  ref="retFileHistRowMapper"/>
+        <property name="fetchSize"  value="5"/>
     </bean>
 
 
     <!--                            -->
     <!--        PROCESSER(s)        -->
     <!--                            -->
-
-    <!-- Cursor Item Processor -->
     <bean id="cursorItemProcessor" class="jwl.prp.retiree.costreport.processor.CursorItemProcessor" >
     </bean>
 
@@ -97,7 +95,11 @@
     <!--                         -->
     <!--        WRITER(s)        -->
     <!--                         -->
-
-    <!-- Cursor Item Writer -->
     <bean id="cursorItemWriter" class="jwl.prp.retiree.costreport.writer.CursorItemWriter"/>
+
+
+    <!--                              -->
+    <!--        ROW MAPPER(s)         -->
+    <!--                              -->
+    <bean id="retFileHistRowMapper" class="jwl.prp.retiree.costreport.dao.mapper.RetFileHistMapper"/>
 </beans>

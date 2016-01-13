@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class RetFileHist
 {
-    private String    fileId;
+    private int       fileId;
     private String    psId;
     private String    applId;
     private int       receiptDt;
@@ -36,7 +36,7 @@ public class RetFileHist
     }
 
 
-    public RetFileHist(String    fileId,
+    public RetFileHist(int       fileId,
                        String    psId,
                        String    applId,
                        int       receiptDt,
@@ -85,7 +85,7 @@ public class RetFileHist
     //
     // --- Getter(s) ---
     //
-    public String getFileId() { return fileId; }
+    public int getFileId() { return fileId; }
 
     public String getPsId() { return psId; }
 
@@ -131,7 +131,7 @@ public class RetFileHist
     //
     // --- Setter(s) ---
     //
-    public void setFileId(String fileId) { this.fileId = fileId; }
+    public void setFileId(int fileId) { this.fileId = fileId; }
 
     public void setPsId(String psId) { this.psId = psId; }
 

@@ -1,3 +1,5 @@
+DROP DATABASE cost_report;
+
 CREATE DATABASE cost_report;
 
 USE cost_report;
@@ -309,3 +311,147 @@ CREATE TABLE COST_REPORT_IMPORT
      RECORD_CONTENTS  CHAR(110)        NOT NULL,
      FOREIGN KEY (FILE_ID) REFERENCES RDS_FILE(FILE_ID)
 );
+
+
+
+CREATE TABLE RETFILEHIST
+(
+  `FILE_ID`       int(11)      NOT NULL,
+  `PS_ID`         char(10)     NOT NULL,
+  `APPL_ID`       char(10)     NOT NULL,
+  `RECEIPT_DT`    int(11)      NOT NULL,
+  `RESPONSE_DT`   int(11)      NOT NULL,
+  `STATUS`        char(2)      NOT NULL,
+  `PREV_STATUS`   char(2)      NOT NULL,
+  `ERROR_REASON`  char(2)      NOT NULL,
+  `ADD_CNT`       int(11)      NOT NULL,
+  `UPDATE_CNT`    int(11)      NOT NULL,
+  `DELETE_CNT`    int(11)      NOT NULL,
+  `ERROR_CNT`     int(11)      NOT NULL,
+  `TOTAL_CNT`     int(11)      NOT NULL,
+  `TRANS_METHOD`  char(1)      NOT NULL,
+  `INPUT_FILE`    char(44)     NOT NULL,
+  `RESPONSE_FILE` char(44)     NOT NULL,
+  `MAILBOX_FILE`  varchar(255) NOT NULL,
+  `COBC_PLAN_NUM` char(4)      NOT NULL,
+  `UPDT_PGM`      char(8)      NOT NULL,
+  `TIMESTAMP`     timestamp    NOT NULL   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `ORIGIN_ID`     char(10)     NOT NULL,
+  PRIMARY KEY (`FILE_ID`)
+);
+
+INSERT INTO RETFILEHIST
+VALUES (1,
+        '1111111111',
+        '2222222222',
+        20160101,
+        20161231,
+        '00',
+        'PS',
+        'ER',
+        0,
+        0,
+        0,
+        0,
+        0,
+        'T',
+        '1--------01--- INPUT FILE ---01--------01--4',
+        '1--------01-- RESPONSE FILE -01--------01--4',
+        "XXX---   MAIL BOX FILE   ---XXX",
+        'COBC',
+        'UPDT PGM',
+        '2016-01-01 00:00:01',
+        'ORIGIN  ID');
+
+INSERT INTO RETFILEHIST
+VALUES (2,
+        '2222222222',
+        '2222222222',
+        20160101,
+        20161231,
+        '00',
+        'PS',
+        'ER',
+        0,
+        0,
+        0,
+        0,
+        0,
+        'T',
+        '1--------01--- INPUT FILE ---01--------01--4',
+        '1--------01-- RESPONSE FILE -01--------01--4',
+        "XXX---   MAIL BOX FILE   ---XXX",
+        'COBC',
+        'UPDT PGM',
+        '2016-01-01 00:00:01',
+        'ORIGIN  ID');
+
+INSERT INTO RETFILEHIST
+VALUES (3,
+        '3333333333',
+        '2222222222',
+        20160101,
+        20161231,
+        '00',
+        'PS',
+        'ER',
+        0,
+        0,
+        0,
+        0,
+        0,
+        'T',
+        '1--------01--- INPUT FILE ---01--------01--4',
+        '1--------01-- RESPONSE FILE -01--------01--4',
+        "XXX---   MAIL BOX FILE   ---XXX",
+        'COBC',
+        'UPDT PGM',
+        '2016-01-01 00:00:01',
+        'ORIGIN  ID');
+
+
+INSERT INTO RETFILEHIST
+VALUES (4,
+        '4444444444',
+        '2222222222',
+        20160101,
+        20161231,
+        '00',
+        'PS',
+        'ER',
+        0,
+        0,
+        0,
+        0,
+        0,
+        'T',
+        '1--------01--- INPUT FILE ---01--------01--4',
+        '1--------01-- RESPONSE FILE -01--------01--4',
+        "XXX---   MAIL BOX FILE   ---XXX",
+        'COBC',
+        'UPDT PGM',
+        '2016-01-01 00:00:01',
+        'ORIGIN  ID');
+
+INSERT INTO RETFILEHIST
+VALUES (5,
+        '5555555555',
+        '2222222222',
+        20160101,
+        20161231,
+        '00',
+        'PS',
+        'ER',
+        0,
+        0,
+        0,
+        0,
+        0,
+        'T',
+        '1--------01--- INPUT FILE ---01--------01--4',
+        '1--------01-- RESPONSE FILE -01--------01--4',
+        "XXX---   MAIL BOX FILE   ---XXX",
+        'COBC',
+        'UPDT PGM',
+        '2016-01-01 00:00:01',
+        'ORIGIN  ID');
