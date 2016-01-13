@@ -146,14 +146,16 @@ INSERT INTO STUS_REF VALUES ('OS', 'NW', "New organization added");
 
 CREATE TABLE APPLICATION
 (
-     APPLICATION_ID     CHAR(10)          NOT NULL PRIMARY KEY
+     APPLICATION_ID     CHAR(10)          NOT NULL PRIMARY KEY,
+     STATUS             CHAR(2)           NOT NULL
 );
 
-INSERT INTO APPLICATION VALUES ('0000000001');
-INSERT INTO APPLICATION VALUES ('0123456789');
-INSERT INTO APPLICATION VALUES ('1111111111');
-INSERT INTO APPLICATION VALUES ('9876543210');
-INSERT INTO APPLICATION VALUES ('9999999999');
+INSERT INTO APPLICATION VALUES ('0000000001', '00');
+INSERT INTO APPLICATION VALUES ('0123456789', '03');
+INSERT INTO APPLICATION VALUES ('1111111111', '03');
+INSERT INTO APPLICATION VALUES ('4444444444', '23');
+INSERT INTO APPLICATION VALUES ('9876543210', '00');
+INSERT INTO APPLICATION VALUES ('9999999999', '03');
 
 
 
@@ -369,8 +371,8 @@ VALUES (2,
         '2222222222',
         20160101,
         20161231,
+        '02',
         '00',
-        'PS',
         'ER',
         0,
         0,
@@ -389,7 +391,7 @@ VALUES (2,
 INSERT INTO RETFILEHIST
 VALUES (3,
         '3333333333',
-        '2222222222',
+        '0123456789',
         20160101,
         20161231,
         '00',
@@ -413,7 +415,7 @@ VALUES (3,
 INSERT INTO RETFILEHIST
 VALUES (4,
         '4444444444',
-        '2222222222',
+        '9876543210',
         20160101,
         20161231,
         '00',
@@ -439,8 +441,123 @@ VALUES (5,
         '2222222222',
         20160101,
         20161231,
+        '01',
+        '00',
+        'ER',
+        0,
+        0,
+        0,
+        0,
+        0,
+        'T',
+        '1--------01--- INPUT FILE ---01--------01--4',
+        '1--------01-- RESPONSE FILE -01--------01--4',
+        "XXX---   MAIL BOX FILE   ---XXX",
+        'COBC',
+        'UPDT PGM',
+        '2016-01-01 00:00:01',
+        'ORIGIN  ID');
+
+INSERT INTO RETFILEHIST
+VALUES (6,
+        '6666666666',
+        '4444444444',
+        20160101,
+        20161231,
         '00',
         'PS',
+        'ER',
+        0,
+        0,
+        0,
+        0,
+        0,
+        'T',
+        '1--------01--- INPUT FILE ---01--------01--4',
+        '1--------01-- RESPONSE FILE -01--------01--4',
+        "XXX---   MAIL BOX FILE   ---XXX",
+        'COBC',
+        'UPDT PGM',
+        '2016-01-01 00:00:01',
+        'ORIGIN  ID');
+
+INSERT INTO RETFILEHIST
+VALUES (7,
+        '1212121212',
+        '1111111111',
+        20160101,
+        20161231,
+        '00',
+        'PS',
+        'ER',
+        0,
+        0,
+        0,
+        0,
+        0,
+        'T',
+        '1--------01--- INPUT FILE ---01--------01--4',
+        '1--------01-- RESPONSE FILE -01--------01--4',
+        "XXX---   MAIL BOX FILE   ---XXX",
+        'COBC',
+        'UPDT PGM',
+        '2016-01-01 00:00:01',
+        'ORIGIN  ID');
+
+INSERT INTO RETFILEHIST
+VALUES (8,
+        '1212121212',
+        '9999999999',
+        20160101,
+        20161231,
+        '00',
+        'PS',
+        'ER',
+        0,
+        0,
+        0,
+        0,
+        0,
+        'T',
+        '1--------01--- INPUT FILE ---01--------01--4',
+        '1--------01-- RESPONSE FILE -01--------01--4',
+        "XXX---   MAIL BOX FILE   ---XXX",
+        'COBC',
+        'UPDT PGM',
+        '2016-01-01 00:00:01',
+        'ORIGIN  ID');
+
+INSERT INTO RETFILEHIST
+VALUES (9,
+        '9999999999',
+        '0000000001',
+        20160101,
+        20161231,
+        '00',
+        'PS',
+        'ER',
+        0,
+        0,
+        0,
+        0,
+        0,
+        'T',
+        '1--------01--- INPUT FILE ---01--------01--4',
+        '1--------01-- RESPONSE FILE -01--------01--4',
+        "XXX---   MAIL BOX FILE   ---XXX",
+        'COBC',
+        'UPDT PGM',
+        '2016-01-01 00:00:01',
+        'ORIGIN  ID');
+
+INSERT INTO RETFILEHIST
+VALUES (10,
+        '2222222222',
+        '2222222222',
+        20160101,
+        20161231,
+        '01',
+        '00',
         'ER',
         0,
         0,

@@ -8,9 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-/**
- * Created by jwleader on 11/20/15.
- */
 public class ApplicationMapper implements RowMapper<Application>
 {
     public Application mapRow(ResultSet resultSet,
@@ -19,6 +16,7 @@ public class ApplicationMapper implements RowMapper<Application>
     {
         Application application = new Application();
         application.setApplicationID(resultSet.getString("APPLICATION_ID"));
+        application.setStatus(resultSet.getString("STATUS"));
         return application;
     }
 }

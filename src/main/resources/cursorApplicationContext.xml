@@ -79,7 +79,7 @@
     <!--                              -->
     <bean id="cursorItemReader" class="org.springframework.batch.item.database.JdbcCursorItemReader" >
         <property name="dataSource" ref="dataSource" />
-        <property name="sql"        value="select * from retfilehist"/>
+        <property name="sql"        value="select * from retfilehist where status = '00'"/>
         <property name="rowMapper"  ref="retFileHistRowMapper"/>
         <property name="fetchSize"  value="5"/>
     </bean>
@@ -89,6 +89,7 @@
     <!--        PROCESSER(s)        -->
     <!--                            -->
     <bean id="cursorItemProcessor" class="jwl.prp.retiree.costreport.processor.CursorItemProcessor" >
+        <property name="applicationDAO"  ref="applicationDAO"/>
     </bean>
 
 
@@ -102,4 +103,12 @@
     <!--        ROW MAPPER(s)         -->
     <!--                              -->
     <bean id="retFileHistRowMapper" class="jwl.prp.retiree.costreport.dao.mapper.RetFileHistMapper"/>
+
+
+    <!--                          -->
+    <!--          DAO(s)          -->
+    <!--                          -->
+    <bean id="applicationDAO" class="jwl.prp.retiree.costreport.dao.ApplicationDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
 </beans>
