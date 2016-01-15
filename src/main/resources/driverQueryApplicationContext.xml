@@ -79,7 +79,33 @@
     <!--                              -->
     <bean id="driverQueryItemReader" class="org.springframework.batch.item.database.JdbcCursorItemReader" >
         <property name="dataSource" ref="dataSource" />
-        <property name="sql"        value="select file_id from retfilehist where status = '00'"/>
+
+        <property name="sql">
+            <value>
+                <![CDATA[
+                    select file_id
+                    from   retfilehist
+                    where  status = '10'
+                ]]>
+            </value>
+        </property>
+
+        <!--
+        <property name="sql">
+            <value>
+                <![CDATA[
+                    select file_id
+                    from   retfilehist
+                    where  status = ?
+                ]]>
+            </value>
+        </property>
+        <property name="preparedStatementSetter" >
+            <bean class="jwl.prp.retiree.costreport.reader.jdbc.cursor.DriverQueryPreparedStatementSetter">
+            </bean>
+        </property>
+        -->
+
         <property name="rowMapper" >
             <bean class="org.springframework.jdbc.core.SingleColumnRowMapper">
                 <constructor-arg value="java.lang.Integer" />

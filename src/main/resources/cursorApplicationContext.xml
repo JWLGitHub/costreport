@@ -79,7 +79,33 @@
     <!--                              -->
     <bean id="cursorItemReader" class="org.springframework.batch.item.database.JdbcCursorItemReader" >
         <property name="dataSource" ref="dataSource" />
-        <property name="sql"        value="select * from retfilehist where status = '00'"/>
+
+        <!--
+        <property name="sql">
+            <value>
+                <![CDATA[
+                    select *
+                    from   retfilehist
+                    where  status = '00'
+                ]]>
+            </value>
+        </property>
+        -->
+
+        <property name="sql">
+            <value>
+                <![CDATA[
+                    select *
+                    from   retfilehist
+                    where  status = ?
+                ]]>
+            </value>
+        </property>
+        <property name="preparedStatementSetter" >
+            <bean class="jwl.prp.retiree.costreport.reader.jdbc.cursor.CursorPreparedStatementSetter">
+            </bean>
+        </property>
+
         <property name="rowMapper"  ref="retFileHistRowMapper"/>
         <property name="fetchSize"  value="3"/>
     </bean>
